@@ -1,3 +1,10 @@
-include_directories (${libmpong_DIR}/include)
+include_directories (${libmpong_DIR}/include ${GTEST_ROOT}/include)
 add_executable (libmpongtest ball_test.cpp)
-target_link_libraries (libmpongtest libmpong gtest gtest_main pthread)
+
+target_link_libraries (
+	libmpongtest
+	libmpong
+	gtest_main
+	gtest
+	pthread
+    )
