@@ -24,14 +24,11 @@ ExternalProject_Get_Property(googletest source_dir binary_dir)
 set_target_properties(gtest PROPERTIES
     "IMPORTED_LOCATION" "${binary_dir}/libgtest.a"
     "IMPORTED_LINK_INTERFACE_LIBRARIES" "${CMAKE_THREAD_LIBS_INIT}"
-#    "INTERFACE_INCLUDE_DIRECTORIES" "${source_dir}/include"
 )
 set_target_properties(gtest_main PROPERTIES
     "IMPORTED_LOCATION" "${binary_dir}/libgtest_main.a"
     "IMPORTED_LINK_INTERFACE_LIBRARIES" "${CMAKE_THREAD_LIBS_INIT}"
-#    "INTERFACE_INCLUDE_DIRECTORIES" "${source_dir}/include"
 )
-# I couldn't make it work with INTERFACE_INCLUDE_DIRECTORIES
 include_directories("${source_dir}/include")
 
 # Download and install GoogleMock
@@ -52,9 +49,7 @@ ExternalProject_Get_Property(gmock source_dir binary_dir)
 set_target_properties(libgmock PROPERTIES
     "IMPORTED_LOCATION" "${binary_dir}/libgmock.a"
     "IMPORTED_LINK_INTERFACE_LIBRARIES" "${CMAKE_THREAD_LIBS_INIT}"
-#    "INTERFACE_INCLUDE_DIRECTORIES" "${source_dir}/include"
 )
-# I couldn't make it work with INTERFACE_INCLUDE_DIRECTORIES
 include_directories("${source_dir}/include")
 
 add_subdirectory(libmpong)
