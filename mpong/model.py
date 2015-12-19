@@ -1,103 +1,140 @@
 
-# dimensions of gameboard. Values for halfGameboard is good to have
-gameboard = {'hight': 900., 'width': 1.6*900}
-halfGameboard = {'hight': gameboard['hight'] / 2., 'width': gameboard['width'] / 2.}
+class Vector(object):
+    def __init__(self, x, y):
+        self.x = x
+        self.y = y
+
+    def add(self, vec):
+        temp = Vector(self.x, self.y)
+        temp.x += vec.x
+        temp.y += vec.y
+        return temp
+
+    def subtract(self, vec):
+        temp = Vector(self.x, self.y)
+        temp.x -= vec.x
+        temp.y -= vec.y
+        return temp
+
+    def dot(self, vec):
+        return self.x * vec.x + self.y * vec.y
 
 
-# create classes for left player, right player and ball object.
-class Paddle(object):
-    def __init__(self, start_position):
-        self.position = start_position
-        self.speed = [0., 0.]
-        self.hight = gameboard['hight']/(6.)
-        self.width = gameboard['hight']/(6*3.)
+class Rectangle(object):
+    def __init__(self, pos_x, pos_y, width, height):
+        self.position = Vector(pos_x, pos_y)
+        self.speed = Vector(0, 0)
+        self.width = Vector(width, 0)
+        self.height = Vector(0, height)
 
-    def __str__(self):
-        return 'position: ' + str(self.position) + 'speed: ' + str(self.speed) + ', hight: %f, width: %f' % (self.hight, self.width)
+    def topp(self):
+        return self.position.y + self.height.y / 2.
+
+    def bottom(self):
+        return self.position.y - self.height.y / 2.
+
+    def left(self):
+        return self.position.x - self.width.x / 2.
+
+    def right(self):
+        return self.position.x + self.width.x / 2.
+
+    def move(self):
+        self.positin.x += self.speed.x
+        self.positin.y += self.speed.y
 
 
-class LeftPlayer(Paddle):
-    def __init__(self, name):
-        super(LeftPlayer, self).__init__([halfGameboard['width'] - 250., -halfGameboard['hight']])
+class Player(Rectangle):
+    def __init__(self, name, pos_x, pos_y, height):
+        super(Player, self).__init__(pos_x, pos_y, height / 1.6, height)
         self.name = name
-
-    def __str__(self):
-        return Paddle.__str__(self) + ', name: %s' % (self.name)
+        self.points = 0
 
 
-class RightPlayer(Paddle):
-    def __init__(self, name):
-        super(RightPlayer, self).__init__([halfGameboard['width'] + 250., -halfGameboard['hight']])
-        self.name = name
-
-    def __str__(self):
-        return Paddle.__str__(self) + ', name: %s' % (self.name)
+class Ball(Rectangle):
+    def __init__(self, pos_x, pos_y, width):
+        super(Ball, self).__init__(pos_x, pos_y, width, width)
+        self.speed.x = 1
+        self.speed.y = 1
 
 
-class Ball(object):
-    def __init__(self):
-        self.position = [halfGameboard['width'], -halfGameboard['hight']]
-        self.speed = [1., 1.]
-        self.hight = gameboard['hight']/12.
-        self.width = gameboard['hight']/12. 
+class Gameboard(Rectangle):
+    def __init__(self, player1_name, player2_name, height):
+        super(Gameboard, self).__init__(1.6 * height / 2., -height / 2.,
+                                        1.6 * height, height)
+        self.player1 = Player(player1_name,
+                              self.position.x - self.width.x / 2.,
+                              -self.height.y,
+                              self.height.y / 12.)
+        self.player2 = Player(player2_name,
+                              self.position.x + self.width.x / 2.,
+                              -self.height.y,
+                              self.height.y / 12.)
+        self.ball = Ball(self.position.x, self.position.y, 1)
 
-    def __str__(self):
-        return 'position: ' + str(self.position) + ', speed: ' + str(self.speed) + ', hight: %f, width: %f' % (self.hight, self.width)
+    def collision(self):
+        # check that players do not get outside gameboard
+        for obj in [self.player1, self.player2]:
+            if obj.topp() > self.topp():
+                obj.position.y = self.topp() - obj.height.y / 2.
+            elif obj.bottom() < self.bottom():
+                obj.position.y = self.bottom() + obj.height.y / 2.
 
-
-# create Game. Contains players, ball and rules
-class Game(object):
-    def __init__(self, left_player_name, right_player_name):
-        self.left_player = LeftPlayer(left_player_name)
-        self.right_player = RightPlayer(right_player_name)
-        self.ball = Ball()
-
-    # a player should not move outside the gameboard
-    def player_collision(player):
-        position = player.position
-        if position[1] > 0 - player.hight/2.:
-            position[1] = 0 - player.hight/2.    # highest possible position
-        elif position[1] < -gameboard['hight'] + player.hight/2.:
-            position[1] = -gameboard['hight'] + player.hight/2.  # lowest possible position
-
-    # collision detection for 'slow' moving objects. Gameboard coordinate (0, 0) is at upper left corner
-    def ball_collision(ball, left_player, right_player):
-        position = ball.position
         # check if ball bounces off roof or floor
-        if position[1] > 0 - ball['hight']/2.:
-            position[1] = -position[1]
-        elif position[1] < -gameboard['hight'] + ball['hight']/2.:
-            position[1] = -position[1]
-        # check if ball hits player_left or player_right
-        if position[0] < left_player.position[0]:
-            pos_y = left_player.position[1]
-            if position[1] < pos_y + left_player.hight/2. and position[1] > pos_y - left_player.hight/2.:
-                position[0] = -position[0]
-            else:
-                right_player.points += 1
-                position[0] = halfGameboard['width']
-                position[1] = -halfGameboard['hight']
-        elif position[0] > right_player.position[0]:
-            pos_y = right_player.position[1]
-            if position[1] < pos_y + right_player.hight/2. and position[1] > pos_y - right_player.hight/2.:
-                position[0] = -position[0]
-            else:
-                left_player.points += 1
-                position[0] = halfGameboard['width']
-                position[1] = -halfGameboard['hight']
+        if self.ball.topp() > self.topp():
+            self.ball.position.y = self.topp() - self.ball.height.y / 2.
+            self.ball.speed.y = -self.ball.speed.y
+        elif self.ball.bottom() < self.bottom():
+            self.ball.position.y = self.bottom() + self.ball.height.y / 2.
+            self.ball.speed.y = -self.ball.speed.y
+
+        # check if ball bounces off a player, or if a player get points
+        if self.ball.speed.dot(Vector(1, 0)) > 0:
+            t = self.player2.topp() - self.ball.topp()
+            b = self.player2.bottom() - self.ball.bottom()
+            if self.ball.right() > self.player2.left():
+                if t > 0 and b < 0:
+                    self.ball.speed.x = -self.ball.speed.x
+                else:
+                    self.player1.points += 1
+                    self.ball.position.x = self.position.x
+                    self.ball.position.y = self.position.y
         else:
-            pass
+            t = self.player1.topp() - self.ball.topp()
+            b = self.player1.bottom() - self.ball.bottom()
+            if self.ball.right() > self.player2.left():
+                if t > 0 and b < 0:
+                    self.ball.speed.x = -self.ball.speed.x
+                else:
+                    self.player2.points += 1
+                    self.ball.position.x = self.position.x
+                    self.ball.position.y = self.position.y
 
-    # get player speeds from view.
-    def update(self, left_player_speed, right_player_speed):
-        pass
+    def update(self, player1_speed_y):
+        self.player1.speed.y = player1_speed_y
+        self.player1.move()
 
-    def printaut(self):
-        print 'left player:', '{', self.left_player, '}'
-        print 'right player:', '{', self.right_player, '}'
-        print'ball:', self.ball
+        # artificial intelligence move player2
+        if self.ball.speed.dot(Vector(1., 0.)) > 0:
+            tmp = self.player2.position
+            if tmp.y < self.ball.y and self.player2.speed.y < 0:
+                self.player2.speed.y = -self.player2.speed.y
+            elif tmp.y > self.ball.y and self.player2.speed.y > 0:
+                self.player2.speed.y = -self.player2.speed.y
+            self.player2.move()
+        else:
+            eps = 0.000001
+            tmp = self.player2.position
+            if tmp.y < self.y and self.player2.speed.y < 0:
+                self.player2.speed.y = -self.player2.speed.y
+            elif tmp.y > self.ball.y and self.player2.speed.y > 0:
+                self.player2.speed.y = -self.player2.speed.y
+            if tmp.y > self.y + eps or tmp.y < self.y - eps:
+                self.player2.move()
+
+        self.collision()
 
 
-if __name__ == '__main__':
-    g = Game('Clint', 'Arnold')
-    g.printaut()
+if __name__ == "__main__":
+    g = Gameboard("Clint", "Rudolf", 300)
+    g.collision()
