@@ -40,13 +40,13 @@ class Rectangle(object):
         return self.position.x + self.width.x / 2.
 
     def move(self):
-        self.positin.x += self.speed.x
-        self.positin.y += self.speed.y
+        self.position.x += self.speed.x
+        self.position.y += self.speed.y
 
 
 class Player(Rectangle):
     def __init__(self, name, pos_x, pos_y, height):
-        super(Player, self).__init__(pos_x, pos_y, height / 1.6, height)
+        super(Player, self).__init__(pos_x, pos_y, height, 1.6 * height)
         self.name = name
         self.points = 0
 
@@ -64,11 +64,11 @@ class Gameboard(Rectangle):
                                         1.6 * height, height)
         self.player1 = Player(player1_name,
                               self.position.x - self.width.x / 2.,
-                              -self.height.y,
+                              self.position.y,
                               self.height.y / 12.)
         self.player2 = Player(player2_name,
                               self.position.x + self.width.x / 2.,
-                              -self.height.y,
+                              self.position.y,
                               self.height.y / 12.)
         self.ball = Ball(self.position.x, self.position.y, 1)
 
@@ -111,30 +111,61 @@ class Gameboard(Rectangle):
                     self.ball.position.y = self.position.y
 
     def update(self, player1_speed_y):
+        self.ball.move()
         self.player1.speed.y = player1_speed_y
         self.player1.move()
-
         # artificial intelligence move player2
         if self.ball.speed.dot(Vector(1., 0.)) > 0:
+            print "if ball.speed.dot(e_vecotr) > 0 == True"
             tmp = self.player2.position
-            if tmp.y < self.ball.y and self.player2.speed.y < 0:
-                self.player2.speed.y = -self.player2.speed.y
-            elif tmp.y > self.ball.y and self.player2.speed.y > 0:
-                self.player2.speed.y = -self.player2.speed.y
+            if tmp.y < self.ball.position.y:
+                self.player2.speed.y = 1
+            elif tmp.y > self.ball.position.y:
+                self.player2.speed.y = -1
             self.player2.move()
         else:
             eps = 0.000001
             tmp = self.player2.position
-            if tmp.y < self.y and self.player2.speed.y < 0:
+            if tmp.y < self.position.y and self.player2.speed.y < 0:
                 self.player2.speed.y = -self.player2.speed.y
-            elif tmp.y > self.ball.y and self.player2.speed.y > 0:
+            elif tmp.y > self.ball.position.y and self.player2.speed.y > 0:
                 self.player2.speed.y = -self.player2.speed.y
-            if tmp.y > self.y + eps or tmp.y < self.y - eps:
+            if tmp.y > self.position.y + eps or tmp.y < self.position.y - eps:
                 self.player2.move()
-
         self.collision()
+        print "self.player1.position.y = %f" % (self.player1.position.y)
+        print "self.player2.position.y = %f" % (self.player2.position.y)
+        print "self.ball.position. = (%f,%f)" % (self.ball.position.x, self.ball.position.y)
+        print "player1.points = %d" % (self.player1.points)
+        print "player2.points = %d" % (self.player2.points)
+
+    def clear(self):
+        self.player1.position.x = self.position.x - self.width / 2.
+        self.player1.position.y = self.position.y
+        self.player2.position.x = self.position.x + self.width / 2.
+        self.player2.position.y = self.position.y
+        self.ball.position.x = self.position.x
+        self.ball.position.y = self.position.y
+        self.player1.points = 0
+        self.player2.points = 0
 
 
 if __name__ == "__main__":
-    g = Gameboard("Clint", "Rudolf", 300)
-    g.collision()
+    g = Gameboard("Clint", "Rudolf", 5)
+    g.update(1)
+    g.update(1)
+    g.update(1)
+    g.update(1)
+    g.update(1)
+    g.update(1)
+    g.update(1)
+    g.update(1)
+    g.update(1)
+    g.update(1)
+    g.update(1)
+    g.update(1)
+    g.update(1)
+    g.update(1)
+    g.update(1)
+    g.update(1)
+    g.update(1)
