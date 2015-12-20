@@ -126,10 +126,10 @@ class Gameboard(Rectangle):
         else:
             eps = 0.000001
             tmp = self.player2.position
-            if tmp.y < self.position.y and self.player2.speed.y < 0:
-                self.player2.speed.y = -self.player2.speed.y
-            elif tmp.y > self.ball.position.y and self.player2.speed.y > 0:
-                self.player2.speed.y = -self.player2.speed.y
+            if tmp.y < self.position.y:
+                self.player2.speed.y = 1
+            elif tmp.y > self.position.y:
+                self.player2.speed.y = -1
             if tmp.y > self.position.y + eps or tmp.y < self.position.y - eps:
                 self.player2.move()
         self.collision()
