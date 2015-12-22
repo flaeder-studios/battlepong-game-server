@@ -23,9 +23,9 @@ class Vector(object):
 class Rectangle(object):
     def __init__(self, pos_x, pos_y, width, height):
         self.position = Vector(pos_x, pos_y)
-        self.speed = Vector(0, 0)
         self.width = Vector(width, 0)
         self.height = Vector(0, height)
+        self.speed = Vector(0, 0)
 
     def topp(self):
         return self.position.y + self.height.y / 2.
@@ -45,8 +45,8 @@ class Rectangle(object):
 
 
 class Player(Rectangle):
-    def __init__(self, name, pos_x, pos_y, height):
-        super(Player, self).__init__(pos_x, pos_y, height, 1.6 * height)
+    def __init__(self, name, pos_x, pos_y, width, height):
+        super(Player, self).__init__(pos_x, pos_y, width, height)
         self.name = name
         self.points = 0
 
@@ -59,113 +59,99 @@ class Ball(Rectangle):
 
 
 class Gameboard(Rectangle):
-    def __init__(self, player1_name, player2_name, height):
-        super(Gameboard, self).__init__(1.6 * height / 2., -height / 2.,
-                                        1.6 * height, height)
+    def __init__(self, player1_name, player2_name, width, height):
+        super(Gameboard, self).__init__(width / 2., -height / 2.,
+                                        width, height)
         self.player1 = Player(player1_name,
                               self.position.x - self.width.x / 2.,
                               self.position.y,
-                              self.height.y / 12.)
+                              height / 6, width / 6.)
         self.player2 = Player(player2_name,
                               self.position.x + self.width.x / 2.,
                               self.position.y,
-                              self.height.y / 12.)
-        self.ball = Ball(self.position.x, self.position.y, 1)
+                              height / 6, width / 6.)
+        self.ball = Ball(self.position.x, self.position.y, height / 30.)
+
+
+class Game(object):
+    def __init__(self, height, name1, name2):
+        self.golden_ratio = 1.618033
+        self.width = self.golden_ratio * float(height)
+        self.game = Gameboard(name1, name2, self.width, height)
 
     def collision(self):
-        # check that players do not get outside gameboard
-        for obj in [self.player1, self.player2]:
-            if obj.topp() > self.topp():
-                obj.position.y = self.topp() - obj.height.y / 2.
-            elif obj.bottom() < self.bottom():
-                obj.position.y = self.bottom() + obj.height.y / 2.
-
-        # check if ball bounces off roof or floor
-        if self.ball.topp() > self.topp():
-            self.ball.position.y = self.topp() - self.ball.height.y / 2.
-            self.ball.speed.y = -self.ball.speed.y
-        elif self.ball.bottom() < self.bottom():
-            self.ball.position.y = self.bottom() + self.ball.height.y / 2.
-            self.ball.speed.y = -self.ball.speed.y
+        # check if players or ball hit roof or floor
+        for obj in [self.game.player1, self.game.player2]:
+            if obj.topp() > self.game.topp():
+                obj.position.y = self.game.topp() - obj.height.y / 2.
+                obj.speed.y = -obj.speed.y
+            elif obj.bottom() < self.game.bottom():
+                obj.position.y = self.game.bottom() + obj.height.y / 2.
+                obj.speed.y = -obj.speed.y
 
         # check if ball bounces off a player, or if a player get points
-        if self.ball.speed.dot(Vector(1, 0)) > 0:
-            t = self.player2.topp() - self.ball.topp()
-            b = self.player2.bottom() - self.ball.bottom()
-            if self.ball.right() > self.player2.left():
-                if t > 0 and b < 0:
-                    self.ball.speed.x = -self.ball.speed.x
+        ball = self.game.ball
+        player2 = self.game.player2
+        player1 = self.game.player1
+        game = self.game
+        if ball.speed.dot(Vector(1, 0)) > 0:
+            if ball.right() > player2.left():
+                if ball.position.y < player2.topp() and ball.position.y > player2.bottom():
+                    ball.speed.x = -ball.speed.x
                 else:
-                    self.player1.points += 1
-                    self.ball.position.x = self.position.x
-                    self.ball.position.y = self.position.y
+                    player1.points += 1
+                    ball.position.x = game.position.x
+                    ball.position.y = game.position.y
         else:
-            t = self.player1.topp() - self.ball.topp()
-            b = self.player1.bottom() - self.ball.bottom()
-            if self.ball.right() > self.player2.left():
-                if t > 0 and b < 0:
-                    self.ball.speed.x = -self.ball.speed.x
+            if ball.left() < player1.right():
+                if ball.position.y < player1.topp() and ball.position.y > player1.bottom():
+                    ball.speed.x = -ball.speed.x
                 else:
-                    self.player2.points += 1
-                    self.ball.position.x = self.position.x
-                    self.ball.position.y = self.position.y
+                    player2.points += 1
+                    ball.position.x = game.position.x
+                    ball.position.y = game.position.y
 
     def update(self, player1_speed_y):
-        self.ball.move()
-        self.player1.speed.y = player1_speed_y
-        self.player1.move()
+        ball = self.game.ball
+        player1 = self.game.player1
+        player2 = self.game.player2
+        player1.speed.y = player1_speed_y
+        ball.move()
+        self.game.player1.move()
         # artificial intelligence move player2
-        if self.ball.speed.dot(Vector(1., 0.)) > 0:
-            print "if ball.speed.dot(e_vecotr) > 0 == True"
-            tmp = self.player2.position
-            if tmp.y < self.ball.position.y:
-                self.player2.speed.y = 1
-            elif tmp.y > self.ball.position.y:
-                self.player2.speed.y = -1
-            self.player2.move()
+        if ball.speed.dot(Vector(1., 0.)) > 0:
+            if player2.position.y < ball.position.y:
+                player2.speed.y = 1
+            elif player2.y > ball.position.y:
+                player2.speed.y = -1
         else:
             eps = 0.000001
-            tmp = self.player2.position
-            if tmp.y < self.position.y:
-                self.player2.speed.y = 1
-            elif tmp.y > self.position.y:
-                self.player2.speed.y = -1
-            if tmp.y > self.position.y + eps or tmp.y < self.position.y - eps:
-                self.player2.move()
+            if player2.position.y < self.game.position.y - eps:
+                player2.speed.y = 1
+            elif player2.position.y > self.game.position.y + eps:
+                player2.speed.y = -1
+            else:
+                player2.speed.y = 0
+        player2.move()
         self.collision()
-        print "self.player1.position.y = %f" % (self.player1.position.y)
-        print "self.player2.position.y = %f" % (self.player2.position.y)
-        print "self.ball.position. = (%f,%f)" % (self.ball.position.x, self.ball.position.y)
-        print "player1.points = %d" % (self.player1.points)
-        print "player2.points = %d" % (self.player2.points)
+        player1_pos_y = self.game.player1.position.y
+        player2_pos_y = self.game.player2.position.y
+        ball_pos_x = self.game.ball.position.x
+        ball_pos_y = self.game.ball.position.y
+        print "self.game.player1.position.y = %f" % (player1_pos_y)
+        print "self.game.player2.position.y = %f" % (player2_pos_y)
+        print "self.game.ball.position. = (%f,%f)" % (ball_pos_x, ball_pos_y)
+        print "player1.points = %d" % (self.game.player1.points)
+        print "player2.points = %d" % (self.game.player2.points)
 
     def clear(self):
-        self.player1.position.x = self.position.x - self.width / 2.
-        self.player1.position.y = self.position.y
-        self.player2.position.x = self.position.x + self.width / 2.
-        self.player2.position.y = self.position.y
-        self.ball.position.x = self.position.x
-        self.ball.position.y = self.position.y
-        self.player1.points = 0
-        self.player2.points = 0
+        self.game.player1.position.y = self.game.position.y
+        self.game.player2.position.y = self.game.position.y
+        self.game.ball.position.x = self.game.position.x
+        self.game.ball.position.y = self.game.position.y
+        self.game.player1.points = 0
+        self.game.player2.points = 0
 
 
 if __name__ == "__main__":
-    g = Gameboard("Clint", "Rudolf", 5)
-    g.update(1)
-    g.update(1)
-    g.update(1)
-    g.update(1)
-    g.update(1)
-    g.update(1)
-    g.update(1)
-    g.update(1)
-    g.update(1)
-    g.update(1)
-    g.update(1)
-    g.update(1)
-    g.update(1)
-    g.update(1)
-    g.update(1)
-    g.update(1)
-    g.update(1)
+    g = Game(100, "Clint", "Rudolf")
