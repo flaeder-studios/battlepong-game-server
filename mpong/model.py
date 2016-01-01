@@ -1,8 +1,8 @@
 
 class Vector(object):
     def __init__(self, x, y):
-        self.x = x
-        self.y = y
+        self.x = float(x)
+        self.y = float(y)
 
     def add(self, vec):
         temp = Vector(self.x, self.y)
@@ -81,7 +81,7 @@ class Game(object):
 
     def collision(self):
         # check if players or ball hit roof or floor
-        for obj in [self.game.player1, self.game.player2]:
+        for obj in [self.game.player1, self.game.player2, self.game.ball]:
             if obj.topp() > self.game.topp():
                 obj.position.y = self.game.topp() - obj.height.y / 2.
                 obj.speed.y = -obj.speed.y
@@ -89,7 +89,7 @@ class Game(object):
                 obj.position.y = self.game.bottom() + obj.height.y / 2.
                 obj.speed.y = -obj.speed.y
 
-        # check if ball bounces off a player, or if a player get points
+        # check if ball bounces off a player and if a player get points
         ball = self.game.ball
         player2 = self.game.player2
         player1 = self.game.player1
@@ -117,12 +117,12 @@ class Game(object):
         player2 = self.game.player2
         player1.speed.y = player1_speed_y
         ball.move()
-        self.game.player1.move()
+        player1.move()
         # artificial intelligence move player2
         if ball.speed.dot(Vector(1., 0.)) > 0:
             if player2.position.y < ball.position.y:
                 player2.speed.y = 1
-            elif player2.y > ball.position.y:
+            elif player2.position.y > ball.position.y:
                 player2.speed.y = -1
         else:
             eps = 0.000001
@@ -133,6 +133,7 @@ class Game(object):
             else:
                 player2.speed.y = 0
         player2.move()
+        # print some output after an update
         self.collision()
         player1_pos_y = self.game.player1.position.y
         player2_pos_y = self.game.player2.position.y
@@ -155,3 +156,5 @@ class Game(object):
 
 if __name__ == "__main__":
     g = Game(100, "Clint", "Rudolf")
+    while True:
+        g.update(0.01)
