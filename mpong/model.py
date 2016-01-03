@@ -60,16 +60,20 @@ class Ball(Rectangle):
 
 class Gameboard(Rectangle):
     def __init__(self, player1_name, player2_name, width, height):
+        print "Gameboard: width(%f), height(%f)" % (width, height)
         super(Gameboard, self).__init__(width / 2., -height / 2.,
                                         width, height)
+        self.player_scale_factor = 12
+        self.player_height = width / self.player_scale_factor
+        self.player_width = height / self.player_scale_factor
         self.player1 = Player(player1_name,
-                              self.position.x - self.width.x / 2.,
+                              self.position.x - width / 2. + self.player_width / 2.,
                               self.position.y,
-                              height / 6, width / 6.)
+                              self.player_width, self.player_height)
         self.player2 = Player(player2_name,
-                              self.position.x + self.width.x / 2.,
+                              self.position.x + width / 2. - self.player_width / 2.,
                               self.position.y,
-                              height / 6, width / 6.)
+                              self.player_width, self.player_height)
         self.ball = Ball(self.position.x, self.position.y, height / 30.)
 
 
@@ -119,13 +123,15 @@ class Game(object):
         ball.move()
         player1.move()
         # artificial intelligence move player2
+        eps = 0.000001
         if ball.speed.dot(Vector(1., 0.)) > 0:
-            if player2.position.y < ball.position.y:
+            if player2.position.y < ball.position.y - eps:
                 player2.speed.y = 1
-            elif player2.position.y > ball.position.y:
+            elif player2.position.y > ball.position.y + eps:
                 player2.speed.y = -1
+            else:
+                player2.speed.y = 0
         else:
-            eps = 0.000001
             if player2.position.y < self.game.position.y - eps:
                 player2.speed.y = 1
             elif player2.position.y > self.game.position.y + eps:
@@ -133,17 +139,7 @@ class Game(object):
             else:
                 player2.speed.y = 0
         player2.move()
-        # print some output after an update
         self.collision()
-        player1_pos_y = self.game.player1.position.y
-        player2_pos_y = self.game.player2.position.y
-        ball_pos_x = self.game.ball.position.x
-        ball_pos_y = self.game.ball.position.y
-        print "self.game.player1.position.y = %f" % (player1_pos_y)
-        print "self.game.player2.position.y = %f" % (player2_pos_y)
-        print "self.game.ball.position. = (%f,%f)" % (ball_pos_x, ball_pos_y)
-        print "player1.points = %d" % (self.game.player1.points)
-        print "player2.points = %d" % (self.game.player2.points)
 
     def clear(self):
         self.game.player1.position.y = self.game.position.y
@@ -153,8 +149,22 @@ class Game(object):
         self.game.player1.points = 0
         self.game.player2.points = 0
 
+    def __str__(self):
+        player1_pos_y = self.game.player1.position.y
+        player2_pos_y = self.game.player2.position.y
+        ball_pos_x = self.game.ball.position.x
+        ball_pos_y = self.game.ball.position.y
+        s = ""
+        s += "self.game.player1.position.y = %f\n" % (player1_pos_y)
+        s += "self.game.player2.position.y = %f\n" % (player2_pos_y)
+        s += "self.game.ball.position. = (%f,%f)\n" % (ball_pos_x, ball_pos_y)
+        s += "player1.points = %d\n" % (self.game.player1.points)
+        s += "player2.points = %d\n" % (self.game.player2.points)
+        return s
+
 
 if __name__ == "__main__":
     g = Game(100, "Clint", "Rudolf")
     while True:
         g.update(0.01)
+        print g
