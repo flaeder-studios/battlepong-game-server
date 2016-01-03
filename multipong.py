@@ -1,7 +1,9 @@
-import server
+import os
 
-from flask import Flask
-app = Flask('__name__', static_url_path='')
+import cherrypy
 
-if __name__ == '__main__':
-	app.run(host="0.0.0.0")
+class Root:
+    pass
+
+cfgFile = os.path.dirname(os.path.realpath(__file__)) + '/multipong.conf'
+cherrypy.quickstart(Root(), '/', cfgFile)
