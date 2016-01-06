@@ -1,3 +1,6 @@
+import random
+import math
+from random import randrange
 
 class Vector(object):
     def __init__(self, x, y):
@@ -54,8 +57,18 @@ class Player(Rectangle):
 class Ball(Rectangle):
     def __init__(self, pos_x, pos_y, width):
         super(Ball, self).__init__(pos_x, pos_y, width, width)
-        self.speed.x = 1
-        self.speed.y = 1
+        self.speed = Vector(1, 1)
+        self.init_speed = 0
+
+    def reset(self, pos):
+        self.position = Vector(0, 0).add(pos)
+        if random.random() < 0.5:
+            alpha = -75.0 * math.pi / 180 + (2 * 75.0) * math.pi / 180 * random.random()
+        else:
+            alpha = (180 - 75) * math.pi / 180 + (2 * 75.0) * math.pi / 180 * random.random()
+        x = abs(self.init_speed) * math.cos(alpha)
+        y = abs(self.init_speed) * math.sin(alpha)
+        self.speed = Vector(x, y)
 
 
 class Gameboard(Rectangle):
@@ -78,68 +91,81 @@ class Gameboard(Rectangle):
 
 
 class Game(object):
-    def __init__(self, height, name1, name2):
+    def __init__(self, height, name1, name2, ball_initial_speed):
         self.golden_ratio = 1.618033
         self.width = self.golden_ratio * float(height)
         self.game = Gameboard(name1, name2, self.width, height)
+        self.game.ball.init_speed = ball_initial_speed
+        self.game.ball.reset(self.game.position)
 
     def collision(self):
-        # check if players or ball hit roof or floor
-        for obj in [self.game.player1, self.game.player2, self.game.ball]:
+        # check if players or ball hit roof or bottom
+        for obj in [self.game.player1, self.game.player2]:
             if obj.topp() > self.game.topp():
                 obj.position.y = self.game.topp() - obj.height.y / 2.
-                obj.speed.y = -obj.speed.y
+                obj.speed.y = 0
             elif obj.bottom() < self.game.bottom():
                 obj.position.y = self.game.bottom() + obj.height.y / 2.
-                obj.speed.y = -obj.speed.y
+                obj.speed.y = 0
+        if self.game.ball.topp() > self.game.topp():
+            self.game.ball.position.y = self.game.topp() - self.game.ball.height.y / 2.
+            self.game.ball.speed.y = -self.game.ball.speed.y
+        elif self.game.ball.bottom() < self.game.bottom():
+            self.game.ball.position.y = self.game.bottom() + self.game.ball.height.y / 2.
+            self.game.ball.speed.y = -self.game.ball.speed.y
 
         # check if ball bounces off a player and if a player get points
+        # the ball bounces off in a direction calculated from where it hits the paddle.
         ball = self.game.ball
         player2 = self.game.player2
         player1 = self.game.player1
         game = self.game
+        radians_top = math.atan(game.height.y / game.width.x) * 2.365 # approx 75 degrees
+        height_to_radians = radians_top / (player1.height.y / 2.0) 
         if ball.speed.dot(Vector(1, 0)) > 0:
             if ball.right() > player2.left():
                 if ball.position.y < player2.topp() and ball.position.y > player2.bottom():
-                    ball.speed.x = -ball.speed.x
+                    ball.position.x = player2.left() - ball.width.x / 2.
+                    diff_y = ball.position.y - player2.position.y
+                    radians = diff_y * height_to_radians
+                    ball.speed.x = ball.init_speed * math.cos(math.pi - radians)
+                    ball.speed.y = ball.init_speed * math.sin(math.pi - radians)
                 else:
                     player1.points += 1
-                    ball.position.x = game.position.x
-                    ball.position.y = game.position.y
+                    ball.reset(self.game.position)
         else:
             if ball.left() < player1.right():
                 if ball.position.y < player1.topp() and ball.position.y > player1.bottom():
-                    ball.speed.x = -ball.speed.x
+                    ball.position.x = player1.right() + ball.width.x / 2.
+                    diff_y = ball.position.y - float(player1.position.y)
+                    radians = diff_y * height_to_radians
+                    ball.speed.x = ball.init_speed * math.cos(radians)
+                    ball.speed.y = ball.init_speed * math.sin(radians)
                 else:
                     player2.points += 1
-                    ball.position.x = game.position.x
-                    ball.position.y = game.position.y
+                    ball.reset(self.game.position)
 
-    def update(self, player1_speed_y):
-        ball = self.game.ball
-        player1 = self.game.player1
-        player2 = self.game.player2
-        player1.speed.y = player1_speed_y
-        ball.move()
-        player1.move()
-        # artificial intelligence move player2
-        eps = 0.000001
-        if ball.speed.dot(Vector(1., 0.)) > 0:
-            if player2.position.y < ball.position.y - eps:
-                player2.speed.y = 1
-            elif player2.position.y > ball.position.y + eps:
-                player2.speed.y = -1
-            else:
-                player2.speed.y = 0
-        else:
-            if player2.position.y < self.game.position.y - eps:
-                player2.speed.y = 1
-            elif player2.position.y > self.game.position.y + eps:
-                player2.speed.y = -1
-            else:
-                player2.speed.y = 0
-        player2.move()
+    def update(self):
+        """ Move objects to new positions determined by speed"""
+        self.game.ball.move()
+        self.game.player1.move()
+        self.game.player2.move()
         self.collision()
+
+    def artificial_intelligence(self):
+        eps = self.game.player2.height.y / 8. # player2 target area
+        if self.game.ball.speed.dot(Vector(1., 0.)) > 0:
+            self.artificial_move(self.game.player2, self.game.ball, eps)
+        else:
+            self.artificial_move(self.game.player2, self.game, eps)
+
+    def artificial_move(self, paddle, obj, eps):
+            if paddle.position.y < obj.position.y - eps:
+                paddle.speed.y = abs(paddle.speed.y)
+            elif paddle.position.y > obj.position.y + eps:
+                paddle.speed.y = -abs(paddle.speed.y)
+            else:
+                paddle.speed.y = 0
 
     def clear(self):
         self.game.player1.position.y = self.game.position.y
@@ -166,5 +192,6 @@ class Game(object):
 if __name__ == "__main__":
     g = Game(100, "Clint", "Rudolf")
     while True:
-        g.update(0.01)
+        g.update()
+        g.artificial_intelligence()
         print g
