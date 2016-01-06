@@ -1,9 +1,22 @@
+#!/usr/bin/python
+# -*- coding: utf-8 -*-
+
 import os
 
 import cherrypy
 
+import server
+
+
 class Root:
+
     pass
 
-cfgFile = os.path.dirname(os.path.realpath(__file__)) + '/multipong.conf'
-cherrypy.quickstart(Root(), '/', cfgFile)
+
+root = Root()
+root.game = server.GameState()
+root.game.paddle = server.PaddleHandler()
+
+cfgFile = os.path.dirname(os.path.realpath(__file__)) \
+    + '/multipong.conf'
+cherrypy.quickstart(root, '/', cfgFile)
