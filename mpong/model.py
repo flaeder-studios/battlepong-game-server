@@ -73,7 +73,6 @@ class Ball(Rectangle):
 
 class Gameboard(Rectangle):
     def __init__(self, player1_name, player2_name, width, height):
-        print "Gameboard: width(%f), height(%f)" % (width, height)
         super(Gameboard, self).__init__(width / 2., -height / 2.,
                                         width, height)
         self.player_scale_factor = 12
@@ -145,6 +144,18 @@ class Game(object):
                     player2.points += 1
                     ball.reset(self.game.position)
 
+    def set_player1_speed(self, x):
+        self.game.player1.speed.y = x
+
+    def set_player2_speed(self, x):
+        self.game.player2.speed.y = x
+
+    def get_player1_speed(self):
+        return self.game.player1.speed.y
+
+    def get_player2_speed(self):
+        return self.game.player2.speed.y
+
     def update(self):
         """ Move objects to new positions determined by speed"""
         self.game.ball.move()
@@ -190,7 +201,7 @@ class Game(object):
 
 
 if __name__ == "__main__":
-    g = Game(100, "Clint", "Rudolf")
+    g = Game(100, "Clint", "Rudolf", 3)
     while True:
         g.update()
         g.artificial_intelligence()
