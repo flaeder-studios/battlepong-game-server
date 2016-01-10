@@ -1,0 +1,16 @@
+{
+    "games": [
+        {
+            "id": "myGame",
+            "createdBy": "arvid"
+        },
+        {
+            "id": "hisGame",
+            "createdBy": "malin"
+        },
+        {
+            "id": "anyonesGame",
+            "createdBy": "sigrid"
+        }
+    ]
+}
