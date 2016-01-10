@@ -3,17 +3,21 @@
 
 (function () {
     'use strict';
-   // this function is strict...
+    // this function is strict...
 
-    var BALL_EDGES = 32, D_ANGLE = 2 * Math.PI / BALL_EDGES;
+    var BALL_EDGES = 32,
+        D_ANGLE = 2 * Math.PI / BALL_EDGES;
 
     function getGlContext() {
-        var canvas = document.getElementById("canvas"), gl = getWebGLContext(canvas);
+        var canvas = document.getElementById("canvas"),
+            gl = getWebGLContext(canvas);
         return gl;
     }
 
     function initGame() {
-        var game = {}, gl = getGlContext("canvas"), program = createProgramFromScripts(gl, ["2d-vertex-shader", "2d-fragment-shader"]);
+        var game = {},
+            gl = getGlContext("canvas"),
+            program = createProgramFromScripts(gl, ["2d-vertex-shader", "2d-fragment-shader"]);
 
         // Get A WebGL context
         game.dt = 0.05;
@@ -50,7 +54,9 @@
                 b.radius = radius;
 
                 b.draw = function (gl) {
-                    var angle = 0.0, arr = [this.xpos, this.ypos], i, buffer = gl.createBuffer();
+                    var angle = 0.0,
+                        arr = [this.xpos, this.ypos],
+                        i, buffer = gl.createBuffer();
 
                     for (i = 2; i < 2 * (BALL_EDGES + 1) + 2; i += 2) {
                         arr[i] = this.radius * Math.cos(angle) + this.xpos;
@@ -208,7 +214,9 @@
     }
 
     function main() {
-        var game = initGame(), board = createBoard(), i;
+        var game = initGame(),
+            board = createBoard(),
+            i;
 
         board.createBall(0.1);
         board.createBall(0.1);
@@ -229,5 +237,5 @@
     }
 
     window.onload = main;
-    
+
 }());
