@@ -14,16 +14,22 @@
     <script type="text/javascript " src="js/lobby.js "></script>
 
     <header>
-        <div ng-controller="PlayerController">
+        <div ng-show="!initialized">
+            <form name="InitNameForm " novalidate>
+                <input type="text " ng-model="newName " required>
+                <button ng-click="initialize(newName)"> Set Name </button>
+            </form>
+        </div>
+        <div ng-controller="PlayerController" ng-show="initialized">
             <form name="setPlayerNameForm " novalidate>
                 {{name}}
-                <button type="button " ng-click="changeName=true " ng-hide="changeName "> {{ name ? 'Change Name' : 'Set Name' }} </button>
+                <button type="button " ng-click="changeName=true " ng-hide="changeName "> Change Name </button>
                 <input ng-show="changeName" type="text " ng-model="newName " required>
                 <button ng-show="changeName" ng-click="setName(newName) "> Update </button>
             </form>
         </div>
     </header>
-    <section>
+    <section ng-show="initialized">
         <div ng-controller="GameController ">
             <table>
                 <tr ng-repeat="game in games ">
@@ -35,7 +41,7 @@
                         <button ng-show="hasJoinedGame && game.id == currentGame.id" ng-click="leaveGame(game)"> Leave </button>
                     </td>
                     <td>
-                        <button ng-show="game.createdBy == name" ng-click="removeGame(game)"> Remove </button>
+                        <button ng-show="game.removable" ng-click="removeGame(game)"> Remove </button>
                     </td>
                 </tr>
             </table>
@@ -46,11 +52,14 @@
                     <option></option>
                     <option ng-repeat="val in [2,3,4,5,6,7,8] " value={{val}}>{{val}}</option>
                 </select>
-                <button ng-click="createGameForm.$valid && !createGame(newGame)">Submit</button>
-                <button ng-click="!deactivateForm()"> Cancel </button>
+                <button ng-click="createGameForm.$valid && createGame(newGame)">Submit</button>
+                <button ng-click="deactivateCreateGameForm()"> Cancel </button>
             </form>
         </div>
     </section>
+    <footer>
+        (C) Flaeder studios
+    </footer>
 
 </body>
 

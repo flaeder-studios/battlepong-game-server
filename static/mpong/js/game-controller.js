@@ -6,7 +6,8 @@
                     "id": "myGame",
                     "maxPlayers": 2,
                     "joinedPlayers": ['Arvid'],
-                    "createdBy": 'Arvid'
+                    "createdBy": 'Arvid',
+                    "removable": true
                 }, {
                     "id": "hisGame",
                     "maxPlayers": 2,
@@ -38,8 +39,10 @@
             $scope.createGame = function (game) {
                 game.createdBy = 'daniel?';
                 game.joinedPlayers = ['daniel?'];
+                game.removable = true;
                 $scope.games.push(game);
                 console.log("created game", game)
+                $scope.deactivateCreateGameForm();
             };
 
             $scope.removeGame = function (game) {
@@ -60,7 +63,7 @@
                 if (!$scope.hasJoinedGame) {
                     $scope.currentGame = game;
                     $scope.hasJoinedGame = true;
-                    console.log(player.name, " joined ", game.id);
+                    console.log("joined ", game.id);
                 }
             };
 
@@ -68,7 +71,7 @@
                 if ($scope.hasJoinedGame) {
                     $scope.hasJoinedGame = false;
                     $scope.currentGame = {};
-                    console.log(player.name, " left ", game.id);
+                    console.log("left ", game.id);
                 }
             };
 
