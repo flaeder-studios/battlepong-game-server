@@ -7,47 +7,48 @@
     <link rel="stylesheet" type="text/css" href="lib/bootstrap/css/bootstrap.min.css">
 </head>
 
-<body ng-controller="PlayerController as player">
-    <script type="text/javascript" src="lib/angular.min.js"></script>
-    <script type="text/javascript" src="js/lobby.js"></script>
+<body ng-controller="LobbyController">
+    <script type=" text/javascript " src="lib/angular.min.js "></script>
+    <script type="text/javascript " src="js/player-controller.js "></script>
+    <script type="text/javascript " src="js/game-controller.js "></script>
+    <script type="text/javascript " src="js/lobby.js "></script>
 
     <header>
-        <div ng-init="player.name='daniel';player.changeName=false">
-            {{player.name}}
-            <button type="button" ng-click="player.changeName=true" ng-hide="player.changeName"> {{ player.name ? 'Change Name' : 'Set Name' }} </button>
-            <form ng-show="player.changeName" name="setPlayerNameForm" novalidate>
-                <input type="text" ng-model="player.newName" required>
-                <button ng-click="setPlayerNameForm.$valid && player.setName(player.newName)"> Update </button>
+        <div ng-controller="PlayerController">
+            <form name="setPlayerNameForm " novalidate>
+                {{name}}
+                <button type="button " ng-click="changeName=true " ng-hide="changeName "> {{ name ? 'Change Name' : 'Set Name' }} </button>
+                <input ng-show="changeName" type="text " ng-model="newName " required>
+                <button ng-show="changeName" ng-click="setName(newName) "> Update </button>
             </form>
         </div>
     </header>
-    <section ng-show="player.name">
-        <div ng-controller="GameController as gameCtrl">
+    <section>
+        <div ng-controller="GameController ">
             <table>
-                <tr ng-repeat="game in gameCtrl.games">
-                    <td>{{ game.id }}</td>
-                    <td>{{ game.createdBy }}</td>
+                <tr ng-repeat="game in games ">
+                    <td> {{ game.id }} </td>
+                    <td> {{ game.createdBy }} </td>
+                    <td> {{ game.joinedPlayers.length + ' / ' + game.maxPlayers }} </td>
                     <td>
-                        <button ng-show="!player.currentGame && game.maxPlayers > game.joinedPlayers.length" ng-click="gameCtrl.joinGame(game)"> Join </button>
-                        <button ng-show="player.currentGame && game.id == player.currentGame.id" ng-click="gameCtrl.leaveGame(game)"> Leave </button>
+                        <button ng-show="!hasJoinedGame && game.maxPlayers > game.joinedPlayers.length" ng-click="joinGame(game)"> Join </button>
+                        <button ng-show="hasJoinedGame && game.id == currentGame.id" ng-click="leaveGame(game)"> Leave </button>
                     </td>
                     <td>
-                        <button ng-show="game.createdBy == player.name" ng-click="gameCtrl.removeGame(game)"> Remove </button>
+                        <button ng-show="game.createdBy == name" ng-click="removeGame(game)"> Remove </button>
                     </td>
                 </tr>
             </table>
-            <div ng-controller="CreateGameController as createGameCtrl ">
-                <button ng-hide="createGameCtrl.formActive " ng-click="createGameCtrl.activateForm() "> Create </button>
-                <form ng-show="createGameCtrl.formActive " name="createGameForm " novalidate>
-                    <input type="text " ng-model="createGameCtrl.game.id " required>
-                    <select ng-model="createGameCtrl.game.maxPlayers " required>
-                        <option></option>
-                        <option ng-repeat="val in [2,3,4,5,6,7,8] " value={{val}}>{{val}}</option>
-                    </select>
-                    <button ng-click="createGameForm.$valid && !gameCtrl.createGame(createGameCtrl.game, player) && !createGameCtrl.clearForm() && !createGameCtrl.deactivateForm() ">Submit</button>
-                    <button ng-click="!createGameCtrl.clearForm() && !createGameCtrl.deactivateForm() ">Cancel</button>
-                </form>
-            </div>
+            <button ng-hide="createGameFormActive" ng-click="activateCreateGameForm()"> Create </button>
+            <form ng-show="createGameFormActive" name="createGameForm " novalidate>
+                <input type="text " ng-model="newGame.id" required>
+                <select ng-model="newGame.maxPlayers " required>
+                    <option></option>
+                    <option ng-repeat="val in [2,3,4,5,6,7,8] " value={{val}}>{{val}}</option>
+                </select>
+                <button ng-click="createGameForm.$valid && !createGame(newGame)">Submit</button>
+                <button ng-click="!deactivateForm()"> Cancel </button>
+            </form>
         </div>
     </section>
 
