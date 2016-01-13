@@ -1,25 +1,7 @@
 (function () {
-    angular.module("game", [])
-        .controller('GameController', ['$scope', function ($scope) {
+    angular.module("game", ['game-service'])
+        .controller('GameController', ['$scope', 'gameService', function ($scope, gameService) {
 
-            $scope.games = [{
-                    "id": "myGame",
-                    "maxPlayers": 2,
-                    "joinedPlayers": ['Arvid'],
-                    "createdBy": 'Arvid',
-                    "removable": true
-                }, {
-                    "id": "hisGame",
-                    "maxPlayers": 2,
-                    "joinedPlayers": ['Arvid', 'Sigrid'],
-                    "createdBy": 'Sigrid'
-                },
-                {
-                    "id": "anyonesGame",
-                    "maxPlayers": 2,
-                    "joinedPlayers": ['Malin'],
-                    "createdBy": 'Malin'
-                }];
 
             $scope.hasJoinedGame = false;
             $scope.currentGame = {};
@@ -36,42 +18,36 @@
                 $scope.newGame = {};
             };
 
+            $scope.listGames = function () {
+                return gameService.getAllGames();
+            };
+
             $scope.createGame = function (game) {
-                game.createdBy = 'daniel?';
-                game.joinedPlayers = ['daniel?'];
-                game.removable = true;
-                $scope.games.push(game);
-                console.log("created game", game)
+                gameService.createGame(game.id, game.maxPlayers);
                 $scope.deactivateCreateGameForm();
             };
 
             $scope.removeGame = function (game) {
-                var idx = -1;
-                for (var i = 0; i < $scope.games.length; i++) {
-                    if ($scope.games[i] == game) {
-                        idx = i;
-                        break;
-                    }
-                }
-                if (idx > -1) {
-                    $scope.games.splice(idx, 1);
-                    console.log("removed game ", game.id);
+                if (!$scope.hasJoinedGame) {
+                    gameService.removeGame(game);
+                    $scope.currentGame = {};
+                    $scope.hasJoinedGame = false;
                 }
             };
 
             $scope.joinGame = function (game) {
                 if (!$scope.hasJoinedGame) {
+                    gameService.joinGame(game);
                     $scope.currentGame = game;
                     $scope.hasJoinedGame = true;
-                    console.log("joined ", game.id);
                 }
             };
 
             $scope.leaveGame = function (game) {
                 if ($scope.hasJoinedGame) {
+                    gameService.leaveGame(game);
                     $scope.hasJoinedGame = false;
                     $scope.currentGame = {};
-                    console.log("left ", game.id);
                 }
             };
 

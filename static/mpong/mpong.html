@@ -9,12 +9,15 @@
 
 <body ng-controller="LobbyController">
     <script type=" text/javascript " src="lib/angular.min.js "></script>
+    <script type=" text/javascript " src="js/player-service.js"></script>
     <script type="text/javascript " src="js/player-controller.js "></script>
+    <script type="text/javascript " src="js/game-service.js"></script>
     <script type="text/javascript " src="js/game-controller.js "></script>
-    <script type="text/javascript " src="js/lobby.js "></script>
+    <script type="text/javascript " src="js/lobby-controller.js"></script>
+    <script type="text/javascript " src="js/lobby-service.js"></script>
 
     <header>
-        <div ng-show="!initialized">
+        <div ng-hide="initialized">
             <form name="InitNameForm " novalidate>
                 <input type="text " ng-model="newName " required>
                 <button ng-click="initialize(newName)"> Set Name </button>
@@ -32,7 +35,7 @@
     <section ng-show="initialized">
         <div ng-controller="GameController ">
             <table>
-                <tr ng-repeat="game in games ">
+                <tr ng-repeat="game in listGames() ">
                     <td> {{ game.id }} </td>
                     <td> {{ game.createdBy }} </td>
                     <td> {{ game.joinedPlayers.length + ' / ' + game.maxPlayers }} </td>
@@ -41,7 +44,7 @@
                         <button ng-show="hasJoinedGame && game.id == currentGame.id" ng-click="leaveGame(game)"> Leave </button>
                     </td>
                     <td>
-                        <button ng-show="game.removable" ng-click="removeGame(game)"> Remove </button>
+                        <button ng-show="game != currentGame && game.removable" ng-click="removeGame(game)"> Remove </button>
                     </td>
                 </tr>
             </table>
@@ -58,7 +61,7 @@
         </div>
     </section>
     <footer>
-        (C) Flaeder studios
+        <p> (C) Flaeder studios </p>
     </footer>
 
 </body>

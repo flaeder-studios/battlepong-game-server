@@ -1,15 +1,14 @@
 (function () {
 
-    angular.module('player', [])
-        .controller('PlayerController', ['$scope', function ($scope) {
-            $scope.name = '';
-            $scope.changeName = true;
+    angular.module('player', ['player-service'])
+        .controller('PlayerController', ['$scope', 'playerService', function ($scope, playerService) {
+            $scope.changeName = false;
 
             $scope.setName = function (name) {
-                console.log("setName", name);
                 if (name) {
-                    $scope.name = name;
+                    $scope.name = playerService.setName(name);
                     $scope.changeName = false;
+                    console.log("setName", $scope.name);
                 }
             };
         }]);

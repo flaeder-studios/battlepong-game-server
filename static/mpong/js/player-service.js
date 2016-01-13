@@ -1,15 +1,15 @@
 (function () {
-    angular.module('playerAPIModule', [])
-        .factory('playerAPI', function () {
+    angular.module('player-service', [])
+        .factory('playerService', function () {
 
             var api = {};
 
             api.setName = function (name) {
-                console.log("setName", name);
                 if (name) {
                     return name;
                 }
             };
+
 
             api.getPlayer = function () {
                 return {
