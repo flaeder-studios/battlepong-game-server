@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html ng-app="lobby">
+<html ng-app="lobby" ng-strict-di>
 
 <head>
     <meta content="text/html;charset=utf-8" http-equiv="Content-Type">
@@ -37,7 +37,6 @@
     </header>
     <section ng-show="initialized">
         <div ng-controller="GameController ">
-            <button ng-click="listGames()"> listGames </button>
             <table>
                 <tr ng-repeat="game in games">
                     <td> {{ game.id }} </td>
