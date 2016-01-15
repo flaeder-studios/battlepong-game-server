@@ -2,21 +2,39 @@
 # -*- coding: utf-8 -*-
 
 import cherrypy
+from gameHandler import GameHandler
 
 class JoinGameHandler:
     
     exposed = True
     
-    def POST(self):
-        # Add player to game. This allows him to pick up a websocket to the game. Return adress to ws. 
-        playerName = cherrypy.session.get('playerName')
-        
-        joined = cherrypy.engine.publish('mpong-join-game', gameId, cherrypy.session.get('name')).pop()
-        
-        if not joined:
-            raise cherrypy.HTTPError(401, '%s could not join game with id %s' % (playerName, gameId))
+    @cherrypy.tools.json_out()
+    def POST(self, gameId):
+        if not cherrypy.session.get('name'):
+            raise cherrypy.HTTPError(401)
             
-        return game.toDict()
+        # Add player to game. This allows him to pick up a websocket to the game. Return adress to ws. 
+        playerName = cherrypy.session.get('name')
+        
+        #joined = cherrypy.engine.publish('mpong-join-game', gameId, playerName).pop()
+        
+        joinedGame = None
+        for g in GameHandler.games:
+            if g['id'] == gameId:
+                joinedGame = g
+                break
+                
+        if not joinedGame:
+            raise cherrypy.HTTPError(404)
+        
+        if cherrypy.session.get('currentGame'):
+            raise cherrypy.HTTPError(401, '%s could not join game with id %s' % (playerName, gameId))
+        else:
+            cherrypy.session['currentGame'] = joinedGame
+            if playerName not in joinedGame['joinedPlayers']:
+                joinedGame['joinedPlayers'].append(playerName)
+        
+        return {'games': [joinedGame]}
 
     def GET(self, gameId):
         

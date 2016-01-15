@@ -11,10 +11,10 @@ class PlayerHandler:
     def GET(self):
         player = {}
         
-        if 'playerName' in cherrypy.session:
-            player['playerName'] = cherrypy.session['playerName']
+        if 'name' in cherrypy.session:
+            player['name'] = cherrypy.session['name']
         else:
-            player['playerName'] = ''
+            player['name'] = ''
             
         if 'currentGame' in cherrypy.session:
             player['currentGame'] = cherrypy.session['currentGame']
@@ -34,8 +34,10 @@ class PlayerHandler:
         if 'player' in data:
             data = data['player']
         
-        if 'playerName' in data:
-            cherrypy.session['playerName'] = data['playerName']
+        if 'name' in data:
+            cherrypy.session['name'] = data['name']
+            
+        cherrypy.log("set name to %s" % data['name'])
         
         return self.GET()
         

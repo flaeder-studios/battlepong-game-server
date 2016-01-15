@@ -1,11 +1,7 @@
 (function () {
-    angular.module('lobby-service', [])
-        .factory('lobbyService', [function () {
+    angular.module('lobby-service', ['player-service'])
+        .factory('lobbyService', ['playerService', function (playerService) {
             service = {};
-
-            service.initSession = function (name) {
-                return name;
-            };
 
             return service;
     }]);

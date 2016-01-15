@@ -1,23 +1,23 @@
 (function () {
-    angular.module('player-service', [])
-        .factory('playerService', function () {
+    angular.module('player-service', ['http-method-service', 'url-service'])
+        .factory('playerService', ['httpMethodService', 'urlService', function (httpMethodService, urlService) {
 
-            var api = {};
+            var service = {};
 
-            api.setName = function (name) {
+            service.setName = function (name, callback) {
                 if (name) {
-                    return name;
+                    var data = {}
+                    data.player = {};
+                    data.player.name = name;
+                    httpMethodService.post(urlService.playerUri, data, {}, callback);
                 }
             };
 
-
-            api.getPlayer = function () {
-                return {
-                    name: 'daniel'
-                };
+            service.getPlayer = function (callback) {
+                httpMethodService.get(urlService.playerUri, {}, callback);
             };
 
-            return api;
+            return service;
 
-        });
+        }]);
 })();

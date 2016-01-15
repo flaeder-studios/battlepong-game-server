@@ -8,7 +8,10 @@
 </head>
 
 <body ng-controller="LobbyController">
-    <script type=" text/javascript " src="lib/angular.min.js "></script>
+    <script type=" text/javascript " src="https://ajax.googleapis.com/ajax/libs/angularjs/1.5.0-rc.0/angular.min.js"></script>
+    <script type=" text/javascript " src="https://ajax.googleapis.com/ajax/libs/angularjs/1.5.0-rc.0/angular-resource.js"></script>
+    <script type=" text/javascript " src="js/url-service.js"></script>
+    <script type=" text/javascript " src="js/http-method-service.js"></script>
     <script type=" text/javascript " src="js/player-service.js"></script>
     <script type="text/javascript " src="js/player-controller.js "></script>
     <script type="text/javascript " src="js/game-service.js"></script>
@@ -20,31 +23,32 @@
         <div ng-hide="initialized">
             <form name="InitNameForm " novalidate>
                 <input type="text " ng-model="newName " required>
-                <button ng-click="initialize(newName)"> Set Name </button>
+                <button ng-click="startSession(newName)"> Set Name </button>
             </form>
         </div>
         <div ng-controller="PlayerController" ng-show="initialized">
             <form name="setPlayerNameForm " novalidate>
                 {{name}}
-                <button type="button " ng-click="changeName=true " ng-hide="changeName "> Change Name </button>
+                <button type="button " ng-click="changeName=true " ng-hide="changeName"> Change Name </button>
                 <input ng-show="changeName" type="text " ng-model="newName " required>
-                <button ng-show="changeName" ng-click="setName(newName) "> Update </button>
+                <button ng-show="changeName" ng-click="updateName(newName) "> Update </button>
             </form>
         </div>
     </header>
     <section ng-show="initialized">
         <div ng-controller="GameController ">
+            <button ng-click="listGames()"> listGames </button>
             <table>
-                <tr ng-repeat="game in listGames() ">
+                <tr ng-repeat="game in games">
                     <td> {{ game.id }} </td>
                     <td> {{ game.createdBy }} </td>
                     <td> {{ game.joinedPlayers.length + ' / ' + game.maxPlayers }} </td>
                     <td>
                         <button ng-show="!hasJoinedGame && game.maxPlayers > game.joinedPlayers.length" ng-click="joinGame(game)"> Join </button>
-                        <button ng-show="hasJoinedGame && game.id == currentGame.id" ng-click="leaveGame(game)"> Leave </button>
+                        <button ng-show="hasJoinedGame && game.id == currentGame.id" ng-click="leaveGame()"> Leave </button>
                     </td>
                     <td>
-                        <button ng-show="game != currentGame && game.removable" ng-click="removeGame(game)"> Remove </button>
+                        <button ng-show="game != currentGame && game.createdBy == name" ng-click="removeGame(game)"> Remove </button>
                     </td>
                 </tr>
             </table>

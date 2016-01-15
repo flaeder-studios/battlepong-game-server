@@ -5,17 +5,17 @@ import cherrypy
 
 class LeaveGameHandler:
     
-    expose = True
+    exposed = True
     
     @cherrypy.tools.json_out()
-    def POST(self, gameId):
+    def POST(self):
+        playerName = cherrypy.session.get('name')
         
-        playerName = cherrypy.session.get('playerName')
+        currentGame = cherrypy.session.get('currentGame')
+        currentGame['joinedPlayers'].remove(playerName)
+        cherrypy.session['currentGame'] = None
         
-        game = cherrypy.engine.publish('mpong-leave-game', gameId, playerName).pop()
+        #game = cherrypy.engine.publish('mpong-leave-game', gameId, playerName).pop()
         
-        if game is None:
-            raise cherrypy.HTTPError(404, 'No game with id %s found' % gameId)
-            
-        return game.toDict()
+        return {'games': [currentGame]}
 
