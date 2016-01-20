@@ -1,0 +1,27 @@
+<div ng-show="isRegistered" ng-controller="GameController ">
+    <button ng-click="startGame('/game/mpong')"> Start Mpong </button>
+    <table>
+        <tr ng-repeat="game in games">
+            <td> {{ game.id }} </td>
+            <td> {{ game.createdBy }} </td>
+            <td> {{ game.joinedPlayers.length + ' / ' + game.maxPlayers }} </td>
+            <td>
+                <button ng-show="!currentGame && game.maxPlayers > game.joinedPlayers.length" ng-click="joinGame(game)"> Join </button>
+                <button ng-show="currentGame && game.id == currentGame.id" ng-click="leaveGame()"> Leave </button>
+            </td>
+            <td>
+                <button ng-show="game.createdBy == playerName" ng-click="removeGame(game)"> Remove </button>
+            </td>
+        </tr>
+    </table>
+    <button ng-hide="createGameFormActive" ng-click="activateCreateGameForm()"> Create </button>
+    <form ng-show="createGameFormActive" name="createGameForm " novalidate>
+        <input type="text " ng-model="newGame.id" required>
+        <select ng-model="newGame.maxPlayers " required>
+            <option></option>
+            <option ng-repeat="val in [2,3,4,5,6,7,8] " value={{val}}>{{val}}</option>
+        </select>
+        <button ng-click="createGameForm.$valid && createGame(newGame)">Submit</button>
+        <button ng-click="deactivateCreateGameForm()"> Cancel </button>
+    </form>
+</div>

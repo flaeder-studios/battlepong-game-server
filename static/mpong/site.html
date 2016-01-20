@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html ng-app="site" ng-strict-di>
+
+<head>
+    <meta content="text/html;charset=utf-8" http-equiv="Content-Type">
+    <meta content="utf-8" http-equiv="encoding">
+    <link rel="stylesheet" type="text/css" href="lib/bootstrap/css/bootstrap.min.css">
+</head>
+
+<body ng-controller="SiteController">
+    <script type=" text/javascript " src="/lib/angular/angular.js"></script>
+    <script type=" text/javascript " src="/lib/angular-route/angular-route.js"></script>
+    <script type=" text/javascript " src="/lib/angular-load/angular-load.js"></script>
+
+    <script type=" text/javascript " src="js/site-controller.js"></script>
+    <script type=" text/javascript " src="js/register-controller.js"></script>
+    <script type=" text/javascript " src="js/player-service.js"></script>
+    <script type=" text/javascript " src="js/http-method-service.js"></script>
+    <script type=" text/javascript " src="js/url-service.js"></script>
+    <script type=" text/javascript " src="js/lobby-controller.js"></script>
+    <script type=" text/javascript " src="js/lobby-service.js"></script>
+    <script type=" text/javascript " src="js/player-controller.js"></script>
+    <script type=" text/javascript " src="js/game-controller.js"></script>
+    <script type=" text/javascript " src="js/game-service.js"></script>
+    <script type=" text/javascript " src="js/game-loading-controller.js"></script>
+
+    <header>
+        <form name="setPlayerNameForm" ng-show="isRegistered" novalidate>
+            {{ playerName }}
+            <button type="button " ng-click="changeName=true " ng-hide="changeName"> Change Name </button>
+            <input ng-show="changeName" type="text " ng-model="newName " required>
+            <button ng-show="changeName" ng-click="updateName(newName) "> Update </button>
+        </form>
+    </header>
+
+    <div ng-view></div>
+
+    <footer>
+        <p> (C) Flaeder studios </p>
+    </footer>
+
+
+</body>
+
+</html>

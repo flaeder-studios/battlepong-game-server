@@ -1,72 +1,24 @@
+<!-- Licensed under a BSD license. See license.html for license -->
 <!DOCTYPE html>
-<html ng-app="lobby" ng-strict-di>
+<html>
 
 <head>
-    <meta content="text/html;charset=utf-8" http-equiv="Content-Type">
-    <meta content="utf-8" http-equiv="encoding">
-    <link rel="stylesheet" type="text/css" href="lib/bootstrap/css/bootstrap.min.css">
+    <meta charset="utf-8">
+    <title>Multipong</title>
+    <link type="text/css" href="css/mpong.css" rel="stylesheet" />
+    <script id="2d-vertex-shader" type="x-shader/x-vertex">
+        attribute vec2 a_position; void main() { gl_Position = vec4(a_position, 0, 1); }
+    </script>
+    <script id="2d-fragment-shader" type="x-shader/x-fragment">
+        void main() { gl_FragColor = vec4(1.0, 0.0, 1.0, 1.0); }
+    </script>
 </head>
 
-<body ng-controller="LobbyController">
-    <script type=" text/javascript " src="https://ajax.googleapis.com/ajax/libs/angularjs/1.5.0-rc.0/angular.min.js"></script>
-    <script type=" text/javascript " src="https://ajax.googleapis.com/ajax/libs/angularjs/1.5.0-rc.0/angular-resource.js"></script>
-    <script type=" text/javascript " src="js/url-service.js"></script>
-    <script type=" text/javascript " src="js/http-method-service.js"></script>
-    <script type=" text/javascript " src="js/player-service.js"></script>
-    <script type="text/javascript " src="js/player-controller.js "></script>
-    <script type="text/javascript " src="js/game-service.js"></script>
-    <script type="text/javascript " src="js/game-controller.js "></script>
-    <script type="text/javascript " src="js/lobby-controller.js"></script>
-    <script type="text/javascript " src="js/lobby-service.js"></script>
-
-    <header>
-        <div ng-hide="initialized">
-            <form name="InitNameForm " novalidate>
-                <input type="text " ng-model="newName " required>
-                <button ng-click="startSession(newName)"> Set Name </button>
-            </form>
-        </div>
-        <div ng-controller="PlayerController" ng-show="initialized">
-            <form name="setPlayerNameForm " novalidate>
-                {{name}}
-                <button type="button " ng-click="changeName=true " ng-hide="changeName"> Change Name </button>
-                <input ng-show="changeName" type="text " ng-model="newName " required>
-                <button ng-show="changeName" ng-click="updateName(newName) "> Update </button>
-            </form>
-        </div>
-    </header>
-    <section ng-show="initialized">
-        <div ng-controller="GameController ">
-            <table>
-                <tr ng-repeat="game in games">
-                    <td> {{ game.id }} </td>
-                    <td> {{ game.createdBy }} </td>
-                    <td> {{ game.joinedPlayers.length + ' / ' + game.maxPlayers }} </td>
-                    <td>
-                        <button ng-show="!hasJoinedGame && game.maxPlayers > game.joinedPlayers.length" ng-click="joinGame(game)"> Join </button>
-                        <button ng-show="hasJoinedGame && game.id == currentGame.id" ng-click="leaveGame()"> Leave </button>
-                    </td>
-                    <td>
-                        <button ng-show="game != currentGame && game.createdBy == name" ng-click="removeGame(game)"> Remove </button>
-                    </td>
-                </tr>
-            </table>
-            <button ng-hide="createGameFormActive" ng-click="activateCreateGameForm()"> Create </button>
-            <form ng-show="createGameFormActive" name="createGameForm " novalidate>
-                <input type="text " ng-model="newGame.id" required>
-                <select ng-model="newGame.maxPlayers " required>
-                    <option></option>
-                    <option ng-repeat="val in [2,3,4,5,6,7,8] " value={{val}}>{{val}}</option>
-                </select>
-                <button ng-click="createGameForm.$valid && createGame(newGame)">Submit</button>
-                <button ng-click="deactivateCreateGameForm()"> Cancel </button>
-            </form>
-        </div>
-    </section>
-    <footer>
-        <p> (C) Flaeder studios </p>
-    </footer>
-
+<body>
+    <canvas id="canvas" width="600" height="600"></canvas>
+    <button onclick="quitGame()"> Quit </button>
+<script src="lib/webgl-utils.js"></script>
+<script src="js/mpong.js"></script>
 </body>
 
 </html>

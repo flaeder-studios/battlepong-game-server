@@ -13,15 +13,13 @@ class PlayerHandler:
         
         if 'name' in cherrypy.session:
             player['name'] = cherrypy.session['name']
-        else:
-            player['name'] = ''
             
         if 'currentGame' in cherrypy.session:
             player['currentGame'] = cherrypy.session['currentGame']
-        else:
-            player['currentGame'] = ''
         
         player['createdGames'] = []
+        
+        cherrypy.log(str(player))
         
         return { 'player': player }
             

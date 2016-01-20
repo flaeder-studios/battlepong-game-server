@@ -11,17 +11,42 @@ class GameHandler:
                 "id": "myGame",
                 "maxPlayers": 2,
                 "joinedPlayers": ['Arvid'],
-                "createdBy": 'Arvid'
+                "createdBy": 'Arvid',
+                "path": 'game/mpong',
+                'name': 'mpong',
+                'template': 'mpong.html',
+                'scripts': [
+                    '/mpong/js/mpong.js'
+                ],
+                'controller': 'MpongController',
+                'startPath': '/game/mpong/start'
             }, {
                 "id": "hisGame",
                 "maxPlayers": 2,
                 "joinedPlayers": ['Arvid', 'Sigrid'],
-                "createdBy": 'Sigrid'
+                "createdBy": 'Sigrid',
+                "path": 'game/mpong',
+                'name': 'mpong',
+                'template': 'mpong.html',
+                'scripts': [
+                    '/mpong/js/mpong.js'
+                ],
+                'controller': 'MpongController',
+                'startPath': '/game/mpong/start'
+
             }, {
                 "id": "anyonesGame",
                 "maxPlayers": 2,
                 "joinedPlayers": ['Malin'],
-                "createdBy": 'Malin'
+                "createdBy": 'Malin',
+                "path": 'game/mpong',
+                'name': 'mpong',
+                'template': 'mpong.html',
+                'scripts': [
+                    '/mpong/js/mpong.js'
+                ],
+                'controller': 'MpongController',
+                'startPath': '/game/mpong/start'
             }]
     
     def getAllGames(self):
