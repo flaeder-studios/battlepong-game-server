@@ -127,6 +127,9 @@ class GameHandler:
                 else:
                     raise cherrypy.HTTPError(401, '%s could not remove game created by %s' % (cherrypy.session.get('name'), g['createdBy']))
         
+        if removedGame == cherrypy.session['currentGame']:
+            cherrypy.session['currentGame'] = None
+        
         if removedGame is None:
             raise cherrypy.HTTPError(404, 'could not remove game with id %s' % gameId)
             

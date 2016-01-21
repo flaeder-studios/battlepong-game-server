@@ -9,7 +9,6 @@
 
             $scope.activateCreateGameForm = function () {
                 $scope.createGameFormActive = true;
-                $scope.newGame = {};
             };
 
             $scope.deactivateCreateGameForm = function () {
@@ -52,7 +51,7 @@
 
                     if (idx > -1) {
                         $scope.games.splice(idx, 1);
-                        if ($scope.currentGame == removedGame) {
+                        if ($scope.currentGame.id == removedGame.id) {
                             $scope.setCurrentGame(undefined);
                         }
                     }

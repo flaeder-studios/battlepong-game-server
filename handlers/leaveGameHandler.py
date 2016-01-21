@@ -12,7 +12,8 @@ class LeaveGameHandler:
         playerName = cherrypy.session.get('name')
         
         currentGame = cherrypy.session.get('currentGame')
-        currentGame['joinedPlayers'].remove(playerName)
+        if playerName in currentGame['joinedPlayers']:
+            currentGame['joinedPlayers'].remove(playerName)
         cherrypy.session['currentGame'] = None
         
         #game = cherrypy.engine.publish('mpong-leave-game', gameId, playerName).pop()
