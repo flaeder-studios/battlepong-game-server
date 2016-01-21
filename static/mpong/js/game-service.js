@@ -1,6 +1,6 @@
 (function () {
 
-    angular.module('game-service', ['http-method-service', 'url-service'])
+    angular.module('game-service', ['http-method-service', 'url-service', 'ui.grid'])
         .factory('gameService', ['httpMethodService', 'urlService', function (httpMethodService, urlService) {
             var service = {};
 

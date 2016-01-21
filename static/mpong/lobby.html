@@ -26,4 +26,7 @@
         <button ng-click="createGameForm.$valid && createGame(newGame)">Submit</button>
         <button ng-click="deactivateCreateGameForm()"> Cancel </button>
     </form>
+
+    <div id="gameGrid" ui-grid="{ data: games }" class="grid"></div>
+
 </div>
