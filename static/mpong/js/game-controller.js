@@ -16,6 +16,7 @@
                 multiSelect: false,
                 enableRowHeaderSelection: false,
                 enableSelectAll: false,
+                rowTemplate: 'game-grid-row.html',
 
                 onRegisterApi: function (gridApi) {
                     //set gridApi on scope
@@ -47,6 +48,10 @@
                 }],
             };
 
+            $scope.rowHover = function (row) {
+                row.isSelected ? row.isSelected = false : row.isSelected = true;
+            };
+
             $scope.updateGridSelection = function () {
                 if ($scope.selectedGame) {
                     console.log('calling selectRow with', $scope.selectedGame);
@@ -68,7 +73,7 @@
                             } else {
                                 $scope.selectedGame = undefined;
                             }
-                        }, 100);
+                        }, 1);
                     }
                 }
             };
