@@ -1,8 +1,16 @@
 (function () {
     angular.module('http-method-service', [])
-        .factory('httpMethodService', ['$http', function ($http) {
+        .factory('httpMethodService', ['$http', '$location', function ($http, $location) {
 
             var service = {};
+
+            var handleError = function (rejectReason) {
+                if (rejectReason.status == 401) {
+                    $location.path('/register');
+                } else {
+                    console.error(rejectReason);
+                }
+            };
 
             service.get = function (uri, config, callback) {
                 var res = {};
@@ -12,7 +20,7 @@
                         callback(result);
                     },
                     function (rejectReason) {
-                        console.error(rejectReason);
+                        handleError(rejectReason);
                     });
             };
 
@@ -24,7 +32,7 @@
                         callback(result);
                     },
                     function (rejectReason) {
-                        console.error(rejectReason);
+                        handleError(rejectReason);
                     });
             };
 
@@ -36,7 +44,7 @@
                         callback(result);
                     },
                     function (rejectReason) {
-                        console.error(rejectReason);
+                        handleError(rejectReason);
                     });
             };
 

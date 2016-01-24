@@ -40,8 +40,12 @@
                         $scope.playerName = player.name;
                         $scope.isRegistered = true;
                         console.log("registered as", $scope.playerName);
+                        $location.path('/lobby');
                     } else {
-                        console.log("not registered")
+                        console.log("not registered");
+                        $scope.currentGame = undefined;
+                        $scope.playerName = undefined;
+                        $scope.isRegistered = false;
                         $location.path('/register');
                     }
 
@@ -52,8 +56,6 @@
 
                 });
             };
-
-            $scope.initialize();
 
         }])
         .config(['$routeProvider', function ($routeProvider) {

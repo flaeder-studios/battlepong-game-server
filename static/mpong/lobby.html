@@ -1,5 +1,5 @@
 <div ng-show="isRegistered" ng-controller="GameController ">
-    <table>
+    <table ng-hide="true">
         <tr ng-repeat="game in games">
             <td> {{ game.id }} </td>
             <td> {{ game.createdBy }} </td>
@@ -16,6 +16,7 @@
             </td>
         </tr>
     </table>
+    <div id="gameGrid" ui-grid="gameGrid" ui-grid-selection class="grid"></div>
     <button ng-hide="createGameFormActive" ng-click="activateCreateGameForm()"> Create </button>
     <form ng-show="createGameFormActive" name="createGameForm " novalidate>
         <input type="text" ng-init="newGame.id='TestGame'" ng-model="newGame.id" required>
@@ -27,6 +28,5 @@
         <button ng-click="deactivateCreateGameForm()"> Cancel </button>
     </form>
 
-    <div id="gameGrid" ui-grid="{ data: games }" class="grid"></div>
 
 </div>

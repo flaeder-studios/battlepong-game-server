@@ -1,6 +1,6 @@
 (function () {
 
-    angular.module('game-service', ['http-method-service', 'url-service', 'ui.grid'])
+    angular.module('game-service', ['http-method-service', 'url-service'])
         .factory('gameService', ['httpMethodService', 'urlService', function (httpMethodService, urlService) {
             var service = {};
 
@@ -10,13 +10,11 @@
                 });
             };
 
-            service.createGame = function (gameId, maxPlayers, callback) {
-                var game = {
-                    "id": gameId,
-                    "maxPlayers": maxPlayers
-                };
+            service.createGame = function (game, callback) {
 
-                httpMethodService.post(urlService.gameUri + '/' + gameId, game, {}, function (result) {
+                game.name = "mpong";
+
+                httpMethodService.post(urlService.gameUri + '/' + game.id, game, {}, function (result) {
                     callback(result.data);
                 });
             };
