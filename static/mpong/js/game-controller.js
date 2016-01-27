@@ -17,34 +17,71 @@
                 enableRowHeaderSelection: false,
                 enableSelectAll: false,
                 rowTemplate: 'game-grid-row.html',
+                enableColumnMenus: false,
 
                 onRegisterApi: function (gridApi) {
                     //set gridApi on scope
                     $scope.gridApi = gridApi;
                     gridApi.selection.on.rowSelectionChanged($scope, function (row) {
-                        console.log('selected row', row);
                         $scope.selectedGame = row.entity;
-                        row.isSelected = true;
+                        // row.isSelected = true;
                     });
                 },
 
                 columnDefs: [{
                     field: 'name',
-                    name: 'name'
+                    name: 'name',
+                    suppressRemoveSort: true,
+                    enableHiding: false
                 }, {
                     field: 'id',
-                    name: 'name'
+                    name: 'name',
+                    suppressRemoveSort: true,
+                    enableHiding: false
                 }, {
                     field: 'createdBy',
-                    name: 'Created By'
+                    name: 'Created By',
+                    suppressRemoveSort: true,
+                    enableHiding: false
                 }, {
                     cellTemplate: "<span> {{ row.entity.joinedPlayers.length + ' / ' + row.entity.maxPlayers }} </span>",
-                    name: "Joined / Max"
+                    name: "Joined / Max",
+                    suppressRemoveSort: true,
+                    enableHiding: false,
+                    sortingAlgorithm: function (a, b, rowA, rowB, direction) {
+                        var aFullPercent = rowA.entity.joinedPlayers.length / rowA.entity.maxPlayers,
+                            bFullPercent = rowB.entity.joinedPlayers.length / rowB.entity.maxPlayers;
+                        if (Math.abs(aFullPercent - bFullPercent) < 0.00001) {
+                            if (rowB.entity.maxPlayers == rowA.entity.maxPlayers) {
+                                return 0;
+                            } else if (rowB.entity.maxPlayers < rowA.entity.maxPlayers) {
+                                return 1;
+                            } else {
+                                return -1;
+                            }
+                        } else if (aFullPercent > bFullPercent) {
+                            return 1;
+                        } else {
+                            return -1;
+                        }
+                    }
                 }, {
                     cellTemplate: '/mpong/game-grid-control.html',
                     name: 'Joined Players',
-                    enableSorting: false,
-                    enableFiltering: false
+                    enableHiding: false,
+                    enableSorting: true,
+                    suppressRemoveSort: true,
+                    sortingAlgorithm: function (a, b, rowA, rowB, direction) {
+                        a = rowA.entity.joinedPlayers.length;
+                        b = rowB.entity.joinedPlayers.length;
+                        if (a > b) {
+                            return -1;
+                        } else if (a < b) {
+                            return 1;
+                        } else {
+                            return 0;
+                        }
+                    }
                 }],
             };
 
