@@ -1,0 +1,36 @@
+<div>
+
+    <table ng-hide="true">
+        <tr ng-repeat="game in games">
+            <td> {{ game.id }} </td>
+            <td> {{ game.createdBy }} </td>
+            <td>
+                <button ng-click="startGame('/game/mpong')" ng-show="currentGame.id == game.id && game.joinedPlayers.length == game.maxPlayers"> Start Game </button>
+                <div ng-show="currentGame.id != game.id || game.joinedPlayers.length != game.maxPlayers"> {{ game.joinedPlayers.length + ' / ' + game.maxPlayers }} </div>
+            </td>
+            <td>
+                <button ng-show="!currentGame && game.maxPlayers > game.joinedPlayers.length" ng-click="joinGame(game)"> Join </button>
+                <button ng-show="currentGame && game.id == currentGame.id" ng-click="leaveGame()"> Leave </button>
+            </td>
+            <td>
+                <button ng-show="game.createdBy == playerName" ng-click="removeGame(game)"> Remove </button>
+            </td>
+        </tr>
+    </table>
+
+    <div ng-controller="GameGridController">
+        <div id="gameGrid" ui-grid="gameGrid" ui-grid-selection class="grid"></div>
+    </div>
+    <button ng-hide="createGameFormActive" ng-click="activateCreateGameForm()"> Create </button>
+    <form ng-show="createGameFormActive" name="createGameForm " novalidate>
+        <input type="text" ng-init="newGame.id='TestGame'" ng-model="newGame.id" required>
+        <select ng-init="newGame.maxPlayers=2" ng-model="newGame.maxPlayers" required>
+            <option></option>
+            <option ng-repeat="val in [2,3,4,5,6,7,8]" value={{val}}> {{ val }} </option>
+        </select>
+        <button ng-click="createGameForm.$valid && createGame(newGame)">Submit</button>
+        <button ng-click="deactivateCreateGameForm()"> Cancel </button>
+    </form>
+
+
+</div>

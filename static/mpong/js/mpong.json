@@ -1,8 +1,0 @@
-{
-    'template': 'mpong.html',
-    'scripts': [
-                    'js/mpong.js'
-                ],
-    'controller': 'MpongController',
-    'startPath': '/game/mpong/start'
-}
