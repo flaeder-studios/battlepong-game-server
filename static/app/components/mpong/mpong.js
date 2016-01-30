@@ -245,5 +245,5 @@ var intervalId;
 
 var quitGame = function () {
     clearInterval(intervalId);
-    window.location = "#/lobby";
+    window.location = "/#/lobby";
 };

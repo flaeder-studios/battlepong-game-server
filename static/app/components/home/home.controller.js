@@ -4,43 +4,48 @@
         .controller('HomeController', ['$scope', '$location', 'playerService', function ($scope, $location, playerService) {
 
             $scope.isRegistered = false;
-            $scope.playerName = '';
+            $scope.player = '';
             $scope.newName = '';
+            $scope.changeName = false;
 
             $scope.initialize = function () {
                 if ($scope.isRegistered) {
                     $location.path('/lobby')
                 } else {
-                    playerService.getPlayer(function (data) {
-                        if (data.player.name && data.player.name.length) {
-                            $scope.playerName = data.player.name;
-                            $scope.isRegistered = true;
-                            $location.path('/lobby');
-                        } else {
-                            $scope.isRegistered = false;
-                            $scope.playerName = '';
-                        }
-                    });
-                }
+                    $scope.updatePlayerData();
+                };
             };
 
-            $scope.registerPlayer = function (name) {
-                playerService.setName(name, function (data) {
-                    $scope.isRegistered = true;
-                    $scope.playerName = data.player.name;
-                    console.log("Set player name to", $scope.playerName);
-                    $location.path('/lobby');
+            $scope.updatePlayerData = function () {
+                playerService.getPlayer(function (data) {
+                    if (data.player) {
+                        console.log('player is ', data.player);
+                        $scope.player = data.player;
+                        if ($scope.player.name) {
+                            $scope.isRegistered = true;
+                        }
+                    }
                 });
             };
 
             $scope.setPlayerName = function (name) {
-                if (name) {
-                    $scope.playerName = name;
-                }
+                playerService.setName(name, function (data) {
+                    $scope.player = data.player;
+                    if (data.player.name == name) {
+                        console.log("Set player name to", $scope.playerName);
+                        $scope.changeName = false;
+                        if (!$scope.isRegistered) {
+                            $scope.isRegistered = true;
+                            $location.path('/lobby');
+                        }
+                    } else {
+                        alert('could not set name to ' + name);
+                    }
+                });
             };
 
             $scope.initialize();
 
-        }]);
+            }]);
 
 })();

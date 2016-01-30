@@ -9,21 +9,11 @@
     <link rel="stylesheet" type="text/css" href="/assets/css/site.css">
 </head>
 
-<body>
-    <header ng-controller="HomeController">
-        <div ng-init="newName='heisenberg'" ng-controller="PlayerController">
-            <p> Flaeder Games </p>
-            <form ng-hide="isRegistered" novalidate>
-                <input type="text" ng-model="newName">
-                <button ng-click=" registerPlayer(newName) "> Register </button>
-            </form>
-            <form ng-show="isRegistered" name="setPlayerNameForm" novalidate>
-                {{ playerName }}
-                <button type="button " ng-click="changeName=true " ng-hide="changeName"> Change Name </button>
-                <input ng-show="changeName" type="text " ng-model="newName " required>
-                <button ng-show="changeName" ng-click="updateName(newName) "> Update </button>
-            </form>
-        </div>
+<body ng-controller="HomeController">
+    <header>
+        <p> Flaeder Games </p>
+        <fldr-player-register ng-hide="isRegistered"></fldr-player-register>
+        <fldr-player-name ng-show="isRegistered"></fldr-player-name>
     </header>
 
 
@@ -42,12 +32,15 @@
     <script type=" text/javascript " src="/app/app.routing.js"></script>
     <script type=" text/javascript " src="/app/shared/http-methods/httpmethod.service.js"></script>
     <script type=" text/javascript " src="/app/shared/http-methods/url.service.js"></script>
-    <script type=" text/javascript " src="/app/shared/player/player.controller.js"></script>
     <script type=" text/javascript " src="/app/shared/player/player.service.js"></script>
     <script type=" text/javascript " src="/app/shared/gamegrid/gamegrid.controller.js"></script>
+    <script type=" text/javascript " src="/app/shared/gamegrid/gamegrid.directive.js"></script>
     <script type=" text/javascript " src="/app/components/home/home.controller.js"></script>
+    <script type=" text/javascript " src="/app/components/home/home.name.directive.js"></script>
+    <script type=" text/javascript " src="/app/components/home/home.register.directive.js"></script>
     <script type=" text/javascript " src="/app/components/lobby/lobby.controller.js"></script>
     <script type=" text/javascript " src="/app/components/lobby/lobby.service.js"></script>
+    <script type=" text/javascript " src="/app/components/lobby/create-game-form.directive.js"></script>
     <script type=" text/javascript " src="/app/components/game/game.controller.js"></script>
 
 </body>

@@ -1,0 +1,6 @@
+<form name="setPlayerNameForm" novalidate>
+    {{player.name}}
+    <button type="button " ng-click="changeName=true " ng-hide="changeName"> Change Name </button>
+    <input ng-show="changeName" type="text " ng-model="newName " required>
+    <button ng-show="changeName" ng-click="setPlayerName(newName) "> Update </button>
+</form>
