@@ -4,8 +4,8 @@
 <head>
     <meta content="text/html;charset=utf-8" http-equiv="Content-Type">
     <meta content="utf-8" http-equiv="encoding">
+    <link rel="stylesheet" type="text/css" href="/assets/libs/angular-ui-grid/ui-grid.css" />
     <link rel="stylesheet" type="text/css" href="/assets/libs/bootstrap/css/bootstrap.min.css">
-    <link rel="stylesheet" type="text/css" href="/assets/libs/angular-ui-grid/ui-grid.css">
     <link rel="stylesheet" type="text/css" href="/assets/css/site.css">
 </head>
 
@@ -15,7 +15,6 @@
         <fldr-player-register ng-hide="isRegistered"></fldr-player-register>
         <fldr-player-name ng-show="isRegistered"></fldr-player-name>
     </header>
-
 
     <ng-view></ng-view>
 
@@ -42,6 +41,8 @@
     <script type=" text/javascript " src="/app/components/lobby/lobby.service.js"></script>
     <script type=" text/javascript " src="/app/components/lobby/create-game-form.directive.js"></script>
     <script type=" text/javascript " src="/app/components/game/game.controller.js"></script>
+
+    <script type=" text/javascript " src="/app/components/test/gridtest.js"></script>
 
 </body>
 

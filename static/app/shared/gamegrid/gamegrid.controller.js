@@ -19,6 +19,11 @@
                 onRegisterApi: function (gridApi) {
                     //set gridApi on scope
                     $scope.gridApi = gridApi;
+                    console.log("onRegister")
+                },
+
+                afterSelectionChange: function (data) {
+                    console.log("selected", data);
                 },
 
                 columnDefs: [{
@@ -26,17 +31,17 @@
                     name: 'name',
                     suppressRemoveSort: true,
                     enableHiding: false
-                }, {
+                                }, {
                     field: 'id',
                     name: 'name',
                     suppressRemoveSort: true,
                     enableHiding: false
-                }, {
+                                }, {
                     field: 'createdBy',
                     name: 'Created By',
                     suppressRemoveSort: true,
                     enableHiding: false
-                }, {
+                                }, {
                     cellTemplate: "<span> {{ row.entity.joinedPlayers.length + ' / ' + row.entity.maxPlayers }} </span>",
                     name: "Joined / Max",
                     suppressRemoveSort: true,
@@ -58,7 +63,7 @@
                             return -1;
                         }
                     }
-                }, {
+                                }, {
                     cellTemplate: '/app/shared/gamegrid/game-grid-control.html',
                     name: 'Joined Players',
                     enableHiding: false,
@@ -75,7 +80,7 @@
                             return 0;
                         }
                     }
-                }],
+                                }],
             };
 
             $scope.rowHover = function (row) {
