@@ -3,11 +3,11 @@
     'use strict';
 
     angular.module('flaederGamesApp')
-        .controller('LobbyController', ['$scope', '$location', 'lobbyService', function ($scope, $location, lobbyService) {
+        .controller('LobbyController', ['$scope', '$location', 'lobbyService', 'NgTableParams', function ($scope, $location, lobbyService, NgTableParams) {
 
             $scope.newGame = {};
             $scope.games = [];
-
+            $scope.selectionState = undefined;
             $scope.createGameFormActive = false;
 
             $scope.cancelCreateGameForm = function () {
@@ -23,6 +23,7 @@
             $scope.listGames = function () {
                 return lobbyService.getAllGames(function (data) {
                     $scope.games = data.games;
+                    $scope.restoreSelection();
                 });
             };
 
@@ -35,6 +36,7 @@
             $scope.createGame = function (game) {
                 lobbyService.createGame(game, function (data) {
                     $scope.games.push(data.games[0]);
+                    $scope.restoreSelection();
                     console.log('created game ' + data.games[0]);
                 });
             };
@@ -82,6 +84,7 @@
                         }
 
                         $scope.updatePlayerData();
+                        $scope.restoreSelection();
 
                         console.log('joined game ', joinedGame);
                     });
@@ -99,8 +102,93 @@
                             }
                         }
                         $scope.updatePlayerData();
+                        $scope.restoreSelection();
                         console.log("leftGame: ", leftGame);
                     });
+                }
+            };
+
+            $scope.selectedGame = undefined;
+
+            $scope.gameGrid = {
+                data: 'games',
+                enableSorting: true,
+                enableFiltering: true,
+                enableRowSelection: true,
+                multiSelect: false,
+                enableRowHeaderSelection: false,
+                enableSelectAll: false,
+                rowTemplate: '/app/shared/gamegrid/game-grid-row.html',
+                enableColumnMenus: false,
+
+                onRegisterApi: function (gridApi) {
+                    //set gridApi on scope
+                    $scope.gridApi = gridApi;
+                    console.log("onRegisterApi")
+                },
+
+                columnDefs: [{
+                    cellTemplate: '/app/shared/gamegrid/game-grid-control.html',
+                    name: 'Control',
+                    enableHiding: false,
+                    enableSorting: false,
+                    suppressRemoveSort: true,
+                }, {
+                    field: 'name',
+                    name: 'name',
+                    suppressRemoveSort: true,
+                    enableHiding: false
+                }, {
+                    field: 'id',
+                    name: 'name',
+                    suppressRemoveSort: true,
+                    enableHiding: false
+                }, {
+                    field: 'createdBy',
+                    name: 'Created By',
+                    suppressRemoveSort: true,
+                    enableHiding: false
+                }, {
+                    cellTemplate: "<span> {{ row.entity.joinedPlayers.length + ' / ' + row.entity.maxPlayers }} </span>",
+                    name: "Joined / Max",
+                    suppressRemoveSort: true,
+                    enableHiding: false,
+                    sortingAlgorithm: function (a, b, rowA, rowB, direction) {
+                        var aFullPercent = rowA.entity.joinedPlayers.length / rowA.entity.maxPlayers,
+                            bFullPercent = rowB.entity.joinedPlayers.length / rowB.entity.maxPlayers;
+                        if (Math.abs(aFullPercent - bFullPercent) < 0.00001) {
+                            if (rowB.entity.maxPlayers == rowA.entity.maxPlayers) {
+                                return 0;
+                            } else if (rowB.entity.maxPlayers < rowA.entity.maxPlayers) {
+                                return 1;
+                            } else {
+                                return -1;
+                            }
+                        } else if (aFullPercent > bFullPercent) {
+                            return 1;
+                        } else {
+                            return -1;
+                        }
+                    }
+                }, {
+                    cellTemplate: '<span ng-repeat="name in row.entity.joinedPlayers"> {{ name }} </span>',
+                    name: 'Joined Players',
+                    sortingAlgorithm: function (a, b, rowA, rowB, direction) {
+                        a = rowA.entity.joinedPlayers.length;
+                        b = rowB.entity.joinedPlayers.length;
+                        if (a > b) {
+                            return -1;
+                        } else if (a < b) {
+                            return 1;
+                        } else {
+                            return 0;
+                        }
+                    }
+                }]
+            };
+            $scope.restoreSelection = function () {
+                if ($scope.selectionState) {
+                    $scope.gridApi.saveState.restore($scope, $scope.selectionState);
                 }
             };
 
@@ -110,6 +198,6 @@
 
             $scope.listGames();
 
-    }]);
+            }]);
 
 })();

@@ -1,7 +1,4 @@
-<span ng-hide="row.isSelected" ng-repeat="name in row.entity.joinedPlayers"> {{ name }} </span>
-<div ng-show="row.isSelected">
-    <button ng-click="grid.appScope.startGame('/game/mpong')" ng-show="grid.appScope.player.currentGame.id == row.entity.id && row.entity.joinedPlayers.length == row.entity.maxPlayers"> Start Game </button>
-    <button ng-show="!grid.appScope.player.currentGame && row.entity.maxPlayers > row.entity.joinedPlayers.length" ng-click="grid.appScope.joinGame(row.entity)"> Join </button>
-    <button ng-show="grid.appScope.player.currentGame && row.entity.id == grid.appScope.player.currentGame.id" ng-click="grid.appScope.leaveGame()"> Leave </button>
-    <button ng-show="row.entity.createdBy == grid.appScope.playerName" ng-click="grid.appScope.removeGame(row.entity)"> Remove </button>
-</div>
+<button ng-click="grid.appScope.startGame('/game/mpong')" ng-show="grid.appScope.player.currentGame.id == row.entity.id && row.entity.joinedPlayers.length == row.entity.maxPlayers"> Start Game </button>
+<button ng-show="!grid.appScope.player.currentGame && row.entity.maxPlayers > row.entity.joinedPlayers.length" ng-click="grid.appScope.joinGame(row.entity)"> Join </button>
+<button ng-show="grid.appScope.player.currentGame && row.entity.id == grid.appScope.player.currentGame.id" ng-click="grid.appScope.leaveGame()"> Leave </button>
+<button ng-show="row.entity.createdBy == grid.appScope.player.name" ng-click="grid.appScope.removeGame(row.entity)"> Remove </button>
