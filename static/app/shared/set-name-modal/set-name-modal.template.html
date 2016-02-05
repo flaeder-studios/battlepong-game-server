@@ -1,0 +1,12 @@
+<div class="modal-header">
+    <h3 class="modal-title"> Change Name </h3>
+</div>
+<div class="modal-body">
+    <form ng-init="newName='heisenberg'" novalidate>
+        <input type="text" ng-model="newName">
+    </form>
+</div>
+<div class="modal-footer">
+    <button ng-click="setName()"> Set Name </button>
+    <button ng-click="cancel()"> Cancel </button>
+</div>

@@ -3,7 +3,7 @@
     'use strict';
 
     angular.module('flaederGamesApp')
-        .controller('LobbyController', ['$scope', '$location', 'lobbyService', 'NgTableParams', function ($scope, $location, lobbyService, NgTableParams) {
+        .controller('LobbyController', ['$scope', '$location', 'lobbyService', function ($scope, $location, lobbyService) {
 
             $scope.newGame = {};
             $scope.games = [];
@@ -23,7 +23,6 @@
             $scope.listGames = function () {
                 return lobbyService.getAllGames(function (data) {
                     $scope.games = data.games;
-                    $scope.restoreSelection();
                 });
             };
 
@@ -36,7 +35,6 @@
             $scope.createGame = function (game) {
                 lobbyService.createGame(game, function (data) {
                     $scope.games.push(data.games[0]);
-                    $scope.restoreSelection();
                     console.log('created game ' + data.games[0]);
                 });
             };
@@ -84,7 +82,6 @@
                         }
 
                         $scope.updatePlayerData();
-                        $scope.restoreSelection();
 
                         console.log('joined game ', joinedGame);
                     });
@@ -102,7 +99,6 @@
                             }
                         }
                         $scope.updatePlayerData();
-                        $scope.restoreSelection();
                         console.log("leftGame: ", leftGame);
                     });
                 }
@@ -185,11 +181,6 @@
                         }
                     }
                 }]
-            };
-            $scope.restoreSelection = function () {
-                if ($scope.selectionState) {
-                    $scope.gridApi.saveState.restore($scope, $scope.selectionState);
-                }
             };
 
             if (!$scope.isRegistered) {

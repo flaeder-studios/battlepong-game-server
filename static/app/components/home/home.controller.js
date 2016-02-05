@@ -1,11 +1,10 @@
 (function () {
 
     angular.module('flaederGamesApp')
-        .controller('HomeController', ['$scope', '$location', 'playerService', function ($scope, $location, playerService) {
+        .controller('HomeController', ['$scope', '$location', '$uibModal', 'playerService', function ($scope, $location, $uibModal, playerService) {
 
             $scope.isRegistered = false;
-            $scope.player = '';
-            $scope.newName = '';
+            $scope.player = undefined;
             $scope.changeName = false;
 
             $scope.initialize = function () {
@@ -16,6 +15,36 @@
                 };
             };
 
+            $scope.openRegisterModal = function () {
+                var modalInstance = $uibModal.open({
+                    animation: true,
+                    templateUrl: '/app/shared/register-modal/register-modal.template.html',
+                    controller: 'RegisterModalController',
+                });
+
+                modalInstance.result.then(function (name) {
+                    $scope.setPlayerName(name);
+                }, function () {
+                    console.log('Register modal dismissed at: ' + new Date());
+                });
+
+            };
+
+            $scope.openSetNameModal = function () {
+                var modalInstance = $uibModal.open({
+                    animation: true,
+                    templateUrl: '/app/shared/set-name-modal/set-name-modal.template.html',
+                    controller: 'SetNameModalController',
+                });
+
+                modalInstance.result.then(function (name) {
+                    $scope.setPlayerName(name);
+                }, function () {
+                    console.log('Set name modal dismissed at: ' + new Date());
+                });
+
+            };
+
             $scope.updatePlayerData = function () {
                 playerService.getPlayer(function (data) {
                     if (data.player) {
@@ -23,6 +52,8 @@
                         $scope.player = data.player;
                         if ($scope.player.name) {
                             $scope.isRegistered = true;
+                        } else {
+                            $scope.openRegisterModal();
                         }
                     }
                 });
