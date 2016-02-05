@@ -3,22 +3,11 @@
     'use strict';
 
     angular.module('flaederGamesApp')
-        .controller('LobbyController', ['$scope', '$location', 'lobbyService', function ($scope, $location, lobbyService) {
+        .controller('LobbyController', ['$scope', '$location', '$uibModal', 'lobbyService', function ($scope, $location, $uibModal, lobbyService) {
 
-            $scope.newGame = {};
             $scope.games = [];
             $scope.selectionState = undefined;
             $scope.createGameFormActive = false;
-
-            $scope.cancelCreateGameForm = function () {
-                $scope.createGameFormActive = false;
-                $scope.newGame = {};
-            };
-
-            $scope.activateCreateGameForm = function () {
-                $scope.createGameFormActive = true;
-                $scope.newGame = {};
-            };
 
             $scope.listGames = function () {
                 return lobbyService.getAllGames(function (data) {
@@ -32,14 +21,17 @@
                 }
             };
 
-            $scope.createGame = function (game) {
+            $scope.createGame = function (game, callback) {
                 lobbyService.createGame(game, function (data) {
                     $scope.games.push(data.games[0]);
                     console.log('created game ' + data.games[0]);
+                    if (callback) {
+                        callback(data.games[0]);
+                    }
                 });
             };
 
-            $scope.removeGame = function (game) {
+            $scope.removeGame = function (game, callback) {
                 var idx, removedGame;
 
                 lobbyService.removeGame(game, function (data) {
@@ -59,10 +51,13 @@
                         }
                     }
                     console.log('removed game ' + data.games[0])
+                    if (callback) {
+                        callback(data.games[0]);
+                    }
                 });
             };
 
-            $scope.joinGame = function (game) {
+            $scope.joinGame = function (game, callback) {
                 if (!$scope.player.currentGame) {
                     lobbyService.joinGame(game, function (data) {
                         var joinedGame = data.games[0],
@@ -84,11 +79,14 @@
                         $scope.updatePlayerData();
 
                         console.log('joined game ', joinedGame);
+                        if (callback) {
+                            callback(data.games[0]);
+                        }
                     });
                 }
             };
 
-            $scope.leaveGame = function () {
+            $scope.leaveGame = function (callback) {
                 if ($scope.player.currentGame) {
                     lobbyService.leaveGame(function (data) {
                         var leftGame = data.games[0];
@@ -100,11 +98,12 @@
                         }
                         $scope.updatePlayerData();
                         console.log("leftGame: ", leftGame);
+                        if (callback) {
+                            callback(leftGame);
+                        }
                     });
                 }
             };
-
-            $scope.selectedGame = undefined;
 
             $scope.gameGrid = {
                 data: 'games',
@@ -120,7 +119,6 @@
                 onRegisterApi: function (gridApi) {
                     //set gridApi on scope
                     $scope.gridApi = gridApi;
-                    console.log("onRegisterApi")
                 },
 
                 columnDefs: [{
@@ -181,6 +179,27 @@
                         }
                     }
                 }]
+            };
+
+            $scope.openCreateGameModal = function () {
+                var modalInstance = $uibModal.open({
+                    animation: true,
+                    templateUrl: '/app/shared/create-game/create-game-modal.template.html',
+                    controller: 'CreateGameModalController',
+                    resolve: {
+                        doCreateGame: function () {
+                            console.log("doCreateGame created")
+                            return $scope.createGame;
+                        }
+                    }
+                });
+
+                modalInstance.result.then(function (newGame) {
+                    $scope.createGame(newGame);
+                }, function () {
+                    console.log('Register modal dismissed at: ' + new Date());
+                });
+
             };
 
             if (!$scope.isRegistered) {
