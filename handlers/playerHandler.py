@@ -13,12 +13,12 @@ class PlayerHandler:
         
         if 'name' in cherrypy.session:
             player['name'] = cherrypy.session['name']
-            
-        if 'currentGame' in cherrypy.session and cherrypy.session['currentGame']:
-            player['currentGame'] = cherrypy.session['currentGame']
+        else:
+            raise cherrypy.HTTPError(401, 'player name not set')
         
-        player['createdGames'] = []
-        
+        player['currentGame'] = cherrypy.session['currentGame']
+        player['createdGames'] = cherrypy.session['createdGames']
+
         cherrypy.log(str(player))
         
         return { 'player': player }
@@ -33,9 +33,13 @@ class PlayerHandler:
             data = data['player']
         
         if 'name' in data:
-            cherrypy.session['name'] = data['name']
+            cherrypy.session['name'] = str(data['name'])
+        else:
+            raise cherrypy.HTTPError(401, 'player name not set')
             
+        cherrypy.session['currentGame'] = []
+        cherrypy.session['createdGames'] = []
+
         cherrypy.log("set name to %s" % data['name'])
         
         return self.GET()
-        
