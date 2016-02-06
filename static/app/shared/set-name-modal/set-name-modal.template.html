@@ -3,10 +3,13 @@
 </div>
 <div class="modal-body">
     <form ng-init="newName='heisenberg'" novalidate>
-        <input type="text" ng-model="newName">
+        <div class="form-group">
+            <label for="nameInput"> Your Name </label>
+            <input id="nameInput" class="form-control" type="text" ng-model="newName">
+        </div>
     </form>
 </div>
 <div class="modal-footer">
-    <button ng-click="setName()"> Set Name </button>
-    <button ng-click="cancel()"> Cancel </button>
+    <button class="btn btn-primary" ng-click="setName()"> Set Name </button>
+    <button class="btn btn-warning" ng-click="cancel()"> Cancel </button>
 </div>

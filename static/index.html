@@ -11,7 +11,7 @@
 
 <body ng-controller="HomeController">
     <header>
-        <p> Flaeder Games </p> <a ng-click="openSetNameModal()"> {{ player.name }} </a>
+        <p> Flaeder Games <a ng-click="openSetNameModal()"> {{ player.name }} </a> </p>
     </header>
 
     <ng-view></ng-view>
@@ -37,11 +37,8 @@
     <script type=" text/javascript " src="/app/shared/set-name-modal/set-name-modal.controller.js"></script>
     <script type=" text/javascript " src="/app/shared/create-game/create-game-modal.controller.js"></script>
     <script type=" text/javascript " src="/app/components/home/home.controller.js"></script>
-    <script type=" text/javascript " src="/app/components/home/home.name.directive.js"></script>
-    <script type=" text/javascript " src="/app/components/home/home.register.directive.js"></script>
     <script type=" text/javascript " src="/app/components/lobby/lobby.controller.js"></script>
     <script type=" text/javascript " src="/app/components/lobby/lobby.service.js"></script>
-    <script type=" text/javascript " src="/app/components/lobby/create-game-form.directive.js"></script>
     <script type=" text/javascript " src="/app/components/game/game.controller.js"></script>
 
     <script type=" text/javascript " src="/app/components/test/gridtest.js"></script>

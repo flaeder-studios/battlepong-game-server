@@ -24,6 +24,9 @@
             $scope.createGame = function (game, callback) {
                 lobbyService.createGame(game, function (data) {
                     $scope.games.push(data.games[0]);
+                    if (game.join) {
+                        $scope.joinGame(data.games[0]);
+                    }
                     console.log('created game ' + data.games[0]);
                     if (callback) {
                         callback(data.games[0]);
