@@ -129,6 +129,7 @@
                     name: 'Control',
                     enableHiding: false,
                     enableSorting: false,
+                    enableFiltering: false,
                     suppressRemoveSort: true,
                 }, {
                     field: 'name',
@@ -166,7 +167,18 @@
                         } else {
                             return -1;
                         }
-                    }
+                    },
+                    filters: [{
+                        condition: function (searchTerm, cellValue, row, column) {
+                            return row.entity.joinedPlayers.length == searchTerm;
+                        },
+                        placeholder: 'Current'
+                    }, {
+                        condition: function (searchTerm, cellValue, row, column) {
+                            return row.entity.maxPlayers == searchTerm;
+                        },
+                        placeholder: 'Max'
+                    }]
                 }, {
                     cellTemplate: '<span ng-repeat="name in row.entity.joinedPlayers"> {{ name }} </span>',
                     name: 'Joined Players',
@@ -179,6 +191,14 @@
                             return 1;
                         } else {
                             return 0;
+                        }
+                    },
+                    filter: {
+                        condition: function (searchTerm, cellValue, row, column) {
+                            searchTerm = searchTerm.toLowerCase();
+                            for (var i = 0; i < row.entity.joinedPlayers.length; i++) {
+                                return row.entity.joinedPlayers[i].toLowerCase().search(searchTerm) > -1;
+                            }
                         }
                     }
                 }]
@@ -211,6 +231,6 @@
 
             $scope.listGames();
 
-            }]);
+                    }]);
 
 })();
