@@ -10,9 +10,12 @@
 </head>
 
 <body ng-controller="HomeController">
-    <header>
-        <p> Flaeder Games <a ng-click="openSetNameModal()"> {{ player.name }} </a> </p>
-    </header>
+    <div class="jumbotron">
+        <div class="container">
+            <h6><a ng-click="openSetNameModal()"> {{ player.name }} </a> </h6>
+            <h1> Flaeder Games </h1>
+        </div>
+    </div>
 
     <ng-view></ng-view>
 
