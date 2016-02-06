@@ -3,7 +3,7 @@
     'use strict';
 
     angular.module('flaederGamesApp')
-        .controller('LobbyController', ['$scope', '$location', '$uibModal', 'lobbyService', function ($scope, $location, $uibModal, lobbyService) {
+        .controller('LobbyController', ['$scope', '$location', '$uibModal', 'lobbyService', 'uiGridConstants', function ($scope, $location, $uibModal, lobbyService, uiGridConstants) {
 
             $scope.games = [];
             $scope.selectionState = undefined;
@@ -111,13 +111,35 @@
             $scope.gameGrid = {
                 data: 'games',
                 enableSorting: true,
-                enableFiltering: true,
+                enableFiltering: false,
                 enableRowSelection: true,
                 multiSelect: false,
                 enableRowHeaderSelection: false,
                 enableSelectAll: false,
                 rowTemplate: '/app/shared/gamegrid/game-grid-row.html',
                 enableColumnMenus: false,
+                enableColumnResize: true,
+
+                enableGridMenu: true,
+                gridMenuCustomItems: [{
+                    title: 'Hide Filters',
+                    action: function ($event) {
+                        $scope.toggleFiltering();
+                    },
+                    shown: function () {
+                        return $scope.gameGrid.enableFiltering;
+                    },
+                    order: 100
+                }, {
+                    title: 'Show Filters',
+                    action: function ($event) {
+                        $scope.toggleFiltering();
+                    },
+                    shown: function () {
+                        return !$scope.gameGrid.enableFiltering;
+                    },
+                    order: 100
+                }],
 
                 onRegisterApi: function (gridApi) {
                     //set gridApi on scope
@@ -131,21 +153,13 @@
                     enableSorting: false,
                     enableFiltering: false,
                     suppressRemoveSort: true,
-                }, {
-                    field: 'name',
-                    name: 'name',
-                    suppressRemoveSort: true,
-                    enableHiding: false
+                    width: '210'
                 }, {
                     field: 'id',
                     name: 'name',
                     suppressRemoveSort: true,
-                    enableHiding: false
-                }, {
-                    field: 'createdBy',
-                    name: 'Created By',
-                    suppressRemoveSort: true,
-                    enableHiding: false
+                    enableHiding: false,
+                    maxWidth: '220'
                 }, {
                     cellTemplate: "<span> {{ row.entity.joinedPlayers.length + ' / ' + row.entity.maxPlayers }} </span>",
                     name: "Joined / Max",
@@ -178,8 +192,14 @@
                             return row.entity.maxPlayers == searchTerm;
                         },
                         placeholder: 'Max'
-                    }]
+                    }],
+                    width: '110'
                 }, {
+                    field: 'createdBy',
+                    name: 'Created By',
+                    suppressRemoveSort: true,
+                    enableHiding: true
+                    }, {
                     cellTemplate: '<span ng-repeat="name in row.entity.joinedPlayers"> {{ name }} </span>',
                     name: 'Joined Players',
                     sortingAlgorithm: function (a, b, rowA, rowB, direction) {
@@ -200,8 +220,13 @@
                                 return row.entity.joinedPlayers[i].toLowerCase().search(searchTerm) > -1;
                             }
                         }
-                    }
+                    },
                 }]
+            };
+
+            $scope.toggleFiltering = function () {
+                $scope.gameGrid.enableFiltering = !$scope.gameGrid.enableFiltering;
+                $scope.gridApi.core.notifyDataChange(uiGridConstants.dataChange.COLUMN);
             };
 
             $scope.openCreateGameModal = function () {
