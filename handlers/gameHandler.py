@@ -95,8 +95,8 @@ class GameHandler:
             
         #createdGame = cherrypy.engine.publish('mpong-create-game', game) #.pop()
         
-        game['joinedPlayers'] = [cherrypy.session.get('name')]
-        game['createdBy'] = cherrypy.session.get('name')
+        game['joinedPlayers'] = [str(cherrypy.session.get('name'))]
+        game['createdBy'] = str(cherrypy.session.get('name'))
         game['path'] = 'game/mpong'
         game['name'] = 'mpong'
         game['template'] = 'mpong.html'
