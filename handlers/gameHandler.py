@@ -105,6 +105,7 @@ class GameHandler:
         game['startPath'] = '/game/mpong/start'
         
         GameHandler.games.append(game)
+        cherrypy.session['currentGame'] = game
         
         cherrypy.log("created game %s" % game)
         

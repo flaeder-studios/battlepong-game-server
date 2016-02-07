@@ -20,17 +20,10 @@ class GameState:
     @cherrypy.tools.json_out()
     def POST(self):
         stateIn = cherrypy.request.json()
-        creatorName = str(cherrypy.session['name'])
-        gameState = GameState.states.get(creatorName, False)
+        currentGame = cherrypy.session['currentGame']
+        gameState = GameState.states.get(currentGame['id'], False)
         if not gameState:
-            for g in GameHandler.games:
-                if g['createdBy'] == creatorName:
-                    joinedPlayers = g['joinedPlayers']
-                    if not len(joinedPlayers) == 2:
-                        raise cherrypy.HTTPError(404, 'To few players' )
-                    states[creatorName] = Game(100, joinedPlayers[0], joinedPlayers[1], 3)
-                    break
-            else:
-                raise cherrypy.HTTPError(404, 'Game %s not found' % (creatorName))
+            joinedPlayers = currentGame['joinedPlayers']
+            states[currentGame['id']] = Game(100, joinedPlayers[0], joinedPlayers[1], 3)
 
         # TODO change state of game
