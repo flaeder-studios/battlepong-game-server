@@ -243,19 +243,21 @@
                 });
 
                 modalInstance.result.then(function (newGame) {
-                    $scope.createGame(newGame);
+                    //$scope.createGame(newGame);
                 }, function () {
                     console.log('Register modal dismissed at: ' + new Date());
                 });
 
             };
 
-            if (!$scope.isRegistered) {
-                $location.path('/home');
-            }
+            $scope.updatePlayerData(function (data) {
+                if (!$scope.isRegistered) {
+                    $location.path('/home');
+                }
+            });
 
             $scope.listGames();
 
-                    }]);
+        }]);
 
 })();

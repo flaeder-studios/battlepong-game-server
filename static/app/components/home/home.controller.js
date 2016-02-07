@@ -11,7 +11,11 @@
                 if ($scope.isRegistered) {
                     $location.path('/lobby')
                 } else {
-                    $scope.updatePlayerData();
+                    $scope.updatePlayerData(function (data) {
+                        if ($scope.isRegistered) {
+                            $location.path('/lobby');
+                        }
+                    });
                 };
             };
 
@@ -45,7 +49,7 @@
 
             };
 
-            $scope.updatePlayerData = function () {
+            $scope.updatePlayerData = function (callback) {
                 playerService.getPlayer(function (data) {
                     if (data.player) {
                         console.log('player is ', data.player);
@@ -54,6 +58,9 @@
                             $scope.isRegistered = true;
                         } else {
                             $scope.openRegisterModal();
+                        }
+                        if (callback) {
+                            callback(data.player);
                         }
                     }
                 });
