@@ -34,7 +34,7 @@ class JoinGameHandler:
                 if len(g['joinedPlayers']) == 2 or playerName in g['joinedPlayers']:
                     raise cherrypy.HTTPError(401, '%s could not join game with id %s' % (playerName, gameId))
                 g['joinedPlayers'].append(playerName)
-                cherrypy.session.get('currentGame') = g
+                cherrypy.session['currentGame'] = g
                 break
         else:
             raise cherrypy.HTTPError(404)
