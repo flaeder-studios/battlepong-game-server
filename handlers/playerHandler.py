@@ -18,6 +18,9 @@ class PlayerHandler:
         else:
             raise cherrypy.HTTPError(401, 'player name not set')
         
+        cherrypy.session['currentGame'] = []
+        cherrypy.session['createdGames'] = []
+
         cherrypy.log(str(player))
         
         return { 'player': player }
@@ -42,5 +45,7 @@ class PlayerHandler:
             cherrypy.session['name'] = playerName
 
         cherrypy.log("set name to %s" % (playerName))
+        cherrypy.session['currentGame'] = []
+        cherrypy.session['createdGames'] = []
         
         return self.GET()
