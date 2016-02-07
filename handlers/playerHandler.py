@@ -12,20 +12,19 @@ class PlayerHandler:
     @cherrypy.tools.json_out()
     def GET(self):
         player = {}
-        
+
         if 'name' in cherrypy.session:
             player['name'] = cherrypy.session['name']
-        else:
-            raise cherrypy.HTTPError(401, 'player name not set')
-        
-        cherrypy.session['currentGame'] = []
+
+        if 'currentGame' in cherrypy.session and cherrypy.session['currentGame']:
+            player['currentGame'] = cherrypy.session['currentGame']
+
         cherrypy.session['createdGames'] = []
 
         cherrypy.log(str(player))
         
         return { 'player': player }
-            
-            
+
     @cherrypy.tools.json_out()
     @cherrypy.tools.json_in()
     def POST(self):
@@ -36,16 +35,10 @@ class PlayerHandler:
         # if exists pull out player name from data
         if 'player' in data and 'name' in data['player']:
             playerName = str(data['player']['name'])
-        else:
-            raise cherrypy.HTTPError(401, 'player name not found')
-
-        if playerName in players:
-            raise cherrypy.HTTPError(401, 'player name not set')
-        else:
+            if playerName in PlayerHandler.players:
+                raise cherrypy.HTTPError(401, 'Player name %s not unique' % (playerName))
             cherrypy.session['name'] = playerName
 
         cherrypy.log("set name to %s" % (playerName))
-        cherrypy.session['currentGame'] = []
-        cherrypy.session['createdGames'] = []
         
         return self.GET()
