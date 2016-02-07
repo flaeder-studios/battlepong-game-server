@@ -83,8 +83,7 @@ class GameHandler:
         
         if gameId:
             game['id'] = gameId
-        
-        if 'id' not in game:
+        else:
             raise cherrypy.HTTPError(400, 'game id not set')
         
         if 'maxPlayers' not in game:
@@ -95,20 +94,22 @@ class GameHandler:
                 raise cherrypy.HTTPError(400, 'game with id %s already exists' % gameId)
             
         #createdGame = cherrypy.engine.publish('mpong-create-game', game) #.pop()
-        createdGame = game
         
-        if createdGame is None:
-            raise cherrypy.HTTPError(404, 'could not create game with id %s' % gameId)
+        game['joinedPlayers'] = [str(cherrypy.session.get('name'))]
+        game['createdBy'] = str(cherrypy.session.get('name'))
+        game['path'] = 'game/mpong'
+        game['name'] = 'mpong'
+        game['template'] = 'mpong.html'
+        game['scripts'] = ['/mpong/js/mpong.js']
+        game['controller'] = 'MpongController'
+        game['startPath'] = '/game/mpong/start'
         
-        createdGame['joinedPlayers'] = []
-        createdGame['createdBy'] = cherrypy.session.get('name')
-        createdGame['removable'] = True
+        GameHandler.games.append(game)
+        cherrypy.session['currentGame'] = game
         
-        GameHandler.games.append(createdGame)
+        cherrypy.log("created game %s" % game)
         
-        cherrypy.log("created game %s" % createdGame)
-        
-        return { 'games': [createdGame] }
+        return { 'games': [game] }
     
     @cherrypy.tools.json_out()
     def DELETE(self, gameId):
