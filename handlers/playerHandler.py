@@ -19,7 +19,8 @@ class PlayerHandler:
         if 'currentGame' in cherrypy.session and cherrypy.session['currentGame']:
             player['currentGame'] = cherrypy.session['currentGame']
 
-        cherrypy.session['createdGames'] = []
+        if 'createdGames' in cherrypy.session and cherrypy.session['createdGames']:
+            player['createdGames'] = cherrypy.session['createdGames']
 
         cherrypy.log(str(player))
         
@@ -35,8 +36,6 @@ class PlayerHandler:
         # if exists pull out player name from data
         if 'player' in data and 'name' in data['player']:
             playerName = str(data['player']['name'])
-            if playerName in PlayerHandler.players:
-                raise cherrypy.HTTPError(401, 'Player name %s not unique' % (playerName))
             cherrypy.session['name'] = playerName
 
         cherrypy.log("set name to %s" % (playerName))
