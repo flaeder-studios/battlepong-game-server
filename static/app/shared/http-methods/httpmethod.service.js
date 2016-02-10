@@ -6,7 +6,7 @@
 
             var handleError = function (rejectReason) {
                 if (rejectReason.status == 401) {
-                    $location.path('/register');
+                    //$location.path('/register');
                 } else {
                     console.error(rejectReason);
                 }

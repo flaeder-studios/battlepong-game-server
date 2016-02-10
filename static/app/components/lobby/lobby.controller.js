@@ -119,6 +119,7 @@
                 rowTemplate: '/app/shared/gamegrid/game-grid-row.html',
                 enableColumnMenus: false,
                 enableColumnResize: true,
+                enableHorizontalScrollbar: uiGridConstants.scrollbars.NEVER,
 
                 enableGridMenu: true,
                 gridMenuCustomItems: [{
@@ -153,7 +154,7 @@
                     enableSorting: false,
                     enableFiltering: false,
                     suppressRemoveSort: true,
-                    width: '210'
+                    width: '220'
                 }, {
                     field: 'id',
                     name: 'name',
