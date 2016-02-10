@@ -8,15 +8,13 @@
             $scope.changeName = false;
 
             $scope.initialize = function () {
-                if ($scope.isRegistered) {
-                    $location.path('/lobby')
-                } else {
-                    $scope.updatePlayerData(function (data) {
-                        if ($scope.isRegistered) {
-                            $location.path('/lobby');
-                        }
-                    });
-                };
+                $scope.updatePlayerData(function (data) {
+                    if ($scope.isRegistered) {
+                        $location.path('/lobby');
+                    } else {
+                        $scope.openRegisterModal();
+                    }
+                });
             };
 
             $scope.openRegisterModal = function () {
@@ -56,8 +54,7 @@
                         $scope.player = data.player;
                         if ($scope.player.name) {
                             $scope.isRegistered = true;
-                        } else {
-                            $scope.openRegisterModal();
+                            $location.path('/lobby');
                         }
                         if (callback) {
                             callback(data.player);
@@ -70,12 +67,10 @@
                 playerService.setName(name, function (data) {
                     $scope.player = data.player;
                     if (data.player.name == name) {
-                        console.log("Set player name to", $scope.playerName);
+                        console.log("set player name to", $scope.player.name);
                         $scope.changeName = false;
-                        if (!$scope.isRegistered) {
-                            $scope.isRegistered = true;
-                            $location.path('/lobby');
-                        }
+                        $scope.isRegistered = true;
+                        $location.path('/lobby');
                     } else {
                         alert('could not set name to ' + name);
                     }

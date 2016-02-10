@@ -251,12 +251,11 @@
 
             };
 
-            $scope.updatePlayerData(function (data) {
-                if (!$scope.isRegistered) {
-                    $location.path('/home');
-                }
-            });
+            console.log("entered lobby")
 
+            if (!$scope.isRegistered) {
+                $location.path('/home')
+            }
             $scope.listGames();
 
         }]);

@@ -12,7 +12,6 @@
                 controller: 'GameController'
             }).when('/home', {
                 templateUrl: '/app/components/home/home.view.html',
-                controller: 'HomeController'
             }).otherwise({
                 redirectTo: '/home'
             });
