@@ -121,7 +121,7 @@
                 enableColumnResize: true,
                 enableHorizontalScrollbar: uiGridConstants.scrollbars.NEVER,
 
-                enableGridMenu: true,
+                enableGridMenu: false,
                 gridMenuCustomItems: [{
                     title: 'Hide Filters',
                     action: function ($event) {
@@ -226,8 +226,24 @@
             };
 
             $scope.toggleFiltering = function () {
+                console.log("toggleFiltering")
                 $scope.gameGrid.enableFiltering = !$scope.gameGrid.enableFiltering;
                 $scope.gridApi.core.notifyDataChange(uiGridConstants.dataChange.COLUMN);
+                return $scope.gameGrid.enableFiltering;
+            };
+
+            $scope.filtersEnabled = false;
+
+            $scope.enableFiltering = function () {
+                $scope.gameGrid.enableFiltering = true;
+                $scope.gridApi.core.notifyDataChange(uiGridConstants.dataChange.COLUMN);
+                return true;
+            };
+
+            $scope.disableFiltering = function () {
+                $scope.gameGrid.enableFiltering = false;
+                $scope.gridApi.core.notifyDataChange(uiGridConstants.dataChange.COLUMN);
+                return false;
             };
 
             $scope.openCreateGameModal = function () {
