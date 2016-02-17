@@ -15,12 +15,6 @@
                 });
             };
 
-            $scope.startCurrentGame = function () {
-                if ($scope.currentGame) {
-                    window.location = '/app/components/mpong/mpong.html'
-                }
-            };
-
             $scope.quitGame = function () {
                 if ($scope.currentGame) {
                     lobbyService.leaveGame(function (data) {

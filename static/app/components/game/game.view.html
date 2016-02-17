@@ -1,2 +1,14 @@
-Loading {{ currentGame.name }} ...
-<button class="btn btn-primary btn-lg" ng-click="startCurrentGame()"> Start Game! </button>
+<div ng-switch on="currentGame.name">
+    <div ng-switch-default>
+        Loading {{ player.currentGame.name }} ...
+        <button class="btn btn-primary btn-lg" ng-click="startCurrentGame()"> Start Game! </button>
+    </div>
+    <div ng-switch-when="mpong">
+        <div ng-controller="BattlePongController" class="gameContainer">
+            <canvas auto-resize width=1024 height=768></canvas>
+        </div>
+        <div id="gameControlBar">
+            <button class="btn btn-primary btn-lg" onclick="quitGame()"> Quit </button>
+        </div>
+    </div>
+</div>

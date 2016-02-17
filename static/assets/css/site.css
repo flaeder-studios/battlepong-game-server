@@ -188,6 +188,11 @@ fieldset[disabled] .btn-primary.focus {
 .btn-group {
     vertical-align: middle;
 }
+canvas {
+    background: blue;
+    border: 1px solid #308900;
+    margin: 10px;
+}
 footer {
     border-top-style: solid;
     border-top-width: 1px;
@@ -222,7 +227,4 @@ a:link {
 }
 a:hover {
     color: white;
-}
-footer {
-    border-top:
 }

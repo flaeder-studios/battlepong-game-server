@@ -16,10 +16,8 @@
             };
 
             $scope.startGame = function () {
-                if ($scope.player.currentGame) {
-                    $location.path('/game');
-                }
-            };
+                $location.path('/game');
+            }
 
             $scope.createGame = function (game, callback) {
                 lobbyService.createGame(game, function (data) {
