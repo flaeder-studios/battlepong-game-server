@@ -672,7 +672,7 @@
      *     var texcoordBuffer = gl.createBuffer();
      *
      *     var attribs = {
-     *       a_position: {buffer: positionBuffer, numComponents: 3},
+     *       aVertexPosition: {buffer: positionBuffer, numComponents: 3},
      *       a_texcoord: {buffer: texcoordBuffer, numComponents: 2},
      *     };
      *
@@ -696,7 +696,7 @@
      * attribs like this
      *
      *     var attribs = {
-     *       a_position: {buffer: positionBuffer, numComponents: 3},
+     *       aVertexPosition: {buffer: positionBuffer, numComponents: 3},
      *       a_texcoord: {buffer: texcoordBuffer, numComponents: 2},
      *       a_color: {
      *         buffer: colorBuffer,
@@ -795,8 +795,8 @@
      * For the example above it is equivilent to
      *
      *     gl.bindBuffer(gl.ARRAY_BUFFER, positionBuffer);
-     *     gl.enableVertexAttribArray(a_positionLocation);
-     *     gl.vertexAttribPointer(a_positionLocation, 3, gl.FLOAT, false, 0, 0);
+     *     gl.enableVertexAttribArray(aVertexPositionLocation);
+     *     gl.vertexAttribPointer(aVertexPositionLocation, 3, gl.FLOAT, false, 0, 0);
      *     gl.bindBuffer(gl.ARRAY_BUFFER, texcoordBuffer);
      *     gl.enableVertexAttribArray(a_texcoordLocation);
      *     gl.vertexAttribPointer(a_texcoordLocation, 4, gl.FLOAT, false, 0, 0);
@@ -1107,7 +1107,7 @@
      * returns something like
      *
      *      var attribs = {
-     *        a_position: { numComponents: 3, type: gl.FLOAT,         normalize: false, buffer: WebGLBuffer, },
+     *        aVertexPosition: { numComponents: 3, type: gl.FLOAT,         normalize: false, buffer: WebGLBuffer, },
      *        a_texcoord: { numComponents: 2, type: gl.FLOAT,         normalize: false, buffer: WebGLBuffer, },
      *        a_normal:   { numComponents: 3, type: gl.FLOAT,         normalize: false, buffer: WebGLBuffer, },
      *        a_color:    { numComponents: 4, type: gl.UNSIGNED_BYTE, normalize: true,  buffer: WebGLBuffer, },
@@ -1179,7 +1179,7 @@
      *       numElements: 4,        // or whatever the number of elements is
      *       indices: WebGLBuffer,  // this property will not exist if there are no indices
      *       attribs: {
-     *         a_position: { buffer: WebGLBuffer, numComponents: 3, },
+     *         aVertexPosition: { buffer: WebGLBuffer, numComponents: 3, },
      *         a_normal:   { buffer: WebGLBuffer, numComponents: 3, },
      *         a_texcoord: { buffer: WebGLBuffer, numComponents: 2, },
      *       },
@@ -1227,7 +1227,7 @@
      *
      *     var bufferInfo = {
      *       attribs: {
-     *         a_position: { numComponents: 3, buffer: gl.createBuffer(), },
+     *         aVertexPosition: { numComponents: 3, buffer: gl.createBuffer(), },
      *         a_texcoods: { numComponents: 2, buffer: gl.createBuffer(), },
      *         a_normals: { numComponents: 3, buffer: gl.createBuffer(), },
      *       },
@@ -1235,7 +1235,7 @@
      *       numElements: 6,
      *     };
      *
-     *     gl.bindBuffer(gl.ARRAY_BUFFER, bufferInfo.attribs.a_position.buffer);
+     *     gl.bindBuffer(gl.ARRAY_BUFFER, bufferInfo.attribs.aVertexPosition.buffer);
      *     gl.bufferData(gl.ARRAY_BUFFER, arrays.position, gl.STATIC_DRAW);
      *     gl.bindBuffer(gl.ARRAY_BUFFER, bufferInfo.attribs.a_texcoord.buffer);
      *     gl.bufferData(gl.ARRAY_BUFFER, arrays.texcoord, gl.STATIC_DRAW);
@@ -1269,7 +1269,7 @@
      *        };
      *
      *        var mapping = {
-     *          a_position: "position",
+     *          aVertexPosition: "position",
      *          a_texcoord: "texcoord",
      *          a_normal:   "normal",
      *        };

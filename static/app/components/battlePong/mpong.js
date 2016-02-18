@@ -31,7 +31,7 @@ var intervalId;
         gl.useProgram(program);
 
         // look up where the vertex data needs to go.
-        gl.positionLocation = gl.getAttribLocation(program, "a_position");
+        gl.positionLocation = gl.getAttribLocation(program, "aVertexPosition");
         game.gl = gl;
 
         return game;

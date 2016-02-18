@@ -75,10 +75,10 @@ function main() {
 <pre id="count"></pre>
 <canvas id="canvas"></canvas>
 <script id="vs" type="x-shader/x-vertex">
-attribute vec4 a_position;
+attribute vec4 aVertexPosition;
 uniform mat4 u_matrix;
 void main() {
-    gl_Position = u_matrix * a_position;
+    gl_Position = u_matrix * aVertexPosition;
 }
 </script>
 <script id="fs" type="x-shader/x-fragment">

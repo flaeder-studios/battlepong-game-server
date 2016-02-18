@@ -7,9 +7,10 @@
 
             service.BALL_EDGES = 32;
             service.D_ANGLE = 2 * Math.PI / service.BALL_EDGES;
+            service.canvas = angular.element("#battlePongCanvas")[0];
+            service.screenRatio = service.canvas.height / service.canvas.width;
 
             service.initGame = function (vertexShader, fragmentShader) {
-                this.canvas = angular.element("#battlePongCanvas")[0];
                 this.gl = this.canvas.getContext('experimental-webgl');
                 if (!this.gl) {
                     console.error("could not get webGL context...");
@@ -25,7 +26,7 @@
                 this.gl.useProgram(this.program);
 
                 // look up where the vertex data needs to go.
-                this.positionLocation = this.gl.getAttribLocation(this.program, "a_position");
+                this.positionLocation = this.gl.getAttribLocation(this.program, "aVertexPosition");
             };
 
             service.drawBoard = function (board) {
@@ -37,7 +38,7 @@
             var angle = 0.0,
                 i;
             for (i = 2; i < 2 * (service.BALL_EDGES + 1) + 2; i += 2) {
-                service.ballBuffer[i] = Math.cos(angle);
+                service.ballBuffer[i] = Math.cos(angle) * service.screenRatio;
                 service.ballBuffer[i + 1] = Math.sin(angle);
                 angle += service.D_ANGLE;
             }
