@@ -5,36 +5,58 @@
 
             var service = {};
 
-            var service.BALL_EDGES = 32,
-                service.D_ANGLE = 2 * Math.PI / BALL_EDGES;
+            service.BALL_EDGES = 32;
+            service.D_ANGLE = 2 * Math.PI / service.BALL_EDGES;
 
-            service.getGlContext = function () {
-                var canvas = document.getElementById("canvas"),
-                    gl = getWebGLContext(canvas);
-                return gl;
-            }
-
-            service.initGame = function () {
-                var game = {},
-                    gl = getGlContext("canvas"),
-                    program = createProgramFromScripts(gl, ["2d-vertex-shader", "2d-fragment-shader"]);
-
-                // Get A WebGL context
-                game.dt = 0.05;
-                if (!gl) {
+            service.initGame = function (vertexShader, fragmentShader) {
+                this.canvas = angular.element("#battlePongCanvas")[0];
+                this.gl = this.canvas.getContext('experimental-webgl');
+                if (!this.gl) {
+                    console.error("could not get webGL context...");
                     return;
                 }
 
+                this.gl.viewportWidth = this.canvas.width;
+                this.gl.viewportHeight = this.canvas.height;
+
+                this.program = createProgramFromScripts(this.gl, [vertexShader, fragmentShader]);
+
                 // setup GLSL program
-                gl.useProgram(program);
+                this.gl.useProgram(this.program);
 
                 // look up where the vertex data needs to go.
-                gl.positionLocation = gl.getAttribLocation(program, "a_position");
-                game.gl = gl;
+                this.positionLocation = this.gl.getAttribLocation(this.program, "a_position");
+            };
 
-                return game;
+            service.drawBoard = function (board) {
 
+            };
+
+            service.ballBuffer = [0.0, 0.0];
+
+            var angle = 0.0,
+                i;
+            for (i = 2; i < 2 * (service.BALL_EDGES + 1) + 2; i += 2) {
+                service.ballBuffer[i] = Math.cos(angle);
+                service.ballBuffer[i + 1] = Math.sin(angle);
+                angle += service.D_ANGLE;
             }
+
+
+            service.drawBall = function (ball) {
+                var buffer = this.gl.createBuffer();
+                this.gl.bindBuffer(this.gl.ARRAY_BUFFER, buffer);
+                this.gl.bufferData(this.gl.ARRAY_BUFFER, new Float32Array(this.ballBuffer), this.gl.STATIC_DRAW);
+                this.gl.enableVertexAttribArray(this.gl.positionLocation);
+                this.gl.vertexAttribPointer(this.gl.positionLocation, 2, this.gl.FLOAT, false, 0, 0);
+
+                // draw
+                this.gl.drawArrays(this.gl.TRIANGLE_FAN, 0, this.ballBuffer.length / 2);
+            };
+
+            service.drawPaddle = function (paddle) {
+
+            };
 
             service.createBoard = function () {
                 return {
@@ -54,23 +76,7 @@
                         b.radius = radius;
 
                         b.draw = function (gl) {
-                            var angle = 0.0,
-                                arr = [this.xpos, this.ypos],
-                                i, buffer = gl.createBuffer();
 
-                            for (i = 2; i < 2 * (BALL_EDGES + 1) + 2; i += 2) {
-                                arr[i] = this.radius * Math.cos(angle) + this.xpos;
-                                arr[i + 1] = this.radius * Math.sin(angle) + this.ypos;
-                                angle += D_ANGLE;
-                            }
-
-                            gl.bindBuffer(gl.ARRAY_BUFFER, buffer);
-                            gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(arr), gl.STATIC_DRAW);
-                            gl.enableVertexAttribArray(gl.positionLocation);
-                            gl.vertexAttribPointer(gl.positionLocation, 2, gl.FLOAT, false, 0, 0);
-
-                            // draw
-                            gl.drawArrays(gl.TRIANGLE_FAN, 0, arr.length / 2);
                         };
 
                         b.move = function (x, y) {
