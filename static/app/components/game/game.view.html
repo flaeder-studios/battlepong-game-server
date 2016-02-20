@@ -5,7 +5,9 @@
     </div>
     <div ng-switch-when="mpong">
         <div ng-controller="BattlePongController" class="gameContainer">
-            <canvas auto-resize width=1024 height=768 id="battlePongCanvas"></canvas>
+            <canvas auto-resize width=1024 height=768 id="battlePongCanvas">
+                Your browser doesn't appear to support the HTML5 <code>&lt;canvas&gt;</code> element.
+            </canvas>
         </div>
         <div id="gameControlBar">
             <button class="btn btn-primary btn-lg" onclick="quitGame()"> Quit </button>

@@ -29,10 +29,10 @@
     </footer>
 
     <script id="2d-vertex-shader" type="x-shader/x-vertex">
-        attribute vec2 aVertexPosition; void main() { gl_Position = vec4(aVertexPosition, 0, 1); }
+        attribute vec2 aVertexPosition; uniform vec2 uTranslation; uniform vec2 uScale; void main() { gl_Position = vec4(aVertexPosition * uScale + uTranslation, 0, 1); }
     </script>
     <script id="2d-fragment-shader" type="x-shader/x-fragment">
-        void main() { gl_FragColor = vec4(1.0, 0.0, 1.0, 1.0); }
+        uniform mediump vec4 uColor; void main() { gl_FragColor = uColor; }
     </script>
 
     <script type=" text/javascript " src="/assets/libs/jquery/dist/jquery.js"></script>

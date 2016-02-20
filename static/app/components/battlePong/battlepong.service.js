@@ -11,11 +11,7 @@
             service.screenRatio = service.canvas.height / service.canvas.width;
 
             service.initGame = function (vertexShader, fragmentShader) {
-                this.gl = this.canvas.getContext('experimental-webgl');
-                if (!this.gl) {
-                    console.error("could not get webGL context...");
-                    return;
-                }
+                this.gl = setupWebGL(service.canvas);
 
                 this.gl.viewportWidth = this.canvas.width;
                 this.gl.viewportHeight = this.canvas.height;
@@ -27,6 +23,9 @@
 
                 // look up where the vertex data needs to go.
                 this.positionLocation = this.gl.getAttribLocation(this.program, "aVertexPosition");
+                this.colorLocation = this.gl.getUniformLocation(this.program, "uColor");
+                this.translationLocation = this.gl.getUniformLocation(this.program, "uTranslation");
+                this.scaleLocation = this.gl.getUniformLocation(this.program, "uScale");
             };
 
             service.drawBoard = function (board) {
@@ -43,20 +42,103 @@
                 angle += service.D_ANGLE;
             }
 
+            service.paddleBuffer = [
+                service.screenRatio, 1.0,
+                -service.screenRatio, 1.0,
+                -service.screenRatio, -1.0,
+                service.screenRatio, -1.0
+            ];
 
             service.drawBall = function (ball) {
                 var buffer = this.gl.createBuffer();
                 this.gl.bindBuffer(this.gl.ARRAY_BUFFER, buffer);
                 this.gl.bufferData(this.gl.ARRAY_BUFFER, new Float32Array(this.ballBuffer), this.gl.STATIC_DRAW);
                 this.gl.enableVertexAttribArray(this.gl.positionLocation);
-                this.gl.vertexAttribPointer(this.gl.positionLocation, 2, this.gl.FLOAT, false, 0, 0);
+                this.gl.vertexAttribPointer(this.positionLocation, 2, this.gl.FLOAT, false, 0, 0);
+
+                this.gl.uniform4fv(this.colorLocation, ball.color);
+                this.gl.uniform2fv(this.translationLocation, ball.position);
+                this.gl.uniform2fv(this.scaleLocation, [ball.radius, ball.radius]);
 
                 // draw
                 this.gl.drawArrays(this.gl.TRIANGLE_FAN, 0, this.ballBuffer.length / 2);
             };
 
-            service.drawPaddle = function (paddle) {
+            service.handleWallBounce = function (ball) {
+                // check wall bounce
+                if (ball.position[0] + ball.radius > 1) {
+                    ball.velocity[0] = -ball.velocity[0];
+                    ball.position[0] = 0.9999 - ball.radius;
+                } else if (ball.position[0] - ball.radius < -1) {
+                    ball.velocity[0] = -ball.velocity[0];
+                    ball.position[0] = -0.9999 + ball.radius;
+                } else if (ball.position[1] + ball.radius > 1) {
+                    ball.velocity[1] = -ball.velocity[1];
+                    ball.position[1] = 0.9999 - ball.radius;
+                } else if (ball.position[1] - ball.radius < -1) {
+                    ball.velocity[1] = -ball.velocity[1];
+                    ball.position[1] = -0.9999 + ball.radius;
+                }
+            };
 
+            service.handlePaddleBounce = function (ball, paddle) {
+                if (Math.abs(ball.position[0] - paddle.position[0]) < ball.radius + paddle.width / 2 &&
+                    Math.abs(ball.position[1] - paddle.position[1]) < paddle.height) {
+                    // collision!!
+                    if (ball.velocity[0] < 0) {
+                        ball.position[0] = paddle.position[0] - paddle.width / 2 - ball.radius - 0.00001;
+                    } else {
+                        ball.position[0] = paddle.position[0] + paddle.width / 2 + ball.radius + 0.00001;
+                    }
+                    ball.velocity[0] = -ball.velocity[0];
+                } else if (Math.abs(ball.position[1] - paddle.position[1]) < ball.radius + paddle.height / 2 &&
+                    Math.abs(ball.position[0] - paddle.position[0]) < paddle.width) {
+                    // collision!!
+                    if (ball.velocity[1] < 0) {
+                        ball.position[1] = paddle.position[1] - paddle.height / 2 - ball.radius - 0.00001;
+                    } else {
+                        ball.position[1] = paddle.position[1] + paddle.height / 2 + ball.radius + 0.00001;
+                    }
+                    ball.velocity[1] = -ball.velocity[1];
+                }
+            };
+
+            service.moveBall = function (ball, dt) {
+                ball.position[0] += ball.velocity[0] * dt;
+                ball.position[1] += ball.velocity[1] * dt;
+
+                if (ball.position[0] > 1.0) {
+                    ball.position[0] = 1.0;
+                }
+
+                if (ball.position[0] < -1.0) {
+                    ball.position[0] = -1.0;
+                }
+
+                if (ball.position[1] > 1.0) {
+                    ball.position[1] = 1.0;
+                }
+
+                if (ball.position[1] < -1.0) {
+                    ball.position[1] = -1.0;
+                }
+
+            };
+
+            service.drawPaddle = function (paddle) {
+                var buffer = this.gl.createBuffer();
+                this.gl.bindBuffer(this.gl.ARRAY_BUFFER, buffer);
+                this.gl.bufferData(this.gl.ARRAY_BUFFER, new Float32Array(this.paddleBuffer), this.gl.STATIC_DRAW);
+                this.gl.enableVertexAttribArray(this.gl.positionLocation);
+                this.gl.vertexAttribPointer(this.gl.positionLocation, 2, this.gl.FLOAT, false, 0, 0);
+                this.gl.uniform4fv(this.colorLocation, paddle.color);
+
+                this.gl.uniform4fv(this.colorLocation, paddle.color);
+                this.gl.uniform2fv(this.translationLocation, paddle.position);
+                this.gl.uniform2fv(this.scaleLocation, [paddle.width / 2, paddle.height / 2]);
+
+                // draw
+                this.gl.drawArrays(this.gl.TRIANGLE_FAN, 0, this.paddleBuffer.length / 2);
             };
 
             service.createBoard = function () {
@@ -72,7 +154,7 @@
 
                         b.xspd = 0.0;
                         b.yspd = 0.0;
-                        b.xpos = 0.0;
+                        b.position[0] = 0.0;
                         b.ypos = 0.0;
                         b.radius = radius;
 
@@ -81,7 +163,7 @@
                         };
 
                         b.move = function (x, y) {
-                            this.xpos = x;
+                            this.position[0] = x;
                             this.ypos = y;
                         };
 
@@ -103,21 +185,7 @@
                             return this.ypos;
                         };
 
-                        b.handleCollision = function () {
-                            if (this.xpos + this.radius > 1) {
-                                this.xspd = -this.xspd;
-                                this.xpos = 0.9999 - this.radius;
-                            } else if (this.xpos - this.radius < -1) {
-                                this.xspd = -this.xspd;
-                                this.xpos = -0.9999 + this.radius;
-                            } else if (this.ypos + this.radius > 1) {
-                                this.yspd = -this.yspd;
-                                this.ypos = 0.9999 - this.radius;
-                            } else if (this.ypos - this.radius < -1) {
-                                this.yspd = -this.yspd;
-                                this.ypos = -0.9999 + this.radius;
-                            }
-                        };
+                        b.handleCollision = function () {};
 
                         this.balls.push(b);
                     },
