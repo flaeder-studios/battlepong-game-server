@@ -11,9 +11,11 @@
                 paddles: [{
                     color: [1.0, 0.0, 0.0, 1.0],
                     width: 0.01,
-                    height: 0.1,
+                    height: 0.3,
                     position: [0.5, 0.5],
-                    velocity: [0.5, 0.4],
+                    velocity: [0, 0.0],
+                    refVelocity: [0, 0.0],
+                    acceleration: [2.0, 2.0]
                 }]
             };
 
@@ -25,6 +27,20 @@
                     velocity: [Math.random() * 0.5 - 1, Math.random() * 0.5 - 1]
                 });
             }
+
+            $scope.handleKeyPress = function (e) {
+                if (e.keyCode == 38) { // up
+                    $scope.gameState.paddles[0].refVelocity = [0.0, 1.0];
+                } else if (e.keyCode == 40) { // down
+                    $scope.gameState.paddles[0].refVelocity = [0.0, -1.0];
+                }
+            };
+
+            $scope.handleKeyRelease = function (e) {
+                if (e.keyCode == 38 || e.keyCode == 40) {
+                    $scope.gameState.paddles[0].refVelocity = [0.0, 0.0];
+                }
+            };
 
             function render(time) {
                 $window.requestAnimationFrame(render);
@@ -40,7 +56,7 @@
                     BattlePongService.handleWallBounce(ball);
                     for (ii = 0; ii < $scope.gameState.paddles.length; ++ii) {
                         paddle = $scope.gameState.paddles[ii];
-                        //BattlePongService.handlePaddleBounce(ball, paddle);
+                        BattlePongService.handlePaddleBounce(ball, paddle);
                     }
                     BattlePongService.moveBall(ball, dt);
                     BattlePongService.drawBall(ball);
@@ -48,13 +64,15 @@
 
                 for (i = 0; i < $scope.gameState.paddles.length; ++i) {
                     paddle = $scope.gameState.paddles[i];
+                    BattlePongService.movePaddle(paddle, dt);
                     BattlePongService.drawPaddle(paddle);
                 }
 
             };
 
             BattlePongService.initGame('2d-vertex-shader', '2d-fragment-shader');
-            var time = new Date();
+            window.addEventListener('keydown', $scope.handleKeyPress, false);
+            window.addEventListener('keyup', $scope.handleKeyRelease, false);
             $scope.pTime = 0;
             render($scope.pTime);
 

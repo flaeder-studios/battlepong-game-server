@@ -4,13 +4,13 @@
         <button class="btn btn-primary btn-lg" ng-click="startCurrentGame()"> Start Game! </button>
     </div>
     <div ng-switch-when="mpong">
-        <div ng-controller="BattlePongController" class="gameContainer">
-            <canvas auto-resize width=1024 height=768 id="battlePongCanvas">
+        <div ng-controller="BattlePongController" class="gameContainer" >
+            <canvas auto-resize width=640 height=480 id="battlePongCanvas">
                 Your browser doesn't appear to support the HTML5 <code>&lt;canvas&gt;</code> element.
             </canvas>
         </div>
         <div id="gameControlBar">
-            <button class="btn btn-primary btn-lg" onclick="quitGame()"> Quit </button>
+            <button class="btn btn-primary btn-lg" onclick="quitGame()"> Quit </button> {{count}}
         </div>
     </div>
 </div>
