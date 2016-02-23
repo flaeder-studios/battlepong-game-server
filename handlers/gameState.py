@@ -1,7 +1,8 @@
 # -*- coding: utf-8 -*-
 
 import cherrypy
-from mpong import Game, Vector
+from mpong.model import Game
+from mpong.model import Vector
 
 class GameState:
 
