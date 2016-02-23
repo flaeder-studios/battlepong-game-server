@@ -19,6 +19,10 @@ class Vector(object):
         temp.y -= vec.y
         return temp
 
+    def copy(self):
+        temp = Vector(self.x, self.y)
+        return temp
+
     def dot(self, vec):
         return self.x * vec.x + self.y * vec.y
 
@@ -144,24 +148,35 @@ class Game(object):
                     player2.points += 1
                     ball.reset(self.game.position)
 
-    def set_player1_speed(self, x):
-        self.game.player1.speed.y = x
-
-    def set_player2_speed(self, x):
-        self.game.player2.speed.y = x
 
     def get_player1_speed(self):
-        return self.game.player1.speed.y
+        """returns a Vector."""
+        return self.game.player1.speed.copy()
 
     def get_player2_speed(self):
-        return self.game.player2.speed.y
+        """returns a Vector."""
+        return self.game.player2.speed.copy()
 
-    def update(self):
-        """ Move objects to new positions determined by speed"""
+    def update(self, speed):
+        """ Move game objects (paddles and ball).
+        Parameter speed is a dictionary containing speeds for player1 and player2.
+        speed has keys 'player1' and 'player2' with values Vector.
+        """
+
+
+        self.game.player1.speed = speed['player1']
+        self.game.player2.speed = speed['player2']
         self.game.ball.move()
         self.game.player1.move()
         self.game.player2.move()
         self.collision()
+
+    def get_state(self):
+        state = {}
+        state['player1'] = [self.game.player1.position.x, self.game.player1.position.y]
+        state['player2'] = [self.game.player2.position.x, self.game.player2.position.y]
+        state['ball'] = [self.game.ball.position.x, self.game.ball.position.y]
+        return state
 
     def artificial_intelligence(self):
         eps = self.game.player2.height.y / 8. # player2 target area
