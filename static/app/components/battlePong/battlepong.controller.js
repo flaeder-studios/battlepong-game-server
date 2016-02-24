@@ -3,8 +3,9 @@
     "use strict";
 
     angular.module('flaederGamesApp')
-        .controller('BattlePongController', ['$scope', '$window', 'BattlePongService', function ($scope, $window, BattlePongService) {
+        .controller('BattlePongController', ['$scope', '$window', '$location', 'BattlePongService', 'lobbyService', 'playerService', function ($scope, $window, $location, BattlePongService, lobbyService, playerService) {
 
+            $scope.pTime = 0;
             $scope.gameState = {
                 balls: [],
 
@@ -19,7 +20,7 @@
                 }]
             };
 
-            for (var i = 0; i < 100; ++i) {
+            for (var i = 0; i < 3; ++i) {
                 $scope.gameState.balls.push({
                     color: [Math.random(), Math.random(), Math.random(), 1.0],
                     radius: Math.random() * 0.05 + 0.05,
@@ -42,8 +43,23 @@
                 }
             };
 
+            $scope.quitGame = function () {
+                if ($scope.currentGame) {
+                    lobbyService.leaveGame(function (data) {
+                        $scope.updatePlayerData( function () {
+                            $location.path("/lobby");
+                        });
+                    });
+                }
+            };
+
+            function initialize () {
+                playerService.getPlayer(function (data) {
+                    $scope.currentPlayer = data.player;
+                });
+            }
+
             function render(time) {
-                $window.requestAnimationFrame(render);
                 var i, ii, paddle, ball, dt;
                 if ($scope.pTime === 0) {
                     dt = 0;
@@ -67,13 +83,13 @@
                     BattlePongService.movePaddle(paddle, dt);
                     BattlePongService.drawPaddle(paddle);
                 }
-
+                    $window.requestAnimationFrame(render);
             };
 
+            initialize();
             BattlePongService.initGame('2d-vertex-shader', '2d-fragment-shader');
             window.addEventListener('keydown', $scope.handleKeyPress, false);
             window.addEventListener('keyup', $scope.handleKeyRelease, false);
-            $scope.pTime = 0;
             render($scope.pTime);
 
     }]);

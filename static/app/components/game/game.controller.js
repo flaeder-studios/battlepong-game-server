@@ -18,7 +18,9 @@
             $scope.quitGame = function () {
                 if ($scope.currentGame) {
                     lobbyService.leaveGame(function (data) {
-                        $location.path("/lobby");
+                        $scope.updatePlayerData( function () {
+                            $location.path("/lobby");
+                        });
                     });
                 }
             };
