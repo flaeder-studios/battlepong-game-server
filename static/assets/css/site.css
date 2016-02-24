@@ -71,7 +71,7 @@ body {}
     overflow: hidden;
     height: 100%;
 }
-#gameGridControl {
+#gameGridControl, #gameControlBar {
     margin: 10px;
 }
 .bottomleft {
