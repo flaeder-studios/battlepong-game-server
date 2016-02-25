@@ -1,7 +1,8 @@
 # -*- coding: utf-8 -*-
 
 import cherrypy
-import mpong
+from mpong.model import Game
+from mpong.model import Vector
 
 class GameState:
 
@@ -9,21 +10,33 @@ class GameState:
     states = {}
 
     @cherrypy.tools.json_out()
-    def GET(self, gameId):
-        game = cherrypy.engine.publish('mpong-get-game', gameId) #.pop()
+    def GET(self):
+        currentGame = cherrypy.session['currentGame']
+        return GameState.states[currentGame['id']].get_state()
         
-        if not game:
-            raise cherrypy.HTTPError(404, 'Game %s not found' % (gameId))
 
-        return game.toDict()
-
+    @cherrypy.tools.json_in()
     @cherrypy.tools.json_out()
     def POST(self):
         stateIn = cherrypy.request.json()
         currentGame = cherrypy.session['currentGame']
-        gameState = GameState.states.get(currentGame['id'], False)
-        if not gameState:
-            joinedPlayers = currentGame['joinedPlayers']
-            states[currentGame['id']] = Game(100, joinedPlayers[0], joinedPlayers[1], 3)
+        game_state = GameState.states.get(currentGame['id'], False)
+        g_state = {}
+        player1 = Vector(stateIn['player1'][0], stateIn['player1'][1])
+        player2 = Vector(stateIn['player2'][0], stateIn['player2'][1])
+        ball = Vector(stateIn['ball'][0], stateIn['ball'][1])
+        g_state['player1'] = player1
+        g_state['player2'] = player2
+        g_state['ball'] = ball
+        game_state.update(g_state)
 
-        # TODO change state of game
+        return self.GET()
+
+    def PUT(self):
+        currentGame = cherrypy.session['currentGame']
+        GameState.states[currentGame['id']] = Game(100, joinedPlayers[0], joinedPlayers[1], 3)
+
+    def DELETE(self):
+        currentGame = cherrypy.session['currentGame']
+        GameState.states.pop(currentGame['id'], None)
+
