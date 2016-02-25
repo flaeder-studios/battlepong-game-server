@@ -211,6 +211,13 @@ header {
     /* Standard syntax */
     color: #ffffff;
 }
+:-webkit-full-screen,
+:-moz-full-screen,
+:-ms-fullscreen,
+:full-screen,
+:fullscreen {
+    background: #ffffff;
+}
 h1 {
     font-family: 'Cinzel Decorative', bold;
     margin: 10px;
