@@ -2,6 +2,7 @@
 # -*- coding: utf-8 -*-
 
 import cherrypy
+from mpong.masterGameBuilder import masterGame
 
 class LeaveGameHandler:
     
@@ -13,6 +14,7 @@ class LeaveGameHandler:
         
         currentGame = cherrypy.session.get('currentGame')
         if playerName in currentGame['joinedPlayers']:
+            masterGame.leave(gameID, playerName)
             currentGame['joinedPlayers'].remove(playerName)
         cherrypy.session['currentGame'] = None
         

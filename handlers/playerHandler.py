@@ -2,6 +2,8 @@
 # -*- coding: utf-8 -*-
 
 import cherrypy
+from mpong.masterGameBuilder import masterGame
+
 
 class PlayerHandler:
     
@@ -37,6 +39,7 @@ class PlayerHandler:
         if 'player' in data and 'name' in data['player']:
             playerName = str(data['player']['name'])
             cherrypy.session['name'] = playerName
+            masterGame.createPlayer(playerName)
 
         cherrypy.log("set name to %s" % (playerName))
         

@@ -3,6 +3,7 @@
 
 import cherrypy
 from gameHandler import GameHandler
+from mpong.masterGameBuilder import masterGame
 
 class JoinGameHandler:
     
@@ -28,6 +29,7 @@ class JoinGameHandler:
             if g['id'] == gameId:
                 g['joinedPlayers'].append(playerName)
                 cherrypy.session['currentGame'] = g
+                masterGame.join(gameId, playerName)
                 break
         
         return {'games': [g]}

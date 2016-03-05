@@ -2,6 +2,7 @@
 # -*- coding: utf-8 -*-
 
 import cherrypy
+from mpong.masterGameBuilder import masterGame
 
 class GameHandler:
     
@@ -105,6 +106,8 @@ class GameHandler:
         game['startPath'] = '/game/mpong/start'
         
         GameHandler.games.append(game)
+        maxPlayers = 2
+        masterGame.createGame(game['id'], game['createdBy'], maxPlayers)
         cherrypy.session['currentGame'] = game
         
         cherrypy.log("created game %s" % game)
