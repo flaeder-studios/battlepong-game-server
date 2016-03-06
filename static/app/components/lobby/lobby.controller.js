@@ -15,7 +15,7 @@
                 });
             };
 
-            $scope.startGame = function () {
+            $scope.gotoGame = function () {
                 $location.path('/game');
             }
 

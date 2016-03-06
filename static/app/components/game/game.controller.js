@@ -1,29 +1,35 @@
 (function () {
 
     angular.module("flaederGamesApp")
-        .controller('GameController', ['$scope', '$location', 'playerService', 'lobbyService', function ($scope, $location, playerService, lobbyService) {
-
-            $scope.currentGame = undefined;
+        .controller('GameController', ['$scope', '$location', 'gameService', 'playerService', 'lobbyService', function ($scope, $location, gameService, playerService, lobbyService) {
 
             $scope.initialize = function () {
                 playerService.getPlayer(function (data) {
-                    if (data.player.currentGame) {
-                        $scope.currentGame = data.player.currentGame;
-                    } else {
-                        $location.path("/lobby");
+                    if (!data.player.currentGame) {
+                        $scope.backToLobby();
                     }
                 });
             };
 
-            $scope.quitGame = function () {
-                if ($scope.currentGame) {
-                    lobbyService.leaveGame(function (data) {
-                        $scope.updatePlayerData( function () {
-                            $location.path("/lobby");
-                        });
+            $scope.startCurrentGame = function () {
+                gameService.startGame(function (data) {
+                    $scope.updatePlayerData(function (data) {
+                        console.log("Starting game!");
                     });
-                }
+                });
             };
+
+            $scope.quitGame = function () {
+                gameService.quitGame(function (data) {
+                    $scope.updatePlayerData( function () {
+                        $scope.backToLobby();
+                    });
+                });
+            };
+
+            $scope.backToLobby = function () {
+                $location.path("/lobby");
+            }
 
             $scope.initialize();
 
