@@ -21,6 +21,7 @@ class GameHandler:
                 ],
                 'controller': 'MpongController',
                 'startPath': '/game/mpong/start'
+                'gameStarted' : 'False'
             }, {
                 "id": "hisGame",
                 "maxPlayers": 2,
@@ -34,6 +35,7 @@ class GameHandler:
                 ],
                 'controller': 'MpongController',
                 'startPath': '/game/mpong/start'
+                'gameStarted' : 'False'
 
             }, {
                 "id": "anyonesGame",
@@ -48,6 +50,7 @@ class GameHandler:
                 ],
                 'controller': 'MpongController',
                 'startPath': '/game/mpong/start'
+                'gameStarted' : 'False'
             }]
     
     def getAllGames(self):
@@ -104,10 +107,10 @@ class GameHandler:
         game['scripts'] = ['/mpong/js/mpong.js']
         game['controller'] = 'MpongController'
         game['startPath'] = '/game/mpong/start'
+        game['gameStarted'] = False
         
         GameHandler.games.append(game)
-        maxPlayers = 2
-        masterGame.createGame(game['id'], game['createdBy'], maxPlayers)
+        masterGame.createGame(game['id'], game['createdBy'], int(game['maxPlayers']))
         cherrypy.session['currentGame'] = game
         
         cherrypy.log("created game %s" % game)
