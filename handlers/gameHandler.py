@@ -4,67 +4,25 @@
 import cherrypy
 from mpong.masterGameBuilder import masterGame
 
-class GameHandler:
-    
-    exposed = True
-    
-    games = [{
-                "id": "myGame",
-                "maxPlayers": 2,
-                "joinedPlayers": ['Arvid'],
-                "createdBy": 'Arvid',
-                "path": 'game/mpong',
-                'name': 'mpong',
-                'template': 'mpong.html',
-                'scripts': [
-                    '/mpong/js/mpong.js'
-                ],
-                'controller': 'MpongController',
-                'startPath': '/game/mpong/start'
-                'gameStarted' : 'False'
-            }, {
-                "id": "hisGame",
-                "maxPlayers": 2,
-                "joinedPlayers": ['Arvid', 'Sigrid'],
-                "createdBy": 'Sigrid',
-                "path": 'game/mpong',
-                'name': 'mpong',
-                'template': 'mpong.html',
-                'scripts': [
-                    '/mpong/js/mpong.js'
-                ],
-                'controller': 'MpongController',
-                'startPath': '/game/mpong/start'
-                'gameStarted' : 'False'
 
-            }, {
-                "id": "anyonesGame",
-                "maxPlayers": 2,
-                "joinedPlayers": ['Malin'],
-                "createdBy": 'Malin',
-                "path": 'game/mpong',
-                'name': 'mpong',
-                'template': 'mpong.html',
-                'scripts': [
-                    '/mpong/js/mpong.js'
-                ],
-                'controller': 'MpongController',
-                'startPath': '/game/mpong/start'
-                'gameStarted' : 'False'
-            }]
-    
+class GameHandler:
+
+    exposed = True
+
+    games = []
+
     def getAllGames(self):
         games = cherrypy.engine.publish('mpong-get-all-games') #.pop()
-        
-        return { 'games': GameHandler.games }
-    
+
+        return {'games': GameHandler.games}
+
     def getGame(self, gameId):
         game = cherrypy.engine.publish('mpong-get-game', gameId) #.pop()
-        
+
         for g in GameHandler.games:
             if g.get('id') == gameId:
-                return { 'games': [g] }
-        
+                return {'games': [g]}
+
         raise cherrypy.HTTPError(404, 'No game with id %s found' % gameId)
 
     @cherrypy.tools.json_out()
@@ -101,12 +59,7 @@ class GameHandler:
         
         game['joinedPlayers'] = [str(cherrypy.session.get('name'))]
         game['createdBy'] = str(cherrypy.session.get('name'))
-        game['path'] = 'game/mpong'
         game['name'] = 'mpong'
-        game['template'] = 'mpong.html'
-        game['scripts'] = ['/mpong/js/mpong.js']
-        game['controller'] = 'MpongController'
-        game['startPath'] = '/game/mpong/start'
         game['gameStarted'] = False
        
         GameHandler.games.append(game)

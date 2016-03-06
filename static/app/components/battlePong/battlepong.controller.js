@@ -3,7 +3,7 @@
     "use strict";
 
     angular.module('flaederGamesApp')
-        .controller('BattlePongController', ['$scope', '$window', '$location', 'BattlePongService', 'lobbyService', 'playerService', function ($scope, $window, $location, BattlePongService, lobbyService, playerService) {
+        .controller('BattlePongController', ['$scope', '$window', '$location', '$timeout','BattlePongService', 'lobbyService', 'playerService', 'gameService', function ($scope, $window, $location, $timeout, BattlePongService, lobbyService, playerService, gameService) {
 
             $scope.pTime = 0;
             $scope.gameState = {
@@ -20,14 +20,14 @@
                 }]
             };
 
-            for (var i = 0; i < 3; ++i) {
-                $scope.gameState.balls.push({
-                    color: [Math.random(), Math.random(), Math.random(), 1.0],
-                    radius: Math.random() * 0.05 + 0.05,
-                    position: [Math.random() * 1.5 - 0.75, Math.random() * 1.5 - 0.75],
-                    velocity: [Math.random() * 0.5 - 1, Math.random() * 0.5 - 1]
-                });
-            }
+            // for (var i = 0; i < 3; ++i) {
+            //     $scope.gameState.balls.push({
+            //         color: [Math.random(), Math.random(), Math.random(), 1.0],
+            //         radius: Math.random() * 0.05 + 0.05,
+            //         position: [Math.random() * 1.5 - 0.75, Math.random() * 1.5 - 0.75],
+            //         velocity: [Math.random() * 0.5 - 1, Math.random() * 0.5 - 1]
+            //     });
+            // }
 
             $scope.handleKeyPress = function (e) {
                 if (e.keyCode == 38) { // up
@@ -43,19 +43,21 @@
                 }
             };
 
-            $scope.quitGame = function () {
-                if ($scope.currentGame) {
-                    lobbyService.leaveGame(function (data) {
-                        $scope.updatePlayerData( function () {
-                            $location.path("/lobby");
-                        });
-                    });
-                }
-            };
+            function updateState() {
+                gameService.getState($scope.currentPlayer.currentGame.id, function (data) {
+                    console.log(data);
+                    $timeout(updateState, 2000);
+                });
+            }
 
-            function initialize () {
+            function startStuff() {
                 playerService.getPlayer(function (data) {
                     $scope.currentPlayer = data.player;
+                    gameService.getState($scope.currentPlayer.currentGame.id, function (data) {
+                        console.log(data);
+                        render($scope.pTime);
+                        updateState();
+                    });
                 });
             }
 
@@ -86,11 +88,9 @@
                     $window.requestAnimationFrame(render);
             };
 
-            initialize();
             BattlePongService.initGame('2d-vertex-shader', '2d-fragment-shader');
             window.addEventListener('keydown', $scope.handleKeyPress, false);
             window.addEventListener('keyup', $scope.handleKeyRelease, false);
-            render($scope.pTime);
-
+            startStuff();
     }]);
 })();
