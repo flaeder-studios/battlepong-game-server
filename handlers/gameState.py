@@ -8,12 +8,5 @@ class GameState:
     exposed = True
 
     @cherrypy.tools.json_out()
-    def GET(self, gameID):
-        return masterGame.gameState(gameID)
-        
-
-    @cherrypy.tools.json_in()
-    @cherrypy.tools.json_out()
-    def POST(self, gameID):
-        masterGame.startGame(gameID)
-        return self.GET(gameID)
+    def GET(self, gameId):
+        return masterGame.gameState(gameId)
