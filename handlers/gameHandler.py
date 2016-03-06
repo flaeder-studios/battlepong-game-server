@@ -108,7 +108,7 @@ class GameHandler:
         game['controller'] = 'MpongController'
         game['startPath'] = '/game/mpong/start'
         game['gameStarted'] = False
-        
+       
         GameHandler.games.append(game)
         masterGame.createGame(game['id'], game['createdBy'], int(game['maxPlayers']))
         cherrypy.session['currentGame'] = game
