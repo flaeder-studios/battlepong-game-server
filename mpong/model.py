@@ -248,7 +248,7 @@ class Player(object):
 
 class MPongGame(threading.Thread):
     def __init__(self, gameID, maxPlayers):
-        super(MPongGame, self).__init__(self,target=self.run)
+        super(MPongGame, self).__init__(target=self.run)
         self.gameID = gameID
         self.maxPlayers = maxPlayers
         self.joinedPlayers = []
