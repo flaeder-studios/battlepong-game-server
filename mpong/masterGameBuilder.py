@@ -1,4 +1,4 @@
-import mpong.model
+import model
 import cherrypy
 
 
@@ -27,7 +27,7 @@ class MasterGameBuilder(object):
 
     def leave(self, gameId, name):
         if name in MasterGameBuilder.players.keys() and gameId in MasterGameBuilder.games.keys():
-            MasterGameBuilder.games[gameId].leavePlayer(player[name])
+            MasterGameBuilder.games[gameId].leavePlayer(MasterGameBuilder.player[name])
         else:
             raise cherrypy.HTTPError(400, 'No game with id %s found' % gameId)
 
