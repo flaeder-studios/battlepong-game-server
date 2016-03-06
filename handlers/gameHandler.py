@@ -63,7 +63,7 @@ class GameHandler:
         game['gameStarted'] = False
        
         GameHandler.games.append(game)
-        masterGame.createGame(game['id'], game['createdBy'], int(game['maxPlayers']))
+        masterGame.createGame(game['id'], int(game['maxPlayers']))
         cherrypy.session['currentGame'] = game
         
         cherrypy.log("created game %s" % game)
