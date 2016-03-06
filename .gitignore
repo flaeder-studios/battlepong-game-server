@@ -3,6 +3,7 @@
 *.lo
 *.o
 *.obj
+*.pyc
 
 # Precompiled Headers
 *.gch
@@ -30,3 +31,6 @@
 # build folder
 /build/*
 /test/Downloads/*
+
+# vim backup files
+*~
