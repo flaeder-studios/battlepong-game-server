@@ -20,5 +20,6 @@ root.game.state = handlers.GameState()
 root.game.paddle = handlers.PaddleHandler()
 root.player = handlers.PlayerHandler()
 
+
 cfgFile = os.path.dirname(os.path.realpath(__file__)) + '/multipong.conf'
 cherrypy.quickstart(root, '/', cfgFile)
