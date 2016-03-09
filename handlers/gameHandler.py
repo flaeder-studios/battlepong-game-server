@@ -44,11 +44,11 @@ class GameHandler:
         game = cherrypy.request.json
         
         if gameId:
-            game['id'] = str(gameId)
+            game[u'id'] = str(gameId)
         else:
             raise cherrypy.HTTPError(400, 'game id not set')
         
-        if 'maxPlayers' not in game:
+        if u'maxPlayers' not in game:
             raise cherrypy.HTTPError(400, 'game maxPlayers not set')
         game[u'maxPlayers'] = int(game[u'maxPlayers'])
 
