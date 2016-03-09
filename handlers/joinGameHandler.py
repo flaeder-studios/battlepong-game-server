@@ -24,5 +24,6 @@ class JoinGameHandler:
                 g['joinedPlayers'].append(playerName)
                 cherrypy.session['currentGame'] = g
                 masterGame.join(gameId, playerName)
+                cherrypy.log("Player %s joined game %s" %(playerName, g['id']))
                 return {'games': [g]}
 
