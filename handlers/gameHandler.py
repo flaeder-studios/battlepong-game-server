@@ -44,12 +44,13 @@ class GameHandler:
         game = cherrypy.request.json
         
         if gameId:
-            game['id'] = gameId
+            game['id'] = str(gameId)
         else:
             raise cherrypy.HTTPError(400, 'game id not set')
         
         if 'maxPlayers' not in game:
             raise cherrypy.HTTPError(400, 'game maxPlayers not set')
+        game[u'maxPlayers'] = int(game[u'maxPlayers'])
 
         for g in GameHandler.games:
             if g.get('id') == game['id']:
@@ -57,15 +58,20 @@ class GameHandler:
             
         #createdGame = cherrypy.engine.publish('mpong-create-game', game) #.pop()
         
-        game['joinedPlayers'] = [str(cherrypy.session.get('name'))]
-        game['createdBy'] = str(cherrypy.session.get('name'))
-        game['name'] = 'mpong'
-        game['gameStarted'] = False
-       
-        GameHandler.games.append(game)
+        game[u'createdBy'] = str(cherrypy.session.get('name'))
+        game[u'name'] = 'mpong'
+        game[u'gameStarted'] = False
+        game[u'joinedPlayers'] = []
+
+        if game['id'] == 'TerminatorConnan':
+            ## create game with player Arnold
+            pass
+
         masterGame.createGame(game['id'], int(game['maxPlayers']))
+
+        GameHandler.games.append(game)
         cherrypy.session['currentGame'] = game
-        
+
         cherrypy.log("created game %s" % game)
         
         return { 'games': [game] }
