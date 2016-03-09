@@ -290,7 +290,7 @@ class MPongGame(threading.Thread):
         if self.model:
             return self.model.getState()
         else:
-            return None
+            raise cherrypy.HTTPError(400, 'Game not started')
 
 
 if __name__ == "__main__":
