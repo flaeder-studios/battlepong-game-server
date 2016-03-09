@@ -87,6 +87,7 @@ class GameHandler:
         for g in GameHandler.games:
             if g['id'] == gameId:
                 if g['createdBy'] == cherrypy.session.get('name'):
+                    masterGame.deleteGame(gameId)
                     removedGame = g
                     GameHandler.games.remove(g)
                     break
