@@ -19,6 +19,12 @@
                     acceleration: [2.0, 2.0]
                 }]
             };
+            $scope.gameOn = false;
+
+            $scope.$on('quitEvent', function () {
+                console.log("quitEvent");
+                $scope.gameOn = false;
+            });
 
             // for (var i = 0; i < 3; ++i) {
             //     $scope.gameState.balls.push({
@@ -46,7 +52,9 @@
             function updateState() {
                 gameService.getState($scope.currentPlayer.currentGame.id, function (data) {
                     console.log(data);
-                    $timeout(updateState, 2000);
+                    if ($scope.gameOn) {
+                        $timeout(updateState, 2000);
+                    }
                 });
             }
 
@@ -55,6 +63,7 @@
                     $scope.currentPlayer = data.player;
                     gameService.getState($scope.currentPlayer.currentGame.id, function (data) {
                         console.log(data);
+                        $scope.gameOn = true;
                         render($scope.pTime);
                         updateState();
                     });
@@ -85,7 +94,9 @@
                     BattlePongService.movePaddle(paddle, dt);
                     BattlePongService.drawPaddle(paddle);
                 }
+                if($scope.gameOn) {
                     $window.requestAnimationFrame(render);
+                }
             };
 
             BattlePongService.initGame('2d-vertex-shader', '2d-fragment-shader');

@@ -22,6 +22,7 @@
             $scope.quitGame = function () {
                 gameService.quitGame(function (data) {
                     $scope.updatePlayerData( function () {
+                        $scope.$broadcast('quitEvent');
                         $scope.backToLobby();
                     });
                 });
