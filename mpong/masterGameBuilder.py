@@ -16,7 +16,7 @@ class MasterGameBuilder(object):
         if gameId not in MasterGameBuilder.games.keys():
             MasterGameBuilder.games[gameId] = model.MPongGame(gameId, maxPlayers)
         else:
-            raise cherrypy.HTTPError(400, 'MasterGameBuilder: Game already %d exists' % gameId)
+            raise cherrypy.HTTPError(400, 'MasterGameBuilder: Game already %s exists' % gameId)
 
     def join(self, gameId, name):
         if name in MasterGameBuilder.players.keys() and gameId in MasterGameBuilder.games.keys():
