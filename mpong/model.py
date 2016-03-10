@@ -2,7 +2,7 @@ import threading
 import time
 import random
 import math
-from random import random
+import cherrypy
 
 
 class Vector(object):
@@ -69,7 +69,7 @@ class Paddle(Rectangle):
 
 class Ball(Rectangle):
     def __init__(self, name, posX, posY, width):
-        super(Ball, self).__init__(posX, posY, width, width)
+        super(Ball, self).__init__(name, posX, posY, width, width)
         self.velocity = Vector(1, 1)
         self.initSpeed = 0
 
@@ -188,10 +188,10 @@ class Game(object):
         paddle2 = game.paddle2
         ball = game.ball
         state = {}
-        state[paddle1.name] = [paddle1.position.x, paddle1.position.y, paddle1.height, paddle1.width, paddle1.points]
-        state[paddle2.name] = [paddle2.position.x, paddle2.position.y, paddle2.height, paddle2.width, paddle2.points]
-        state[ball.name] = [ball.position.x, ball.position.y, ball.height, ball.width]
-        state[game.name] = [game.position.x, game.position.y, game.height, game.width]
+        state[paddle1.name] = [paddle1.position.x, paddle1.position.y, paddle1.height.y, paddle1.width.y, paddle1.points]
+        state[paddle2.name] = [paddle2.position.x, paddle2.position.y, paddle2.height.y, paddle2.width.x, paddle2.points]
+        state[ball.name] = [ball.position.x, ball.position.y, ball.height.y, ball.width.x]
+        state[game.name] = [game.position.x, game.position.y, game.height.y, game.width.x]
         return state
 
     def artificialIntelligence(self):
@@ -271,7 +271,6 @@ class MPongGame(threading.Thread):
         self.gameStarted = True
         self.model = Game(100, self.joinedPlayers[0].name, self.joinedPlayers[1].name, 3)
         self.pt = time.time()
-        self.runModel()
         player1 = self.joinedPlayers[0]
         player2 = self.joinedPlayers[1]
         while self.gameStarted:
