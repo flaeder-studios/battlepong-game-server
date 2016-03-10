@@ -188,7 +188,7 @@ class Game(object):
         paddle2 = game.paddle2
         ball = game.ball
         state = {}
-        state[paddle1.name] = [paddle1.position.x, paddle1.position.y, paddle1.height.y, paddle1.width.y, paddle1.points]
+        state[paddle1.name] = [paddle1.position.x, paddle1.position.y, paddle1.height.y, paddle1.width.x, paddle1.points]
         state[paddle2.name] = [paddle2.position.x, paddle2.position.y, paddle2.height.y, paddle2.width.x, paddle2.points]
         state[ball.name] = [ball.position.x, ball.position.y, ball.height.y, ball.width.x]
         state[game.name] = [game.position.x, game.position.y, game.height.y, game.width.x]
@@ -281,7 +281,7 @@ class MPongGame(threading.Thread):
             velocity[player1.name] = player1.getVelocity().multiply(dt)
             velocity[player2.name] = player2.getVelocity().multiply(dt)
             self.model.update(velocity)
-            if player1.points == 10 or player2.points == 10:
+            if self.model.game.paddle1.points == 10 or self.model.game.paddle2.points == 10:
                 self.stop()
 
     def stop(self):
