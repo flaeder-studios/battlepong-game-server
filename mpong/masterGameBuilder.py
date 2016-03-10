@@ -26,7 +26,7 @@ class MasterGameBuilder(object):
 
     def leave(self, gameId, name):
         if name in MasterGameBuilder.players.keys() and gameId in MasterGameBuilder.games.keys():
-            MasterGameBuilder.games[gameId].leavePlayer(MasterGameBuilder.player[name])
+            MasterGameBuilder.games[gameId].leavePlayer(MasterGameBuilder.players[name])
         else:
             raise cherrypy.HTTPError(400, 'MasterGameBuilder: No game with id %s found' % gameId)
 
