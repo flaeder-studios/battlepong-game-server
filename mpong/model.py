@@ -56,9 +56,9 @@ class Rectangle(object):
     def right(self):
         return self.position.x + self.width.x / 2.
 
-    def move(self):
-        self.position.x += self.velocity.x
-        self.position.y += self.velocity.y
+    def move(self, dt):
+        self.position.x += self.velocity.x * float(dt)
+        self.position.y += self.velocity.y * float(dt)
 
 
 class Paddle(Rectangle):
@@ -166,7 +166,7 @@ class Game(object):
         """returns a Vector."""
         return self.game.paddle2.velocity.copy()
 
-    def update(self, velocity):
+    def update(self, velocity, dt):
         """ Move game objects (paddles and ball).
         Parameter velocity is a dictionary containing velocitys for paddle1 and paddle2.
         velocity has keys 'paddle1' and 'paddle2' with values Vector.
@@ -177,21 +177,20 @@ class Game(object):
         paddle2 = self.game.paddle2
         paddle1.velocity = velocity[paddle1.name]
         paddle2.velocity = velocity[paddle2.name]
-        self.game.ball.move()
-        self.game.paddle1.move()
-        self.game.paddle2.move()
+        self.game.ball.move(dt)
+        self.game.paddle1.move(dt)
+        self.game.paddle2.move(dt)
         self.collision()
 
     def getState(self):
-        game = self.game
-        paddle1 = game.paddle1
-        paddle2 = game.paddle2
-        ball = game.ball
+        paddle1 = self.game.paddle1
+        paddle2 = self.game.paddle2
+        ball = self.game.ball
         state = {}
-        state[paddle1.name] = [paddle1.position.x, paddle1.position.y, paddle1.height.y, paddle1.width.x, paddle1.points]
-        state[paddle2.name] = [paddle2.position.x, paddle2.position.y, paddle2.height.y, paddle2.width.x, paddle2.points]
-        state[ball.name] = [ball.position.x, ball.position.y, ball.height.y, ball.width.x]
-        state[game.name] = [game.position.x, game.position.y, game.height.y, game.width.x]
+        state[paddle1.name] = [paddle1.position.x, paddle1.position.y, paddle1.width.x, paddle1.height.y, paddle1.points]
+        state[paddle2.name] = [paddle2.position.x, paddle2.position.y, paddle2.width.x, paddle2.height.y, paddle2.points]
+        state[ball.name] = [ball.position.x, ball.position.y, ball.width.x, ball.height.y]
+        state[game.name] = [game.position.x, game.position.y, game.width.x, game.height.y]
         return state
 
     def artificialIntelligence(self):
@@ -252,7 +251,7 @@ class MPongGame(threading.Thread):
         self.gameID = gameID
         self.maxPlayers = maxPlayers
         self.joinedPlayers = []
-        self.gameStarted = True
+        self.gameStarted = False
         self.pt = None
         self.model = None
 
@@ -270,18 +269,17 @@ class MPongGame(threading.Thread):
     def run(self):
         self.gameStarted = True
         self.model = Game(100, self.joinedPlayers[0].name, self.joinedPlayers[1].name, 3)
-        self.pt = time.time()
         player1 = self.joinedPlayers[0]
         player2 = self.joinedPlayers[1]
+        self.pt = time.time()
         while self.gameStarted:
-            time.sleep(1)
             t = time.time()
             dt = self.pt - t
             self.pt = t
             velocity = {}
-            velocity[player1.name] = player1.getVelocity().multiply(dt)
-            velocity[player2.name] = player2.getVelocity().multiply(dt)
-            self.model.update(velocity)
+            velocity[player1.name] = player1.getVelocity()
+            velocity[player2.name] = player2.getVelocity()
+            self.model.update(velocity, dt)
             if self.model.game.paddle1.points == 10 or self.model.game.paddle2.points == 10:
                 self.stop()
 
