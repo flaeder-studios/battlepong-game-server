@@ -24,8 +24,8 @@ class Vector(object):
 
     def multiply(self, n):
         temp = Vector(self.x, self.y)
-        temp.x *= temp.x * n
-        temp.y *= temp.y * n
+        temp.x = temp.x * float(n)
+        temp.y = temp.y * float(n)
         return temp
 
     def copy(self):
@@ -252,7 +252,7 @@ class MPongGame(threading.Thread):
         self.gameID = gameID
         self.maxPlayers = maxPlayers
         self.joinedPlayers = []
-        self.gameStarted = False
+        self.gameStarted = True
         self.pt = None
         self.model = None
 
@@ -274,6 +274,7 @@ class MPongGame(threading.Thread):
         player1 = self.joinedPlayers[0]
         player2 = self.joinedPlayers[1]
         while self.gameStarted:
+            time.sleep(1)
             t = time.time()
             dt = self.pt - t
             self.pt = t
