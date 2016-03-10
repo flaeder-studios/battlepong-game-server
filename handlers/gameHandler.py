@@ -63,11 +63,11 @@ class GameHandler:
         game[u'gameStarted'] = False
         game[u'joinedPlayers'] = []
 
-        if game['id'] == 'TerminatorConnan':
-            ## create game with player Arnold
-            pass
-
         masterGame.createGame(game['id'], int(game['maxPlayers']))
+
+        if game['id'] == 'TerminatorConnan':
+            masterGame.join(game['id'], 'Arnold')
+            game[u'joinedPlayers'] = ['Arnold']
 
         GameHandler.games.append(game)
         cherrypy.session['currentGame'] = game
