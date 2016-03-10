@@ -281,6 +281,8 @@ class MPongGame(threading.Thread):
             velocity[player1.name] = player1.getVelocity().multiply(dt)
             velocity[player2.name] = player2.getVelocity().multiply(dt)
             self.model.update(velocity)
+            if player1.points == 10 or player2.points == 10:
+                self.stop()
 
     def stop(self):
         self.gameStarted = False
