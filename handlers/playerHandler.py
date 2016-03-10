@@ -38,8 +38,8 @@ class PlayerHandler:
         # if exists pull out player name from data
         if 'player' in data and 'name' in data['player']:
             playerName = str(data['player']['name'])
-            cherrypy.session['name'] = playerName
             masterGame.createPlayer(playerName)
+            cherrypy.session['name'] = playerName
 
         cherrypy.log("set name to %s" % (playerName))
         
