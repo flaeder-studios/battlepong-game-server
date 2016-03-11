@@ -183,9 +183,10 @@ class Game(object):
         self.collision()
 
     def getState(self):
-        paddle1 = self.game.paddle1
-        paddle2 = self.game.paddle2
-        ball = self.game.ball
+        game = self.game
+        paddle1 = game.paddle1
+        paddle2 = game.paddle2
+        ball = game.ball
         state = {}
         state[paddle1.name] = [paddle1.position.x, paddle1.position.y, paddle1.width.x, paddle1.height.y, paddle1.points]
         state[paddle2.name] = [paddle2.position.x, paddle2.position.y, paddle2.width.x, paddle2.height.y, paddle2.points]
@@ -274,7 +275,7 @@ class MPongGame(threading.Thread):
         self.pt = time.time()
         while self.gameStarted:
             t = time.time()
-            dt = self.pt - t
+            dt = abs(self.pt - t)
             self.pt = t
             velocity = {}
             velocity[player1.name] = player1.getVelocity()
@@ -291,11 +292,3 @@ class MPongGame(threading.Thread):
             return self.model.getState()
         else:
             raise cherrypy.HTTPError(400, 'Game not started')
-
-
-if __name__ == "__main__":
-    g = Game(100, "Clint", "Rudolf", 3)
-    while True:
-        g.update()
-        g.artificialIntelligence()
-        print g
