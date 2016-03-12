@@ -157,15 +157,6 @@ class Game(object):
                     paddle2.points += 1
                     ball.reset(self.game.position)
 
-
-    def getPaddle1Speed(self):
-        """returns a Vector."""
-        return self.game.paddle1.velocity.copy()
-
-    def getPaddle2Speed(self):
-        """returns a Vector."""
-        return self.game.paddle2.velocity.copy()
-
     def update(self, velocity, dt):
         """ Move game objects (paddles and ball).
         Parameter velocity is a dictionary containing velocitys for paddle1 and paddle2.
@@ -175,12 +166,37 @@ class Game(object):
 
         paddle1 = self.game.paddle1
         paddle2 = self.game.paddle2
-        paddle1.velocity = velocity[paddle1.name]
-        paddle2.velocity = velocity[paddle2.name]
+        for paddle in [self.game.paddle1, self.game.paddle2]:
+            if paddle.name == 'Arnold':
+                self.artificialIntelligence(paddle, dt)
+            else:
+                paddle.velocity = velocity[paddle.name]
+                paddle.move(dt)
+
         self.game.ball.move(dt)
-        self.game.paddle1.move(dt)
-        self.game.paddle2.move(dt)
         self.collision()
+
+    def artificialIntelligence(self, paddle, dt):
+        eps = paddle.height.y / 8. # paddle target area
+        if paddle.position.x < self.game.position.x:
+            if self.game.ball.velocity.dot(Vector(1., 0.)) < 0:
+                self.artificialMove(paddle, self.game.ball, eps)     # move according to ball
+            else:
+                self.artificialMove(paddle, self.game, eps)          # move according to gameboard
+        else:
+            if self.game.ball.velocity.dot(Vector(1., 0.)) > 0:
+                self.artificialMove(paddle, self.game.ball, eps)
+            else:
+                self.artificialMove(paddle, self.game, eps)
+        paddle.move(dt)
+
+    def artificialMove(self, paddle, obj, eps):
+            if paddle.position.y < obj.position.y - eps:
+                paddle.velocity.y = 2.0
+            elif paddle.position.y > obj.position.y + eps:
+                paddle.velocity.y = -2.0
+            else:
+                paddle.velocity.y = 0
 
     def getState(self):
         game = self.game
@@ -193,21 +209,6 @@ class Game(object):
         state[ball.name] = [ball.position.x, ball.position.y, ball.width.x, ball.height.y]
         state[game.name] = [game.position.x, game.position.y, game.width.x, game.height.y]
         return state
-
-    def artificialIntelligence(self):
-        eps = self.game.paddle2.height.y / 8. # paddle2 target area
-        if self.game.ball.velocity.dot(Vector(1., 0.)) > 0:
-            self.artificialMove(self.game.paddle2, self.game.ball, eps)
-        else:
-            self.artificialMove(self.game.paddle2, self.game, eps)
-
-    def artificialMove(self, paddle, obj, eps):
-            if paddle.position.y < obj.position.y - eps:
-                paddle.velocity.y = abs(paddle.velocity.y)
-            elif paddle.position.y > obj.position.y + eps:
-                paddle.velocity.y = -abs(paddle.velocity.y)
-            else:
-                paddle.velocity.y = 0
 
     def clear(self):
         self.game.paddle1.position.y = self.game.position.y
