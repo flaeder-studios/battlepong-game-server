@@ -86,7 +86,7 @@ class Ball(Rectangle):
 
 class Gameboard(Rectangle):
     def __init__(self, paddle1Name, paddle2Name, width, height):
-        super(Gameboard, self).__init__('pong', width / 2., -height / 2.,
+        super(Gameboard, self).__init__('pong', width / 2. - 1., -height / 2. + 1.,
                                         width, height)
         self.paddleScaleFactor = 12
         self.paddleHeight = width / self.paddleScaleFactor
