@@ -86,7 +86,7 @@ class Ball(Rectangle):
 
 class Gameboard(Rectangle):
     def __init__(self, paddle1Name, paddle2Name, width, height):
-        super(Gameboard, self).__init__('pong', width / 2. - 1., -height / 2. + 1.,
+        super(Gameboard, self).__init__('GameBoardPong', width / 2. - 1., -height / 2. + 1.,
                                         width, height)
         self.paddleScaleFactor = 12
         self.paddleHeight = width / self.paddleScaleFactor
@@ -204,10 +204,13 @@ class Game(object):
         paddle2 = game.paddle2
         ball = game.ball
         state = {}
-        state[paddle1.name] = [paddle1.position.x, paddle1.position.y, paddle1.width.x, paddle1.height.y, paddle1.points]
-        state[paddle2.name] = [paddle2.position.x, paddle2.position.y, paddle2.width.x, paddle2.height.y, paddle2.points]
-        state[ball.name] = [ball.position.x, ball.position.y, ball.width.x, ball.height.y]
-        state[game.name] = [game.position.x, game.position.y, game.width.x, game.height.y]
+        state['players'] = {}
+        state['players'][paddle1.name] = [paddle1.position.x, paddle1.position.y, paddle1.width.x, paddle1.height.y, paddle1.points]
+        state['players'][paddle2.name] = [paddle2.position.x, paddle2.position.y, paddle2.width.x, paddle2.height.y, paddle2.points]
+        state['balls'] = {}
+        state['balls'][ball.name] = [ball.position.x, ball.position.y, ball.width.x, ball.height.y]
+        state['Game'] = {}
+        state['Game'][game.name] = [game.position.x, game.position.y, game.width.x, game.height.y]
         return state
 
     def clear(self):
@@ -271,7 +274,7 @@ class MPongGame(threading.Thread):
 
     def run(self):
         self.gameStarted = True
-        self.model = Game(2./self.goldenRatio, self.joinedPlayers[0].name, self.joinedPlayers[1].name, 3)
+        self.model = Game(2./self.goldenRatio, self.joinedPlayers[0].name, self.joinedPlayers[1].name, 2./self.goldenRatio*0.05)
         player1 = self.joinedPlayers[0]
         player2 = self.joinedPlayers[1]
         self.pt = time.time()
