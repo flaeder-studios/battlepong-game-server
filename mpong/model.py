@@ -71,7 +71,7 @@ class Ball(Rectangle):
     def __init__(self, name, posX, posY, width):
         super(Ball, self).__init__(name, posX, posY, width, width)
         self.velocity = Vector(1, 1)
-        self.initSpeed = 0
+        self.initSpeed = 0.
 
     def reset(self, pos):
         self.position = Vector(0, 0).add(pos)
@@ -88,7 +88,7 @@ class Gameboard(Rectangle):
     def __init__(self, paddle1Name, paddle2Name, width, height):
         super(Gameboard, self).__init__('GameBoardPong', width / 2. - 1., -height / 2. + 1.,
                                         width, height)
-        self.paddleScaleFactor = 12
+        self.paddleScaleFactor = 12.
         self.paddleHeight = width / self.paddleScaleFactor
         self.paddleWidth = height / self.paddleScaleFactor
         self.paddle1 = Paddle(paddle1Name,
@@ -115,10 +115,10 @@ class Game(object):
         for obj in [self.game.paddle1, self.game.paddle2]:
             if obj.topp() > self.game.topp():
                 obj.position.y = self.game.topp() - obj.height.y / 2.
-                obj.velocity.y = 0
+                obj.velocity.y = 0.
             elif obj.bottom() < self.game.bottom():
                 obj.position.y = self.game.bottom() + obj.height.y / 2.
-                obj.velocity.y = 0
+                obj.velocity.y = 0.
         if self.game.ball.topp() > self.game.topp():
             self.game.ball.position.y = self.game.topp() - self.game.ball.height.y / 2.
             self.game.ball.velocity.y = -self.game.ball.velocity.y
@@ -134,7 +134,7 @@ class Game(object):
         game = self.game
         radiansTop = math.atan(game.height.y / game.width.x) * 2.365 # approx 75 degrees
         heightToRadians = radiansTop / (paddle1.height.y / 2.0) 
-        if ball.velocity.dot(Vector(1, 0)) > 0:
+        if ball.velocity.dot(Vector(1, 0)) > 0.:
             if ball.right() > paddle2.left():
                 if ball.position.y < paddle2.topp() and ball.position.y > paddle2.bottom():
                     ball.position.x = paddle2.left() - ball.width.x / 2.
@@ -179,12 +179,12 @@ class Game(object):
     def artificialIntelligence(self, paddle, dt):
         eps = paddle.height.y / 8. # paddle target area
         if paddle.position.x < self.game.position.x:
-            if self.game.ball.velocity.dot(Vector(1., 0.)) < 0:
+            if self.game.ball.velocity.dot(Vector(1., 0.)) < 0.:
                 self.artificialMove(paddle, self.game.ball, eps)     # move according to ball
             else:
                 self.artificialMove(paddle, self.game, eps)          # move according to gameboard
         else:
-            if self.game.ball.velocity.dot(Vector(1., 0.)) > 0:
+            if self.game.ball.velocity.dot(Vector(1., 0.)) > 0.:
                 self.artificialMove(paddle, self.game.ball, eps)
             else:
                 self.artificialMove(paddle, self.game, eps)
@@ -196,7 +196,7 @@ class Game(object):
             elif paddle.position.y > obj.position.y + eps:
                 paddle.velocity.y = -2./self.goldenRatio * 0.05
             else:
-                paddle.velocity.y = 0
+                paddle.velocity.y = 0.
 
     def getState(self):
         game = self.game
