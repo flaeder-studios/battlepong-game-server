@@ -260,6 +260,7 @@ class MPongGame(threading.Thread):
         self.gameStarted = False
         self.pt = None
         self.model = None
+        self.daemon = True
 
     def joinPlayer(self, newPlayer):
         if newPlayer not in self.joinedPlayers:
