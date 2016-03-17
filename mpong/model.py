@@ -176,6 +176,28 @@ class Game(object):
         self.game.ball.move(dt)
         self.collision()
 
+    def getState(self):
+        game = self.game
+        paddle1 = game.paddle1
+        paddle2 = game.paddle2
+        ball = game.ball
+        state = {}
+        state['players'] = {}
+        state['players'][paddle1.name] = {
+            'position': [paddle1.position.x/100, paddle1.position.y/100],
+            'dimensions': [paddle1.height.y/100, paddle1.width.x/100],
+            'score': paddle1.points,
+        }
+        state['players'][paddle2.name] = {
+            'position': [paddle2.position.x/100, paddle2.position.y/100],
+            'dimensions': [paddle2.height.y/100, paddle2.width.x/100],
+            'score': paddle2.points,
+        }
+        state['balls'] = {}
+        state['balls'][ball.name] = {'position': [ball.position.x/100, ball.position.y/100], 'radius': ball.height.y/100}
+        state[game.name] = [game.position.x/100, game.position.y/100, game.height.y/100, game.width.x/100]
+        return state
+
     def artificialIntelligence(self, paddle, dt):
         eps = paddle.height.y / 8. # paddle target area
         if paddle.position.x < self.game.position.x:
@@ -197,18 +219,6 @@ class Game(object):
                 paddle.velocity.y = -2.0
             else:
                 paddle.velocity.y = 0
-
-    def getState(self):
-        game = self.game
-        paddle1 = game.paddle1
-        paddle2 = game.paddle2
-        ball = game.ball
-        state = {}
-        state[paddle1.name] = [paddle1.position.x, paddle1.position.y, paddle1.width.x, paddle1.height.y, paddle1.points]
-        state[paddle2.name] = [paddle2.position.x, paddle2.position.y, paddle2.width.x, paddle2.height.y, paddle2.points]
-        state[ball.name] = [ball.position.x, ball.position.y, ball.width.x, ball.height.y]
-        state[game.name] = [game.position.x, game.position.y, game.width.x, game.height.y]
-        return state
 
     def clear(self):
         self.game.paddle1.position.y = self.game.position.y
@@ -256,6 +266,7 @@ class MPongGame(threading.Thread):
         self.gameStarted = False
         self.pt = None
         self.model = None
+        self.daemon = True
 
     def joinPlayer(self, newPlayer):
         if newPlayer not in self.joinedPlayers:

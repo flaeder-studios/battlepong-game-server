@@ -6,7 +6,7 @@
             $scope.initialize = function () {
                 playerService.getPlayer(function (data) {
                     if (!data.player.currentGame) {
-                        $scope.backToLobby();
+                       // $scope.backToLobby();
                     }
                 });
             };
@@ -15,6 +15,7 @@
                 gameService.startGame(function (data) {
                     $scope.updatePlayerData(function (data) {
                         console.log("Starting game!");
+                        $scope.$broadcast('startGameEvent');
                     });
                 });
             };
@@ -23,7 +24,6 @@
                 gameService.quitGame(function (data) {
                     $scope.updatePlayerData( function () {
                         $scope.$broadcast('quitEvent');
-                        $scope.backToLobby();
                     });
                 });
             };

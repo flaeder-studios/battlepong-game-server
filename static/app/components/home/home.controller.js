@@ -54,7 +54,6 @@
                         $scope.player = data.player;
                         if ($scope.player.name) {
                             $scope.isRegistered = true;
-                            $location.path('/lobby');
                         }
                         if (callback) {
                             callback(data.player);
