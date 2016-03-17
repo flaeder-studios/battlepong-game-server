@@ -71,7 +71,7 @@ class Ball(Rectangle):
     def __init__(self, name, posX, posY, width):
         super(Ball, self).__init__(name, posX, posY, width, width)
         self.velocity = Vector(1, 1)
-        self.initSpeed = 0
+        self.initSpeed = 0.
 
     def reset(self, pos):
         self.position = Vector(0, 0).add(pos)
@@ -86,9 +86,9 @@ class Ball(Rectangle):
 
 class Gameboard(Rectangle):
     def __init__(self, paddle1Name, paddle2Name, width, height):
-        super(Gameboard, self).__init__('pong', width / 2., -height / 2.,
+        super(Gameboard, self).__init__('GameBoardPong', width / 2. - 1., -height / 2. + 1.,
                                         width, height)
-        self.paddleScaleFactor = 12
+        self.paddleScaleFactor = 12.
         self.paddleHeight = width / self.paddleScaleFactor
         self.paddleWidth = height / self.paddleScaleFactor
         self.paddle1 = Paddle(paddle1Name,
@@ -115,10 +115,10 @@ class Game(object):
         for obj in [self.game.paddle1, self.game.paddle2]:
             if obj.topp() > self.game.topp():
                 obj.position.y = self.game.topp() - obj.height.y / 2.
-                obj.velocity.y = 0
+                obj.velocity.y = 0.
             elif obj.bottom() < self.game.bottom():
                 obj.position.y = self.game.bottom() + obj.height.y / 2.
-                obj.velocity.y = 0
+                obj.velocity.y = 0.
         if self.game.ball.topp() > self.game.topp():
             self.game.ball.position.y = self.game.topp() - self.game.ball.height.y / 2.
             self.game.ball.velocity.y = -self.game.ball.velocity.y
@@ -134,7 +134,7 @@ class Game(object):
         game = self.game
         radiansTop = math.atan(game.height.y / game.width.x) * 2.365 # approx 75 degrees
         heightToRadians = radiansTop / (paddle1.height.y / 2.0) 
-        if ball.velocity.dot(Vector(1, 0)) > 0:
+        if ball.velocity.dot(Vector(1, 0)) > 0.:
             if ball.right() > paddle2.left():
                 if ball.position.y < paddle2.topp() and ball.position.y > paddle2.bottom():
                     ball.position.x = paddle2.left() - ball.width.x / 2.
@@ -201,12 +201,12 @@ class Game(object):
     def artificialIntelligence(self, paddle, dt):
         eps = paddle.height.y / 8. # paddle target area
         if paddle.position.x < self.game.position.x:
-            if self.game.ball.velocity.dot(Vector(1., 0.)) < 0:
+            if self.game.ball.velocity.dot(Vector(1., 0.)) < 0.:
                 self.artificialMove(paddle, self.game.ball, eps)     # move according to ball
             else:
                 self.artificialMove(paddle, self.game, eps)          # move according to gameboard
         else:
-            if self.game.ball.velocity.dot(Vector(1., 0.)) > 0:
+            if self.game.ball.velocity.dot(Vector(1., 0.)) > 0.:
                 self.artificialMove(paddle, self.game.ball, eps)
             else:
                 self.artificialMove(paddle, self.game, eps)
@@ -214,11 +214,26 @@ class Game(object):
 
     def artificialMove(self, paddle, obj, eps):
             if paddle.position.y < obj.position.y - eps:
-                paddle.velocity.y = 2.0
+                paddle.velocity.y = 2./self.goldenRatio * 0.05
             elif paddle.position.y > obj.position.y + eps:
-                paddle.velocity.y = -2.0
+                paddle.velocity.y = -2./self.goldenRatio * 0.05
             else:
-                paddle.velocity.y = 0
+                paddle.velocity.y = 0.
+
+    def getState(self):
+        game = self.game
+        paddle1 = game.paddle1
+        paddle2 = game.paddle2
+        ball = game.ball
+        state = {}
+        state['players'] = {}
+        state['players'][paddle1.name] = [paddle1.position.x, paddle1.position.y, paddle1.width.x, paddle1.height.y, paddle1.points]
+        state['players'][paddle2.name] = [paddle2.position.x, paddle2.position.y, paddle2.width.x, paddle2.height.y, paddle2.points]
+        state['balls'] = {}
+        state['balls'][ball.name] = [ball.position.x, ball.position.y, ball.width.x, ball.height.y]
+        state['Game'] = {}
+        state['Game'][game.name] = [game.position.x, game.position.y, game.width.x, game.height.y]
+        return state
 
     def clear(self):
         self.game.paddle1.position.y = self.game.position.y
@@ -260,6 +275,7 @@ class Player(object):
 class MPongGame(threading.Thread):
     def __init__(self, gameID, maxPlayers):
         super(MPongGame, self).__init__(target=self.run)
+        self.goldenRatio = 1.618033
         self.gameID = gameID
         self.maxPlayers = maxPlayers
         self.joinedPlayers = []
@@ -281,7 +297,7 @@ class MPongGame(threading.Thread):
 
     def run(self):
         self.gameStarted = True
-        self.model = Game(100, self.joinedPlayers[0].name, self.joinedPlayers[1].name, 3)
+        self.model = Game(2./self.goldenRatio, self.joinedPlayers[0].name, self.joinedPlayers[1].name, 2./self.goldenRatio*0.05)
         player1 = self.joinedPlayers[0]
         player2 = self.joinedPlayers[1]
         self.pt = time.time()
