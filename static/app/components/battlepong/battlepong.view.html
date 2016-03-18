@@ -1,10 +1,12 @@
 {{gameState | json}}
-{{gameOn}}
-<div class="gameContainer" >
+<div class="gameContainer">
     <canvas width=640 height=480 id="gameCanvas" auto-resize>
         Your browser doesn't appear to support the HTML5 <code>&lt;canvas&gt;</code> element.
     </canvas>
-    <div id="gameControlBar">
-        <button class="btn btn-primary btn-lg" ng-click="quitGame()"> Quit </button>
+    <div id=scoreBoard>
+        <span ng-repeat="(name, data) in gameState.players"> {{name + ": "}}{{data.score | number}}  </span> <br />
     </div>
+</div>
+<div id="gameControlBar">
+    <button class="btn btn-primary btn-lg" ng-click="quitGame()"> Quit </button>
 </div>

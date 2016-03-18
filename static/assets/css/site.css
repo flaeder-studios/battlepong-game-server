@@ -234,3 +234,11 @@ a:link {
 a:hover {
     color: white;
 }
+.gameContainer {
+    position: relative;
+}
+#scoreBoard {
+    position: absolute;
+    top: 8px;
+    left: 16px;
+}

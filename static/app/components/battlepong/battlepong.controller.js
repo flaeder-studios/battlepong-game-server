@@ -9,8 +9,6 @@
             $scope.gameState = {balls: {}, players: {}};
             $scope.gameOn = false;
 
-            $scope.$on('startGameEvent', $scope.startGame);
-
             $scope.startGame = function () {
                 console.log("starting game...");
                 $scope.gameOn = true;
@@ -21,18 +19,13 @@
             };
 
             $scope.quitGame = function () {
-                $scope.gameOn = false;
-                $scope.backToLobby();
+                gameService.quitGame(function (data) {
+                    $scope.updatePlayerData( function () {
+                        $scope.gameOn = false;
+                        $location.path('/lobby');
+                    });
+                });
             };
-
-            // for (var i = 0; i < 3; ++i) {
-            //     $scope.gameState.balls.push({
-            //         color: [Math.random(), Math.random(), Math.random(), 1.0],
-            //         radius: Math.random() * 0.05 + 0.05,
-            //         position: [Math.random() * 1.5 - 0.75, Math.random() * 1.5 - 0.75],
-            //         velocity: [Math.random() * 0.5 - 1, Math.random() * 0.5 - 1]
-            //     });
-            // }
 
             $scope.handleKeyPress = function (e) {
                 if (e.keyCode == 38) { // up
@@ -59,11 +52,11 @@
                     $scope.gameState.paddles[paddle].velocity = [0.0,0.0];
                     $scope.gameState.paddles[paddle].width = data.paddles[paddle].dimensions[0];
                     $scope.gameState.paddles[paddle].height = data.paddles[paddle].dimensions[1];
+                    $scope.gameState.paddles[paddle].score = data.paddles[paddle].score;
                 }
             }
 
             function initState (data) {
-                console.log('initState: ', data);
                 for (var ball in data.balls) {
                     $scope.gameState.balls[ball] = {};
                     $scope.gameState.balls[ball].position = data.balls[ball].position;
@@ -80,6 +73,7 @@
                     $scope.gameState.players[paddle].width = data.players[paddle].dimensions[0];
                     $scope.gameState.players[paddle].height = data.players[paddle].dimensions[1];
                     $scope.gameState.players[paddle].color = [1.0, 0.0, 0.0, 1.0];
+                    $scope.gameState.players[paddle].score = data.players[paddle].score;
                 }
             }
 
@@ -97,7 +91,6 @@
                 playerService.getPlayer(function (data) {
                     $scope.currentPlayer = data.player;
                     gameService.getState($scope.currentPlayer.currentGame.id, function (data) {
-                        console.log(data);
                         $scope.gameOn = true;
                         initState(data);
                         render($scope.pTime);
@@ -134,14 +127,7 @@
                 }
             };
 
-//            $scope.startGame();
-            console.log("battlepong.controller.js")
             $scope.startGame();
-            BattlePongService.drawBall({
-                position: [0.0,0.0],
-                radius: 0.1,
-                velocity: [0.0,0.0],
-                color: [0.0,1.0,0.0,1.0],
-            });
+
     }]);
 })();
