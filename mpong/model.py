@@ -220,21 +220,6 @@ class Game(object):
             else:
                 paddle.velocity.y = 0.
 
-    def getState(self):
-        game = self.game
-        paddle1 = game.paddle1
-        paddle2 = game.paddle2
-        ball = game.ball
-        state = {}
-        state['players'] = {}
-        state['players'][paddle1.name] = [paddle1.position.x, paddle1.position.y, paddle1.width.x, paddle1.height.y, paddle1.points]
-        state['players'][paddle2.name] = [paddle2.position.x, paddle2.position.y, paddle2.width.x, paddle2.height.y, paddle2.points]
-        state['balls'] = {}
-        state['balls'][ball.name] = [ball.position.x, ball.position.y, ball.width.x, ball.height.y]
-        state['Game'] = {}
-        state['Game'][game.name] = [game.position.x, game.position.y, game.width.x, game.height.y]
-        return state
-
     def clear(self):
         self.game.paddle1.position.y = self.game.position.y
         self.game.paddle2.position.y = self.game.position.y
