@@ -4,20 +4,12 @@
     Unknown game... sorry bro
     <button class="btn btn-primary btn-lg" ng-click="backToLobby()" > Back To Lobby </button>
     </div>
-    <div ng-switch-when="mpong" ng-controller="BattlePongController">
+    <div ng-switch-when="mpong">
         {{gameState | json}}
         {{gameOn}}
         <div ng-if="!player.currentGame.gameStarted"> Waiting for players ... ({{ player.currentGame.joinedPlayers.length + " / "  + player.currentGame.maxPlayers}})
                 <button class="btn btn-primary btn-lg" ng-click="startCurrentGame()" ng-class="{disabled:player.currentGame.joinedPlayers.length != player.currentGame.maxPlayers}" > Start Game! </button>
                 <button class="btn btn-primary btn-lg" ng-click="backToLobby()" > Back To Lobby </button>
-        </div>
-        <div class="gameContainer" >
-            <canvas auto-resize width=640 height=480 id="gameCanvas">
-                Your browser doesn't appear to support the HTML5 <code>&lt;canvas&gt;</code> element.
-            </canvas>
-            <div id="gameControlBar">
-                <button class="btn btn-primary btn-lg" ng-click="quitGame()"> Quit </button>
-            </div>
         </div>
     </div>
 </div>

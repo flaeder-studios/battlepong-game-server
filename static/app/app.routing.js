@@ -10,6 +10,9 @@
             }).when('/game', {
                 templateUrl: '/app/components/game/game.view.html',
                 controller: 'GameController'
+            }).when('/game/battlepong', {
+                templateUrl: '/app/components/battlepong/battlepong.view.html',
+                controller: 'BattlePongController'
             }).when('/home', {
                 templateUrl: '/app/components/home/home.view.html',
             }).otherwise({

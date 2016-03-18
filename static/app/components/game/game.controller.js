@@ -5,8 +5,8 @@
 
             $scope.initialize = function () {
                 playerService.getPlayer(function (data) {
-                    if (!data.player.currentGame) {
-                       // $scope.backToLobby();
+                    if (data.player.currentGame.gameStarted) {
+                       $location.path('/game/battlepong');
                     }
                 });
             };
@@ -16,6 +16,7 @@
                     $scope.updatePlayerData(function (data) {
                         console.log("Starting game!");
                         $scope.$broadcast('startGameEvent');
+                        $location.path('/game/battlepong')
                     });
                 });
             };
