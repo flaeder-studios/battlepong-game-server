@@ -184,18 +184,18 @@ class Game(object):
         state = {}
         state['players'] = {}
         state['players'][paddle1.name] = {
-            'position': [paddle1.position.x/100, paddle1.position.y/100],
-            'dimensions': [paddle1.height.y/100, paddle1.width.x/100],
+            'position': [paddle1.position.x, paddle1.position.y],
+            'dimensions': [paddle1.height.y, paddle1.width.x],
             'score': paddle1.points,
         }
         state['players'][paddle2.name] = {
-            'position': [paddle2.position.x/100, paddle2.position.y/100],
-            'dimensions': [paddle2.height.y/100, paddle2.width.x/100],
+            'position': [paddle2.position.x, paddle2.position.y],
+            'dimensions': [paddle2.height.y, paddle2.width.x],
             'score': paddle2.points,
         }
         state['balls'] = {}
-        state['balls'][ball.name] = {'position': [ball.position.x/100, ball.position.y/100], 'radius': ball.height.y/100}
-        state[game.name] = [game.position.x/100, game.position.y/100, game.height.y/100, game.width.x/100]
+        state['balls'][ball.name] = {'position': [ball.position.x, ball.position.y], 'radius': ball.height.y}
+        state[game.name] = [game.position.x, game.position.y, game.height.y, game.width.x]
         return state
 
     def artificialIntelligence(self, paddle, dt):
