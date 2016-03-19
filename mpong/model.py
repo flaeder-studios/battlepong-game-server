@@ -167,7 +167,7 @@ class Game(object):
         paddle1 = self.game.paddle1
         paddle2 = self.game.paddle2
         for paddle in [self.game.paddle1, self.game.paddle2]:
-            if paddle.name == 'Arnold':
+            if paddle.name == 'Arnold' or paddle.name == 'leibnitz':
                 self.artificialIntelligence(paddle, dt)
             else:
                 paddle.velocity = velocity[paddle.name]
