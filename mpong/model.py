@@ -86,7 +86,7 @@ class Ball(Rectangle):
 
 class Gameboard(Rectangle):
     def __init__(self, paddle1Name, paddle2Name, width, height):
-        super(Gameboard, self).__init__('GameBoardPong', width / 2. - 1., -height / 2. + 1.,
+        super(Gameboard, self).__init__('GameBoardPong', 0, 0,
                                         width, height)
         self.paddleScaleFactor = 12.
         self.paddleHeight = width / self.paddleScaleFactor
@@ -185,12 +185,12 @@ class Game(object):
         state['players'] = {}
         state['players'][paddle1.name] = {
             'position': [paddle1.position.x, paddle1.position.y],
-            'dimensions': [paddle1.height.y, paddle1.width.x],
+            'dimensions': [paddle1.width.x, paddle1.height.y],
             'score': paddle1.points,
         }
         state['players'][paddle2.name] = {
             'position': [paddle2.position.x, paddle2.position.y],
-            'dimensions': [paddle2.height.y, paddle2.width.x],
+            'dimensions': [paddle2.width.x, paddle2.height.y],
             'score': paddle2.points,
         }
         state['balls'] = {}
