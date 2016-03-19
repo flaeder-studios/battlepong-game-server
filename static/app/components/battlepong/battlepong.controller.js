@@ -44,7 +44,7 @@
             function setState (data) {
                 for (var ball in data.balls) {
                     $scope.gameState.balls[ball].position = data.balls[ball].position;
-                    $scope.gameState.balls[ball].radius = data.balls[ball].radius * 100.0;
+                    $scope.gameState.balls[ball].radius = data.balls[ball].radius;
                     $scope.gameState.balls[ball].velocity = [0.0,0.0];
                 }
                 for (var paddle in data.paddles) {
