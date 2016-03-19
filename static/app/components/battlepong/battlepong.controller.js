@@ -51,12 +51,12 @@
                     $scope.gameState.balls[ball].radius = data.balls[ball].radius;
                     $scope.gameState.balls[ball].velocity = [0.0,0.0];
                 }
-                for (var paddle in data.paddles) {
-                    $scope.gameState.paddles[paddle].position = data.paddles[paddle].position;
-                    $scope.gameState.paddles[paddle].velocity = [0.0,0.0];
-                    $scope.gameState.paddles[paddle].width = data.paddles[paddle].dimensions[0];
-                    $scope.gameState.paddles[paddle].height = data.paddles[paddle].dimensions[1];
-                    $scope.gameState.paddles[paddle].score = data.paddles[paddle].score;
+                for (var paddle in data.players) {
+                    $scope.gameState.players[paddle].position = data.players[paddle].position;
+                    $scope.gameState.players[paddle].velocity = [0.0,0.0];
+                    $scope.gameState.players[paddle].width = data.players[paddle].dimensions[0];
+                    $scope.gameState.players[paddle].height = data.players[paddle].dimensions[1];
+                    $scope.gameState.players[paddle].score = data.players[paddle].score;
                 }
             }
 
