@@ -6,7 +6,7 @@ angular.module("flaederGamesApp")
             progress: '=',
             progressId: '@'
         },
-        template: "<canvas width=640 height=480 id='gameCanvas'/>",
+        template: "<canvas width=777 height=480 id='gameCanvas'/>",
         link: function(scope, element, attrs) {
             console.log(element);
             scope.canvas = element.find('gameCanvas')[0];
