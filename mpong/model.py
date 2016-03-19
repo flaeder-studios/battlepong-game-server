@@ -214,9 +214,9 @@ class Game(object):
 
     def artificialMove(self, paddle, obj, eps):
             if paddle.position.y < obj.position.y - eps:
-                paddle.velocity.y = 2./self.goldenRatio * 0.05
+                paddle.velocity.y = 2./self.goldenRatio * 0.25
             elif paddle.position.y > obj.position.y + eps:
-                paddle.velocity.y = -2./self.goldenRatio * 0.05
+                paddle.velocity.y = -2./self.goldenRatio * 0.25
             else:
                 paddle.velocity.y = 0.
 
@@ -282,7 +282,7 @@ class MPongGame(threading.Thread):
 
     def run(self):
         self.gameStarted = True
-        self.model = Game(1./self.goldenRatio, self.joinedPlayers[0].name, self.joinedPlayers[1].name, 2./self.goldenRatio*0.05)
+        self.model = Game(2./self.goldenRatio, self.joinedPlayers[0].name, self.joinedPlayers[1].name, 2./self.goldenRatio*0.25)
         player1 = self.joinedPlayers[0]
         player2 = self.joinedPlayers[1]
         self.pt = time.time()
