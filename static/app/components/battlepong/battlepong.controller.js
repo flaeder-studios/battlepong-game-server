@@ -41,14 +41,18 @@
                 }
             };
 
+            function transformToCanvasCoords(pos) {
+                return [pos[0], pos[1] / 0.625 - 0.6];
+            }
+
             function setState (data) {
                 for (var ball in data.balls) {
-                    $scope.gameState.balls[ball].position = data.balls[ball].position;
+                    $scope.gameState.balls[ball].position = transformToCanvasCoords(data.balls[ball].position);
                     $scope.gameState.balls[ball].radius = data.balls[ball].radius;
                     $scope.gameState.balls[ball].velocity = [0.0,0.0];
                 }
                 for (var paddle in data.paddles) {
-                    $scope.gameState.paddles[paddle].position = data.paddles[paddle].position;
+                    $scope.gameState.paddles[paddle].position = transformToCanvasCoords(data.paddles[paddle].position);
                     $scope.gameState.paddles[paddle].velocity = [0.0,0.0];
                     $scope.gameState.paddles[paddle].width = data.paddles[paddle].dimensions[0];
                     $scope.gameState.paddles[paddle].height = data.paddles[paddle].dimensions[1];
@@ -59,17 +63,18 @@
             function initState (data) {
                 for (var ball in data.balls) {
                     $scope.gameState.balls[ball] = {};
-                    $scope.gameState.balls[ball].position = data.balls[ball].position;
+                    $scope.gameState.balls[ball].position = transformToCanvasCoords(data.balls[ball].position);
                     $scope.gameState.balls[ball].radius = data.balls[ball].radius;
                     $scope.gameState.balls[ball].velocity = [0.0,0.0];
                     $scope.gameState.balls[ball].color = [0.0, 0.0, 1.0, 1.0];
                 }
                 for (var paddle in data.players) {
                     $scope.gameState.players[paddle] = {};
-                    $scope.gameState.players[paddle].position = data.players[paddle].position;
+                    $scope.gameState.players[paddle].position = transformToCanvasCoords(data.players[paddle].position);
                     $scope.gameState.players[paddle].velocity = [0.0,0.0];
                     $scope.gameState.players[paddle].refVelocity = [0.0,0.0];
                     $scope.gameState.players[paddle].acceleration = [0.0,0.0];
+                    data.players[paddle].dimensions = transformToCanvasCoords(data.players[paddle].dimensions[0])
                     $scope.gameState.players[paddle].width = data.players[paddle].dimensions[0];
                     $scope.gameState.players[paddle].height = data.players[paddle].dimensions[1];
                     $scope.gameState.players[paddle].color = [1.0, 0.0, 0.0, 1.0];
