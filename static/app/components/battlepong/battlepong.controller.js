@@ -78,11 +78,10 @@
             }
 
             function updateState() {
-                var i, ball, paddle;
                 gameService.getState($scope.currentPlayer.currentGame.id, function (data) {
-                    setState(data)
+                    setState(data);
                     if ($scope.gameOn == true) {
-                        $timeout(updateState, 2000);
+                        updateState();
                     }
                 });
             }
