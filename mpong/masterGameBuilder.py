@@ -37,8 +37,9 @@ class MasterGameBuilder(object):
             raise cherrypy.HTTPError(400, 'MasterGameBuilder: No game with id %s found or not enough joined players, who knows.' % gameId)
 
     def stopGame(self, gameId):
-        if gameId in MasterGameBuilder.games.keys():
+        if gameId in MasterGameBuilder.games:
             MasterGameBuilder.games[gameId].stop()
+            del MasterGameBuilder.games[gameId]
         else:
             raise cherrypy.HTTPError(400, 'MasterGameBuilder: No game with id %s found' % gameId)
 
