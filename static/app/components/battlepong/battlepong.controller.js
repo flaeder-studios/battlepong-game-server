@@ -37,7 +37,6 @@
             };
 
             $scope.handleKeyRelease = function (e) {
-                console.log("handleKeyRelease");
                 if (e.keyCode == 38 || e.keyCode == 40) {
                     $scope.gameState.players[$scope.player.name].refVelocity = [0.0, 0.0];
                 }
