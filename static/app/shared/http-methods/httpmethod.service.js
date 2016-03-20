@@ -5,6 +5,7 @@
             var service = {};
 
             var defaultErrorHandler = function (rejectReason) {
+                console.error(rejectReason.data.message);
                 alertService.displayAlert('danger', rejectReason.data.message);
             };
 

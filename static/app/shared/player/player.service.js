@@ -4,14 +4,14 @@
 
             var service = {};
 
-            service.setName = function (name, callback) {
+            service.setName = function (name, callback, errorhandler) {
                 if (name) {
                     var data = {}
                     data.player = {};
                     data.player.name = name;
                     httpMethodService.post(urlService.playerUri, data, {}, function (result) {
                         callback(result.data);
-                    });
+                    }, errorhandler);
                 }
             };
 

@@ -6,6 +6,7 @@
             $scope.isRegistered = false;
             $scope.player = undefined;
             $scope.changeName = false;
+            $scope.errorMessage = undefined
 
             $scope.initialize = function () {
                 $scope.updatePlayerData(function (data) {
@@ -22,14 +23,12 @@
                     animation: true,
                     templateUrl: '/app/shared/register-modal/register-modal.template.html',
                     controller: 'RegisterModalController',
+                    resolve: {
+                        setPlayerName: function () {
+                            return $scope.setPlayerName;
+                        }
+                    }
                 });
-
-                modalInstance.result.then(function (name) {
-                    $scope.setPlayerName(name);
-                }, function () {
-                    console.log('Register modal dismissed at: ' + new Date());
-                });
-
             };
 
             $scope.openSetNameModal = function () {
@@ -37,14 +36,12 @@
                     animation: true,
                     templateUrl: '/app/shared/set-name-modal/set-name-modal.template.html',
                     controller: 'SetNameModalController',
+                    resolve: {
+                        setPlayerName: function () {
+                            return $scope.setPlayerName;
+                        }
+                    }
                 });
-
-                modalInstance.result.then(function (name) {
-                    $scope.setPlayerName(name);
-                }, function () {
-                    console.log('Set name modal dismissed at: ' + new Date());
-                });
-
             };
 
             $scope.updatePlayerData = function (callback) {
@@ -62,18 +59,16 @@
                 });
             };
 
-            $scope.setPlayerName = function (name) {
+            $scope.setPlayerName = function (name, callback, errorhandler) {
                 playerService.setName(name, function (data) {
                     $scope.player = data.player;
-                    if (data.player.name == name) {
-                        console.log("set player name to", $scope.player.name);
-                        $scope.changeName = false;
-                        $scope.isRegistered = true;
-                        $location.path('/lobby');
-                    } else {
-                        alert('could not set name to ' + name);
+                    $scope.changeName = false;
+                    $scope.isRegistered = true;
+                    $location.path('/lobby');
+                    if (callback) {
+                        callback(data.player);
                     }
-                });
+                }, errorhandler);
             };
 
             $scope.initialize();
