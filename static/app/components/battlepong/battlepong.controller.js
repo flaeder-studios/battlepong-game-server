@@ -30,25 +30,24 @@
 
             $scope.handleKeyPress = function (e) {
                 if (e.keyCode == 38) { // up
-<<<<<<< HEAD
+
                     $scope.gameState.players[0].refVelocity = [0.0, 1.0];
                 } else if (e.keyCode == 40) { // down
                     $scope.gameState.players[0].refVelocity = [0.0, -1.0];
-=======
+
                     $scope.gameState.players[$scope.player.name].refVelocity = [0.0, 1.0];
                 } else if (e.keyCode == 40) { // down
                     $scope.gameState.players[$scope.player.name].refVelocity = [0.0, -1.0];
->>>>>>> 07f0c05631ead7153d2290dd43f1afb7caddc936
                 }
             };
 
             $scope.handleKeyRelease = function (e) {
                 if (e.keyCode == 38 || e.keyCode == 40) {
-<<<<<<< HEAD
+
                     $scope.gameState.players[0].refVelocity = [0.0, 0.0];
-=======
+
                     $scope.gameState.players[$scope.player.name].refVelocity = [0.0, 0.0];
->>>>>>> 07f0c05631ead7153d2290dd43f1afb7caddc936
+
                 }
             };
 
@@ -63,7 +62,6 @@
                 }
                 for (var paddle in data.players) {
                     $scope.gameState.players[paddle].position = data.players[paddle].position;
-                    data.players[paddle].dimensions = data.players[paddle].dimensions;
                     $scope.gameState.players[paddle].width = data.players[paddle].dimensions[0];
                     $scope.gameState.players[paddle].height = data.players[paddle].dimensions[1];
                     $scope.gameState.players[paddle].score = data.players[paddle].score;
