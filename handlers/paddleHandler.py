@@ -9,14 +9,18 @@ class PaddleHandler:
 
     exposed = True
 
-    def POST(self,spd):
+    @cherrypy.tools.json_in()
+    def POST(self):
         """ str -> float """
+
+        data = cherrypy.request.json
+        requestedSpeed = float(data['speed'])
 
         playerName = cherrypy.session.get('name')
         if playerName is None:
             raise cherrypy.HTTPError(400, 'No player with name %s' % playerName)
 
-        masterGame.setPlayerSpeed(playerName, float(spd))
-        cherrypy.log('Set paddle speed to %f' % spd)
+        masterGame.setPlayerSpeed(playerName, float(requestedSpeed))
+        cherrypy.log('Set paddle speed to %f' % requestedSpeed)
 
 
