@@ -29,15 +29,15 @@
 
             $scope.handleKeyPress = function (e) {
                 if (e.keyCode == 38) { // up
-                    $scope.gameState.paddles[0].refVelocity = [0.0, 1.0];
+                    $scope.gameState.players[0].refVelocity = [0.0, 1.0];
                 } else if (e.keyCode == 40) { // down
-                    $scope.gameState.paddles[0].refVelocity = [0.0, -1.0];
+                    $scope.gameState.players[0].refVelocity = [0.0, -1.0];
                 }
             };
 
             $scope.handleKeyRelease = function (e) {
                 if (e.keyCode == 38 || e.keyCode == 40) {
-                    $scope.gameState.paddles[0].refVelocity = [0.0, 0.0];
+                    $scope.gameState.players[0].refVelocity = [0.0, 0.0];
                 }
             };
 
@@ -113,8 +113,8 @@
                 for (ball in $scope.gameState.balls) {
                     ball = $scope.gameState.balls[ball];
                     BattlePongService.handleWallBounce(ball);
-                    for (paddle in $scope.gameState.paddles) {
-                        paddle = $scope.gameState.paddles[paddle];
+                    for (paddle in $scope.gameState.players) {
+                        paddle = $scope.gameState.players[paddle];
                         BattlePongService.handlePaddleBounce(ball, paddle);
                     }
                     BattlePongService.moveBall(ball, dt);
