@@ -1,51 +1,56 @@
 (function () {
     angular.module('flaederGamesApp')
-        .factory('httpMethodService', ['$http', '$location', function ($http, $location) {
+        .factory('httpMethodService', ['$http', '$location', 'alertService', function ($http, $location, alertService) {
 
             var service = {};
 
             var defaultErrorHandler = function (rejectReason) {
-                if (rejectReason.status == 401) {
-                    //$location.path('/register');
-                } else {
-                    console.error(rejectReason);
-                }
+                alertService.displayAlert('danger', rejectReason.data.message);
             };
 
             service.get = function (uri, config, callback, errorhandler) {
                 var res = {};
 
+                if (!errorhandler) {
+                    errorhandler = defaultErrorHandler;
+                }
+
                 $http.get(uri, config).then(
                     function (result) {
                         callback(result);
                     },
-                    function (rejectReason) {
-                        errorhandler(rejectReason);
-                    });
+                        errorhandler
+                    );
             };
 
             service.post = function (uri, data, config, callback, errorhandler) {
                 var res = {};
 
+                if (!errorhandler) {
+                    errorhandler = defaultErrorHandler;
+                }
+
                 $http.post(uri, data, config).then(
                     function (result) {
                         callback(result);
                     },
-                    function (rejectReason) {
-                        errorhandler(rejectReason);
-                    });
+                        errorhandler
+                    );
             };
 
             service.delete = function (uri, config, callback, errorhandler) {
                 var res = {};
 
+                if (!errorhandler) {
+                    errorhandler = defaultErrorHandler;
+                }
+
                 $http.delete(uri, config).then(
                     function (result) {
                         callback(result);
                     },
-                    function (rejectReason) {
-                        errorhandler(rejectReason);
-                    });
+                        errorhandler
+                    );
             };
 
             return service;

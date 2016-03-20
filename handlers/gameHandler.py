@@ -54,7 +54,7 @@ class GameHandler:
 
         for g in GameHandler.games:
             if g.get('id') == game['id']:
-                raise cherrypy.HTTPError(400, 'game with id %s already exists' % gameId)
+                raise cherrypy.HTTPError(400, message='game with id %s already exists' % gameId)
             
         #createdGame = cherrypy.engine.publish('mpong-create-game', game) #.pop()
         
