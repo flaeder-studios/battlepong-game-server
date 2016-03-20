@@ -9,12 +9,6 @@
                 });
             };
 
-            service.getState = function (gameId, callback) {
-                httpMethodService.get(urlService.stateUri + '/' + gameId, {id: gameId}, function (result) {
-                    callback(result.data);
-                });
-            };
-
             service.quitGame = function (callback) {
                 httpMethodService.post(urlService.quitUri, {}, {}, function (result) {
                     callback(result.data);

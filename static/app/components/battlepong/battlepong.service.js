@@ -1,7 +1,7 @@
 (function () {
 
     angular.module('flaederGamesApp')
-        .factory('BattlePongService', [function () {
+        .factory('battlePongService', ['httpMethodService', 'urlService', function (httpMethodService, urlService) {
 
             var service = {};
 
@@ -123,8 +123,8 @@
 
             service.movePaddle = function (paddle, dt) {
                 // calculate speed
-                paddle.velocity[0] += (paddle.refVelocity[0] - paddle.velocity[0]) * paddle.acceleration[0] * dt;
-                paddle.velocity[1] += (paddle.refVelocity[1] - paddle.velocity[1]) * paddle.acceleration[1] * dt;
+                //paddle.velocity[0] += (paddle.refVelocity[0] - paddle.velocity[0]) * paddle.acceleration[0] * dt;
+                //paddle.velocity[1] += (paddle.refVelocity[1] - paddle.velocity[1]) * paddle.acceleration[1] * dt;
 
                 // Update position
                 paddle.position[0] += paddle.velocity[0] * dt;
@@ -163,6 +163,17 @@
 
                 // draw
                 this.gl.drawArrays(this.gl.TRIANGLE_FAN, 0, this.paddleBuffer.length / 2);
+            };
+
+
+            service.getState = function (gameId, callback) {
+                httpMethodService.get(urlService.stateUri + '/' + gameId, {id: gameId}, function (result) {
+                    callback(result.data);
+                });
+            };
+
+            service.setPaddleSpeed = function(spd, callback) {
+                httpMethodService.post(urlService.paddleUri, {speed: spd}, {}, callback);
             };
 
             return service;
