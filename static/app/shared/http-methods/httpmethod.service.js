@@ -4,7 +4,7 @@
 
             var service = {};
 
-            var handleError = function (rejectReason) {
+            var defaultErrorHandler = function (rejectReason) {
                 if (rejectReason.status == 401) {
                     //$location.path('/register');
                 } else {
@@ -12,7 +12,7 @@
                 }
             };
 
-            service.get = function (uri, config, callback) {
+            service.get = function (uri, config, callback, errorhandler) {
                 var res = {};
 
                 $http.get(uri, config).then(
@@ -20,11 +20,11 @@
                         callback(result);
                     },
                     function (rejectReason) {
-                        handleError(rejectReason);
+                        errorhandler(rejectReason);
                     });
             };
 
-            service.post = function (uri, data, config, callback) {
+            service.post = function (uri, data, config, callback, errorhandler) {
                 var res = {};
 
                 $http.post(uri, data, config).then(
@@ -32,11 +32,11 @@
                         callback(result);
                     },
                     function (rejectReason) {
-                        handleError(rejectReason);
+                        errorhandler(rejectReason);
                     });
             };
 
-            service.delete = function (uri, config, callback) {
+            service.delete = function (uri, config, callback, errorhandler) {
                 var res = {};
 
                 $http.delete(uri, config).then(
@@ -44,7 +44,7 @@
                         callback(result);
                     },
                     function (rejectReason) {
-                        handleError(rejectReason);
+                        errorhandler(rejectReason);
                     });
             };
 

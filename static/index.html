@@ -18,8 +18,11 @@
         </div>
     </header>
 
-
     <section>
+        <div ng-controller="AlertController">
+            <uib-alert ng-repeat="alert in alertService.alerts" type="{{alert.type}}" close="alertService.closeAlert($index)">{{alert.message}}</uib-alert>
+            <button type="button" class='btn btn-default' ng-click="alertService.displayAlert('warning','another warning...')">Add Alert</button>
+        </div>
         <ng-view></ng-view>
     </section>
 
@@ -54,6 +57,8 @@
     <script type=" text/javascript " src="/app/shared/create-game/create-game-modal.controller.js"></script>
     <script type=" text/javascript " src="/app/shared/canvas/autoresize.directive.js"></script>
     <script type=" text/javascript " src="/app/shared/canvas/fullscreen.directive.js"></script>
+    <script type=" text/javascript " src="/app/shared/alert/alert.service.js"></script>
+    <script type=" text/javascript " src="/app/shared/alert/alert.controller.js"></script>
     <script type=" text/javascript " src="/app/components/home/home.controller.js"></script>
     <script type=" text/javascript " src="/app/components/lobby/lobby.controller.js"></script>
     <script type=" text/javascript " src="/app/components/lobby/lobby.service.js"></script>
