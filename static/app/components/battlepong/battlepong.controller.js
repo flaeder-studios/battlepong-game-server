@@ -29,15 +29,17 @@
             };
 
             $scope.handleKeyPress = function (e) {
-                if (e.keyCode == 38) { // up
-                    $scope.gameState.players[$scope.player.name].refVelocity = [0.0, 1.0];
-                } else if (e.keyCode == 40) { // down
-                    $scope.gameState.players[$scope.player.name].refVelocity = [0.0, -1.0];
+                if ($scope.gameState.players[$scope.player.name]) {                
+                    if (e.keyCode == 38) { // up
+                        $scope.gameState.players[$scope.player.name].refVelocity = [0.0, 1.0];
+                    } else if (e.keyCode == 40) { // down
+                        $scope.gameState.players[$scope.player.name].refVelocity = [0.0, -1.0];
+                    }
                 }
             };
 
             $scope.handleKeyRelease = function (e) {
-                if (e.keyCode == 38 || e.keyCode == 40) {
+                if ($scope.gameState.players[$scope.player.name] && (e.keyCode == 38 || e.keyCode == 40)) {
                     $scope.gameState.players[$scope.player.name].refVelocity = [0.0, 0.0];
                 }
             };
