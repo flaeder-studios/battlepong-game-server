@@ -9,13 +9,13 @@
                 });
             };
 
-            service.createGame = function (game, callback) {
+            service.createGame = function (game, callback, errorhandler) {
 
                 game.name = "mpong";
 
                 httpMethodService.post(urlService.gameUri + '/' + game.id, game, {}, function (result) {
                     callback(result.data);
-                });
+                }, errorhandler);
             };
 
             service.removeGame = function (game, callback) {

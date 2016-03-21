@@ -11,6 +11,13 @@
 
             service.displayAlert = function(type, message) {
                 this.alerts.push({type: type, message: message});
+                if (type == 'success' || type == 'info') {
+                    console.info(message);
+                } else if (type == 'warning') {
+                    console.warn(message);
+                } else {
+                    console.error(message);
+                }
             };
              
             service.closeAlert = function(index) {

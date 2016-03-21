@@ -20,8 +20,7 @@
 
     <section>
         <div ng-controller="AlertController">
-            <uib-alert ng-repeat="alert in alertService.alerts" type="{{alert.type}}" close="alertService.closeAlert($index)">{{alert.message}}</uib-alert>
-            <button type="button" class='btn btn-default' ng-click="alertService.displayAlert('warning','another warning...')">Add Alert</button>
+            <uib-alert dismiss-on-timeout="5000" ng-repeat="alert in alertService.alerts" type="{{alert.type}}" close="alertService.closeAlert($index)">{{alert.message}}</uib-alert>
         </div>
         <ng-view></ng-view>
     </section>

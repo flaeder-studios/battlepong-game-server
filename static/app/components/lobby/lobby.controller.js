@@ -19,17 +19,16 @@
                 $location.path('/game');
             }
 
-            $scope.createGame = function (game, callback) {
+            $scope.createGame = function (game, callback, errorhandler) {
                 lobbyService.createGame(game, function (data) {
                     $scope.games.push(data.games[0]);
                     if (game.join) {
                         $scope.joinGame(data.games[0]);
                     }
-                    console.log('created game ' + data.games[0]);
                     if (callback) {
                         callback(data.games[0]);
                     }
-                });
+                }, errorhandler);
             };
 
             $scope.removeGame = function (game, callback) {
@@ -251,18 +250,10 @@
                     controller: 'CreateGameModalController',
                     resolve: {
                         doCreateGame: function () {
-                            console.log("doCreateGame created")
                             return $scope.createGame;
                         }
                     }
                 });
-
-                modalInstance.result.then(function (newGame) {
-                    //$scope.createGame(newGame);
-                }, function () {
-                    console.log('Register modal dismissed at: ' + new Date());
-                });
-
             };
 
             console.log("entered lobby")

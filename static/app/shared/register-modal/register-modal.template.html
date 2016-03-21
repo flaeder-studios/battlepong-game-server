@@ -8,7 +8,7 @@
             <input id="maxPlayers" class="form-control" type="text" ng-model="newName">
         </div>
     </form>
-    {{ message }}
+    <p ng-show="message.length" class="modal-alert">{{ message }}</p>
 </div>
 <div class="modal-footer">
     <button class="btn btn-primary" ng-click="register()"> Register </button>

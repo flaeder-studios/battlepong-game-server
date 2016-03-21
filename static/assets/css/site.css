@@ -250,5 +250,9 @@ a:hover {
     margin-left: -375px;
     z-index: 999;
 }
-
+.modal-alert {
+    color: red;
+    border-style: solid;
+    padding: 5px;
+}
 
