@@ -242,3 +242,13 @@ a:hover {
     top: 8px;
     left: 16px;
 }
+.alert {
+    position: fixed;
+    top: 5px;
+    left: 50%;
+    width: 750px;
+    margin-left: -375px;
+    z-index: 999;
+}
+
+
