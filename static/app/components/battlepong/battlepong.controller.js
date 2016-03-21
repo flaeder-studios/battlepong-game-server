@@ -3,7 +3,7 @@
     "use strict";
 
     angular.module('flaederGamesApp')
-        .controller('BattlePongController', ['$scope', '$window', '$location', '$timeout','battlePongService', 'lobbyService', 'playerService', 'gameService', function ($scope, $window, $location, $timeout, battlePongService, lobbyService, playerService, gameService) {
+        .controller('BattlePongController', ['$scope', '$window', '$location', '$timeout','BattlePongService', 'lobbyService', 'playerService', 'gameService', function ($scope, $window, $location, $timeout, BattlePongService, lobbyService, playerService, gameService) {
 
             $scope.pTime = 0;
             $scope.pPaddleUpdate = 0;
@@ -13,7 +13,7 @@
             $scope.startGame = function () {
                 console.log("starting game...");
                 $scope.gameOn = true;
-                battlePongService.initGame();
+                BattlePongService.initGame();
                 window.addEventListener('keydown', $scope.handleKeyPress, false);
                 window.addEventListener('keyup', $scope.handleKeyRelease, false);
                 startStuff();
@@ -90,7 +90,7 @@
             }
 
             function updatePaddleSpeed(paddle) {
-                battlePongService.setPaddleSpeed(paddle.velocity[1], function() {
+                BattlePongService.setPaddleSpeed(paddle.velocity[1], function() {
                     var dt = 0,
                         time = new Date().getTime();
                     if ($scope.gameOn) {
@@ -109,7 +109,7 @@
             }
 
             function updateState() {
-                battlePongService.getState($scope.currentPlayer.currentGame.id, function (data) {
+                BattlePongService.getState($scope.currentPlayer.currentGame.id, function (data) {
                     setState(data);
                     if ($scope.gameOn == true) {
                         updateState();
@@ -120,7 +120,7 @@
             function startStuff() {
                 playerService.getPlayer(function (data) {
                     $scope.currentPlayer = data.player;
-                    battlePongService.getState($scope.currentPlayer.currentGame.id, function (data) {
+                    BattlePongService.getState($scope.currentPlayer.currentGame.id, function (data) {
                         $scope.gameOn = true;
                         initState(data);
                         render($scope.pTime);
@@ -144,19 +144,19 @@
                     for (paddle in $scope.gameState.players) {
                         paddle = $scope.gameState.players[paddle];
                         BattlePongService.handlePaddleBounce(ball, paddle);
-                    battlePongService.handleWallBounce(ball);
+                    BattlePongService.handleWallBounce(ball);
 		    }
                     for (paddle in $scope.gameState.players) {
                         paddle = $scope.gameState.players[paddle];
-                        battlePongService.handlePaddleBounce(ball, paddle);
+                        BattlePongService.handlePaddleBounce(ball, paddle);
                     }
-                    battlePongService.moveBall(ball, dt);
-                    battlePongService.drawBall(ball);
+                    BattlePongService.moveBall(ball, dt);
+                    BattlePongService.drawBall(ball);
                 }
                 for (paddle in $scope.gameState.players) {
                     paddle = $scope.gameState.players[paddle];
-                    battlePongService.movePaddle(paddle, dt);
-                    battlePongService.drawPaddle(paddle);
+                    BattlePongService.movePaddle(paddle, dt);
+                    BattlePongService.drawPaddle(paddle);
                 }
                 if($scope.gameOn == true) {
                     $window.requestAnimationFrame(render);
