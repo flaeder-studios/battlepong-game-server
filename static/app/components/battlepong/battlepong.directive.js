@@ -11,7 +11,7 @@ angular.module("flaederGamesApp")
             console.log(element);
             scope.canvas = element.find('gameCanvas')[0];
             scope.gl = getWebGLContext(scope.canvas);
-            scope.screenRatio = scope.canvas.height / scope.canvas.width;
+            scope.screenRatio = scope.canvas.width / scope.canvas.height;
             scope.gl.viewportWidth = scope.canvas.width;
             scope.gl.viewportHeight = scope.canvas.height;
         },
