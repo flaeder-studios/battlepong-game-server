@@ -182,13 +182,13 @@ class Game(object):
         paddle2 = game.paddle2
         ball = game.ball
         state = {}
-        state['players'] = {}
-        state['players'][paddle1.name] = {
+        state['paddles'] = {}
+        state['paddles'][paddle1.name] = {
             'position': [paddle1.position.x, paddle1.position.y],
             'dimensions': [paddle1.width.x, paddle1.height.y],
             'score': paddle1.points,
         }
-        state['players'][paddle2.name] = {
+        state['paddles'][paddle2.name] = {
             'position': [paddle2.position.x, paddle2.position.y],
             'dimensions': [paddle2.width.x, paddle2.height.y],
             'score': paddle2.points,
