@@ -145,6 +145,7 @@
                         paddle = $scope.gameState.players[paddle];
                         BattlePongService.handlePaddleBounce(ball, paddle);
                     battlePongService.handleWallBounce(ball);
+		    }
                     for (paddle in $scope.gameState.players) {
                         paddle = $scope.gameState.players[paddle];
                         battlePongService.handlePaddleBounce(ball, paddle);
@@ -160,6 +161,7 @@
                 if($scope.gameOn == true) {
                     $window.requestAnimationFrame(render);
                 }
+		
             };
 
             $scope.startGame();

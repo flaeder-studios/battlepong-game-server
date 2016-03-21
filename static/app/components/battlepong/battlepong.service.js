@@ -1,7 +1,7 @@
 (function () {
 
     angular.module('flaederGamesApp')
-        .factory('battlePongService', ['httpMethodService', 'urlService', function (httpMethodService, urlService) {
+        .factory('BattlePongService', ['httpMethodService', 'urlService', function (httpMethodService, urlService) {
 
             var service = {};
 
