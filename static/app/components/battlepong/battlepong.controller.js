@@ -51,7 +51,7 @@
             function setState (data) {
                 for (var ball in data.balls) {
                     $scope.gameState.balls[ball].position = transformToCanvasCoord(data.balls[ball].position);
-                    $scope.gameState.balls[ball].radius = data.balls[ball].radius;
+                    $scope.gameState.balls[ball].radius = data.balls[ball].radius / 0.618033;
                 }
                 for (var paddle in data.paddles) {
                     $scope.gameState.players[paddle].position = transformToCanvasCoord(data.paddles[paddle].position);
@@ -66,7 +66,7 @@
                 for (var ball in data.balls) {
                     $scope.gameState.balls[ball] = {};
                     $scope.gameState.balls[ball].position = transformToCanvasCoord(data.balls[ball].position);
-                    $scope.gameState.balls[ball].radius = data.balls[ball].radius;
+                    $scope.gameState.balls[ball].radius = data.balls[ball].radius / 0.618033;
                     $scope.gameState.balls[ball].velocity = [0.0,0.0];
                     $scope.gameState.balls[ball].color = [0.0, 0.0, 1.0, 1.0];
                 }
