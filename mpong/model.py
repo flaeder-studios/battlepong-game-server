@@ -194,7 +194,7 @@ class Game(object):
             'score': paddle2.points,
         }
         state['balls'] = {}
-        state['balls'][ball.name] = {'position': [ball.position.x, ball.position.y], 'radius': ball.height.y}
+        state['balls'][ball.name] = {'position': [ball.position.x, ball.position.y], 'radius': ball.height.y / 2}
         state[game.name] = [game.position.x, game.position.y, game.height.y, game.width.x]
         return state
 
