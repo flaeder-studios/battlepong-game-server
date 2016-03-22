@@ -136,6 +136,9 @@
                 for (ball in $scope.gameState.balls) {
                     ball = $scope.gameState.balls[ball];
                     BattlePongService.handleWallBounce(ball);
+		    for (paddle in $scope.gameState.paddles){
+			BattlePongService.handlePaddleBounce(ball, $scope.gameState.paddles[paddle])
+	            }
                     BattlePongService.moveBall(ball, dt);
                     BattlePongService.drawBall(ball);
                 }
