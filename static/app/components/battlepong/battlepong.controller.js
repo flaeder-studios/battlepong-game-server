@@ -45,7 +45,7 @@
             };
 
             function transformToCanvasCoord(pos) {
-                return [pos[0], pos[1] / 0.625];
+                return [pos[0], pos[1] / 0.618033];
             }
 
             function setState (data) {
@@ -136,9 +136,9 @@
                 for (ball in $scope.gameState.balls) {
                     ball = $scope.gameState.balls[ball];
                     BattlePongService.handleWallBounce(ball);
-		    for (paddle in $scope.gameState.paddles){
-			BattlePongService.handlePaddleBounce(ball, $scope.gameState.paddles[paddle])
-	            }
+		            for (paddle in $scope.gameState.paddles){
+			            BattlePongService.handlePaddleBounce(ball, $scope.gameState.paddles[paddle])
+	                }
                     BattlePongService.moveBall(ball, dt);
                     BattlePongService.drawBall(ball);
                 }
