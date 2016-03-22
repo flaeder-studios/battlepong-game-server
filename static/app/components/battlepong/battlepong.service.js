@@ -79,7 +79,7 @@
 
             service.handlePaddleBounce = function (ball, paddle) {
                 if (Math.abs(ball.position[0] - paddle.position[0]) < ball.radius + paddle.width / 2 &&
-                    Math.abs(ball.position[1] - paddle.position[1]) < paddle.height) {
+                    Math.abs(ball.position[1] - paddle.position[1]) < paddle.height / 2) {
                     // collision!!
                     if (ball.velocity[0] < 0) {
                         ball.position[0] = paddle.position[0] + paddle.width / 2 + ball.radius + 0.00001;
