@@ -10,6 +10,39 @@
             $scope.gameState = {balls: {}, players: {}};
             $scope.gameOn = false;
 
+            $scope.scoreBoardStyle = {}
+            
+            function componentToHex(c) {
+                var hex = c.toString(16);
+                return hex.length == 1 ? "0" + hex : hex;
+            }
+
+            function rgbToHex(r, g, b) {
+                return "#" + componentToHex(r) + componentToHex(g) + componentToHex(b);
+            }
+
+            function rgbArrayToHex(rgb) {
+                return rgbToHex(rgb[0]*255|0, rgb[1]*255|0, rgb[2]*255|0);
+            }
+
+            $scope.resize = function (width, height) {
+                $scope.width = width;
+                $scope.height = height;
+                $scope.updateStyle();
+            };
+
+            $scope.updateStyle = function () {
+                for (var paddle in $scope.gameState.players) {
+                    $scope.gameState.players[paddle].style = {
+                        'color': rgbArrayToHex($scope.gameState.players[paddle].color),
+                        'opacity': '0.6',
+                        'font-size': '24px',
+                        'position': 'relative',
+                        'left': ($scope.width + 10).toString() + 'px'
+                    };
+                }
+            };
+
             $scope.startGame = function () {
                 console.log("starting game...");
                 $scope.gameOn = true;
@@ -68,7 +101,7 @@
                     $scope.gameState.balls[ball].position = transformToCanvasCoord(data.balls[ball].position);
                     $scope.gameState.balls[ball].radius = data.balls[ball].radius / 0.618033;
                     $scope.gameState.balls[ball].velocity = [0.0,0.0];
-                    $scope.gameState.balls[ball].color = [0.0, 0.0, 1.0, 1.0];
+                    $scope.gameState.balls[ball].color = [Math.random(), Math.random(), Math.random(), 1.0];
                 }
                 for (var paddle in data.paddles) {
                     $scope.gameState.players[paddle] = {};
@@ -79,9 +112,11 @@
                     data.paddles[paddle].dimensions = transformToCanvasCoord(data.paddles[paddle].dimensions);
                     $scope.gameState.players[paddle].width = data.paddles[paddle].dimensions[0];
                     $scope.gameState.players[paddle].height = data.paddles[paddle].dimensions[1];
-                    $scope.gameState.players[paddle].color = [1.0, 0.0, 0.0, 1.0];
+                    $scope.gameState.players[paddle].color = [Math.random(), Math.random(), Math.random(), 1.0];
                     $scope.gameState.players[paddle].score = data.paddles[paddle].score;
+                    $scope.updateStyle();
                 }
+                console.log($scope.gameState)
             }
 
             function updatePaddleSpeed(paddle) {

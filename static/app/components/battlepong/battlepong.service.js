@@ -37,10 +37,10 @@
                 }
 
                 this.paddleBuffer = [
-                    this.screenRatio, 1.0,
-                    -this.screenRatio, 1.0,
-                    -this.screenRatio, -1.0,
-                    this.screenRatio, -1.0
+                    1.0, 1.0,
+                    -1.0, 1.0,
+                    -1.0, -1.0,
+                    1.0, -1.0
                 ];
 
             };

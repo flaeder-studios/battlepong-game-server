@@ -1,8 +1,8 @@
 angular.module("flaederGamesApp")
-    .directive("autoResize", ['$window', function ($window) {
+    .directive("autoResize", ['$window', '$rootScope', function ($window, $rootScope) {
         return {
             restrict: "A",
-            scope: true,
+            scope: {resizeFn: '&'},
             link: function (scope, element, attrs) {
 
                 scope.ratio = parseInt(attrs.width) / parseInt(attrs.height);
@@ -18,6 +18,9 @@ angular.module("flaederGamesApp")
                             wsize = hsize * scope.ratio;
                         element.css('height', hsize.toString() + 'px');
                         element.css('width', wsize.toString() + 'px');
+
+                        args = {width: wsize, height: hsize};
+                        scope.resizeFn(args);
                     }
                 }
 
