@@ -11,7 +11,7 @@
             service.initGame = function () {
                 this.canvas = angular.element("#gameCanvas")[0];
                 this.gl = getWebGLContext(this.canvas);
-                this.screenRatio = this.canvas.height / this.canvas.width;
+                this.screenRatio = this.canvas.width / this.canvas.height;
                 this.gl.viewportWidth = this.canvas.width;
                 this.gl.viewportHeight = this.canvas.height;
 
@@ -25,13 +25,16 @@
                 this.colorLocation = this.gl.getUniformLocation(this.program, "uColor");
                 this.translationLocation = this.gl.getUniformLocation(this.program, "uTranslation");
                 this.scaleLocation = this.gl.getUniformLocation(this.program, "uScale");
+                this.clipspaceLocation = this.gl.getUniformLocation(this.program, "uClipspace");
+
+                this.gl.uniform2fv(this.clipspaceLocation, [1.0, this.screenRatio]);
 
                 this.ballBuffer = [0.0, 0.0];
 
                 var angle = 0.0,
                     i;
                 for (i = 2; i < 2 * (this.BALL_EDGES + 1) + 2; i += 2) {
-                    this.ballBuffer[i] = Math.cos(angle) * this.screenRatio;
+                    this.ballBuffer[i] = Math.cos(angle);
                     this.ballBuffer[i + 1] = Math.sin(angle);
                     angle += this.D_ANGLE;
                 }
