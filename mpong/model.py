@@ -195,7 +195,8 @@ class Game(object):
         }
         state['balls'] = {}
         state['balls'][ball.name] = {'position': [ball.position.x, ball.position.y], 'radius': ball.height.y / 2}
-        state[game.name] = [game.position.x, game.position.y, game.height.y, game.width.x]
+        state['gameBoard'] = {}
+        state['gameBoard'][game.name] = [game.position.x, game.position.y, game.height.y, game.width.x]
         return state
 
     def artificialIntelligence(self, paddle, dt):
@@ -268,6 +269,7 @@ class MPongGame(threading.Thread):
         self.pt = None
         self.model = None
         self.daemon = True
+        self.countDown = 5
 
     def joinPlayer(self, newPlayer):
         if newPlayer not in self.joinedPlayers:
@@ -287,6 +289,11 @@ class MPongGame(threading.Thread):
         player2 = self.joinedPlayers[1]
         self.pt = time.time()
         while self.gameStarted:
+            while self.countDown > 0:
+                time.sleep(1)
+                cherrypy.log('countDown to start: %d' % (self.countDown))
+                self.countDown -= 1 
+
             t = time.time()
             dt = abs(self.pt - t)
             self.pt = t
@@ -302,6 +309,8 @@ class MPongGame(threading.Thread):
 
     def getState(self):
         if self.model:
+            state = self.model.getState()
+            state['startCountDown'] = self.countDown
             return self.model.getState()
         else:
             raise cherrypy.HTTPError(400, 'Game not started')
