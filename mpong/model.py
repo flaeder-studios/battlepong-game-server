@@ -186,16 +186,23 @@ class Game(object):
         state['paddles'][paddle1.name] = {
             'position': [paddle1.position.x, paddle1.position.y],
             'dimensions': [paddle1.width.x, paddle1.height.y],
-            'score': paddle1.points,
+            'velocity' : [paddle1.velocity.x, paddle1.velocity.y],
+            'score': paddle1.points
         }
         state['paddles'][paddle2.name] = {
             'position': [paddle2.position.x, paddle2.position.y],
             'dimensions': [paddle2.width.x, paddle2.height.y],
-            'score': paddle2.points,
+            'velocity' : [paddle2.velocity.x, paddle2.velocity.y],
+            'score': paddle2.points
         }
         state['balls'] = {}
-        state['balls'][ball.name] = {'position': [ball.position.x, ball.position.y], 'radius': ball.height.y / 2}
-        state[game.name] = [game.position.x, game.position.y, game.height.y, game.width.x]
+        state['balls'][ball.name] = {
+            'position': [ball.position.x, ball.position.y],
+            'radius': ball.height.y / 2,
+            'velocity' : [ball.velocity.x, ball.velocity.y]
+        }
+        state['gameBoard'] = {}
+        state['gameBoard'][game.name] = [game.position.x, game.position.y, game.height.y, game.width.x]
         return state
 
     def artificialIntelligence(self, paddle, dt):
@@ -268,6 +275,7 @@ class MPongGame(threading.Thread):
         self.pt = None
         self.model = None
         self.daemon = True
+        self.countDown = 5
 
     def joinPlayer(self, newPlayer):
         if newPlayer not in self.joinedPlayers:
@@ -285,8 +293,12 @@ class MPongGame(threading.Thread):
         self.model = Game(2./self.goldenRatio, self.joinedPlayers[0].name, self.joinedPlayers[1].name, 2./self.goldenRatio*0.25)
         player1 = self.joinedPlayers[0]
         player2 = self.joinedPlayers[1]
+        while self.countDown > 0:
+            time.sleep(1)
+            self.countDown -= 1 
         self.pt = time.time()
         while self.gameStarted:
+
             t = time.time()
             dt = abs(self.pt - t)
             self.pt = t
@@ -302,6 +314,8 @@ class MPongGame(threading.Thread):
 
     def getState(self):
         if self.model:
+            state = self.model.getState()
+            state['startCountDown'] = self.countDown
             return self.model.getState()
         else:
             raise cherrypy.HTTPError(400, 'Game not started')
