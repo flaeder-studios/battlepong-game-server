@@ -19,10 +19,10 @@ class MasterGameBuilder(object):
             raise cherrypy.HTTPError(400, 'MasterGameBuilder: Game already %s exists' % gameId)
 
     def join(self, gameId, name):
-        if not name in MasterGameBuilder.players.keys():
+        if not name in MasterGameBuilder.players.keys() or name == "":
             raise cherrypy.HTTPError(401, 'MasterGameBuilder: No name %s found.' % (name))
         
-        if not gameId in MasterGameBuilder.games.keys():
+        if not gameId in MasterGameBuilder.games.keys() or gameId == "":
             raise cherrypy.HTTPError(404, 'MasterGameBuilder: No name game with id %s found.' % (gameId))
 
         MasterGameBuilder.games[gameId].joinPlayer(MasterGameBuilder.players[name])
