@@ -9,6 +9,7 @@ class StartHandler:
 
     exposed = True
 
+    @cherrypy.tools.json_out()
     def POST(self):
 
         currentGame = cherrypy.session.get('currentGame')
@@ -16,3 +17,5 @@ class StartHandler:
             currentGame['gameStarted'] = True
             masterGame.startGame(currentGame['id'])
             cherrypy.log('Start game %s' % currentGame['id'])
+
+        return currentGame

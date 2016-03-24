@@ -8,9 +8,6 @@ import json
 import handlers
 
 
-overriddenErrorCodes = [400, 401, 402, 403, 404]
-
-
 def handleError():
     cherrypy.response.status = 500
     cherrypy.response.body = ["An error occurred..."]

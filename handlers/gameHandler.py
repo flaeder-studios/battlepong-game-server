@@ -29,25 +29,26 @@ class GameHandler:
     def GET(self, gameId=None):
         if not cherrypy.session.get('name'):
             raise cherrypy.HTTPError(401)
-        
+
         if gameId is None:
             return self.getAllGames()
         else:
             return self.getGame(gameId)
-    
+
     @cherrypy.tools.json_out()
     @cherrypy.tools.json_in()
     def POST(self, gameId=None):
         if not cherrypy.session.get('name'):
             raise cherrypy.HTTPError(401, 'name not set')
-        
+
         game = cherrypy.request.json
-        
-        if gameId:
-            game[u'id'] = str(gameId)
-        else:
-            raise cherrypy.HTTPError(400, 'game id not set')
-        
+
+        if 'id' not in game:
+            if gameId:
+                game[u'id'] = str(gameId)
+            else:
+                raise cherrypy.HTTPError(400, 'game id not set')
+
         if u'maxPlayers' not in game:
             raise cherrypy.HTTPError(400, 'game maxPlayers not set')
         game[u'maxPlayers'] = int(game[u'maxPlayers'])
@@ -55,9 +56,7 @@ class GameHandler:
         for g in GameHandler.games:
             if g.get('id') == game['id']:
                 raise cherrypy.HTTPError(400, message='game with id %s already exists' % gameId)
-            
-        #createdGame = cherrypy.engine.publish('mpong-create-game', game) #.pop()
-        
+
         game[u'createdBy'] = str(cherrypy.session.get('name'))
         game[u'name'] = 'mpong'
         game[u'gameStarted'] = False
@@ -73,9 +72,9 @@ class GameHandler:
         cherrypy.session['currentGame'] = game
 
         cherrypy.log("created game %s" % game)
-        
-        return { 'games': [game] }
-    
+
+        return {'games': [game]}
+
     @cherrypy.tools.json_out()
     def DELETE(self, gameId):
         if not cherrypy.session.get('name'):
