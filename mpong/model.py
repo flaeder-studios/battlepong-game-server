@@ -145,6 +145,7 @@ class Game(object):
                 else:
                     paddle1.points += 1
                     ball.reset(self.game.position)
+                    time.sleep(1)
         else:
             if ball.left() < paddle1.right():
                 if ball.position.y < paddle1.topp() and ball.position.y > paddle1.bottom():
@@ -156,6 +157,7 @@ class Game(object):
                 else:
                     paddle2.points += 1
                     ball.reset(self.game.position)
+                    time.sleep(1)
 
     def update(self, velocity, dt):
         """ Move game objects (paddles and ball).
@@ -298,7 +300,6 @@ class MPongGame(threading.Thread):
             self.countDown -= 1 
         self.pt = time.time()
         while self.gameStarted:
-
             t = time.time()
             dt = abs(self.pt - t)
             self.pt = t
@@ -319,3 +320,13 @@ class MPongGame(threading.Thread):
             return self.model.getState()
         else:
             raise cherrypy.HTTPError(400, 'Game not started')
+
+class ControlUnit(threading.Thread):
+    def __init__(self, players, games):
+        super(ControlUnit, self).__init__(target=self.run)
+
+    def run():
+        while True:
+            time.slepp(5)
+            ## check for inactive games, or games that is over
+            ## check for inactive players or players that left
