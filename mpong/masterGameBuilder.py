@@ -1,6 +1,7 @@
 import model
 import cherrypy
-
+import time
+import threading
 
 class MasterGameBuilder(object):
     games = {}
@@ -9,62 +10,103 @@ class MasterGameBuilder(object):
 
     def createPlayer(self, name):
         if name not in MasterGameBuilder.players.keys():
-            MasterGameBuilder.players[name] = model.Player(name)
+            MasterGameBuilder.players[name] = [model.Player(name), time.time()]
         else:
             raise cherrypy.HTTPError(400, 'MasterGameBuilder: Player %s already exists' % name)
 
     def createGame(self, gameId, maxPlayers):
         if gameId not in MasterGameBuilder.games.keys():
-            MasterGameBuilder.games[gameId] = model.MPongGame(gameId, maxPlayers)
+            MasterGameBuilder.games[gameId] = [model.MPongGame(gameId, maxPlayers), time.time()]
         else:
             raise cherrypy.HTTPError(400, 'MasterGameBuilder: Game already %s exists' % gameId)
 
     def join(self, gameId, name):
-        if not name in MasterGameBuilder.players.keys() or name == "":
+        if name not in MasterGameBuilder.players.keys() or name == "":
             raise cherrypy.HTTPError(401, 'MasterGameBuilder: No name %s found.' % (name))
-        
-        if not gameId in MasterGameBuilder.games.keys() or gameId == "":
-            raise cherrypy.HTTPError(404, 'MasterGameBuilder: No name game with id %s found.' % (gameId))
-
-        MasterGameBuilder.games[gameId].joinPlayer(MasterGameBuilder.players[name])
+        if gameId not in MasterGameBuilder.games.keys() or gameId == "":
+            raise cherrypy.HTTPError(404, 'MasterGameBuilder: No game with id %s found.' % (gameId))
+        MasterGameBuilder.players[name][1] = time.time()
+        MasterGameBuilder.games[gameId][1] = time.time()
+        MasterGameBuilder.games[gameId][0].joinPlayer(MasterGameBuilder.players[name][0])
 
     def leave(self, gameId, name):
-        if name in MasterGameBuilder.players.keys() and gameId in MasterGameBuilder.games.keys():
-            MasterGameBuilder.games[gameId].leavePlayer(MasterGameBuilder.players[name])
-        else:
-            raise cherrypy.HTTPError(400, 'MasterGameBuilder: No game with id %s found' % gameId)
+        if name not in MasterGameBuilder.players.keys():
+            raise cherrypy.HTTPError(404, 'MasterGameBuilder: No name %s found.' % name)
+        if gameId not in MasterGameBuilder.games.keys():
+            raise cherrypy.HTTPError(404, 'MasterGameBuilder: No game with id %s found.' % gameId)
+        MasterGameBuilder.players[name][1] = time.time()
+        MasterGameBuilder.games[gameId][1] = time.time()
+        MasterGameBuilder.games[gameId][0].leavePlayer(MasterGameBuilder.players[name][0])
 
     def startGame(self, gameId):
-        if gameId in MasterGameBuilder.games.keys() and MasterGameBuilder.games[gameId].maxPlayers == len(MasterGameBuilder.games[gameId].joinedPlayers):
-            MasterGameBuilder.games[gameId].start()
-        else:
-            raise cherrypy.HTTPError(400, 'MasterGameBuilder: No game with id %s found or not enough joined players, who knows.' % gameId)
+        if gameId not in MasterGameBuilder.games.keys():
+            raise cherrypy.HTTPError(400, 'MasterGameBuilder: No game with id %s found' % gameId)
+        if not MasterGameBuilder.games[gameId][0].maxPlayers == len(MasterGameBuilder.games[gameId][0].joinedPlayers):
+            raise cherrypy.HTTPError(400, 'MasterGameBuilder: Not enough players joined')
+        MasterGameBuilder.games[gameId][1] = time.time()
+        MasterGameBuilder.games[gameId][0].start()
 
     def stopGame(self, gameId):
-        if gameId in MasterGameBuilder.games:
-            MasterGameBuilder.games[gameId].stop()
-            del MasterGameBuilder.games[gameId]
-        else:
+        if gameId not in MasterGameBuilder.games.keys():
             raise cherrypy.HTTPError(400, 'MasterGameBuilder: No game with id %s found' % gameId)
+        MasterGameBuilder.games[gameId][0].stop()
+        del MasterGameBuilder.games[gameId]
+
+    def setPlayerSpeed(self, playerName, speedY):
+        """ Set player speed in y-direction."""
+        if playerName not in MasterGameBuilder.players.keys():
+            raise cherrypy.HTTPError(400, 'MasterGameBuilder: No player %s found' % playerName)
+        MasterGameBuilder.players[playerName][1] = time.time()
+        MasterGameBuilder.players[playerName][0].velocity = model.Vector(0, float(speedY))
+
+    def gameState(self, gameId):
+        if gameId not in MasterGameBuilder.games.keys():
+            raise cherrypy.HTTPError(404, 'MasterGameBuilder: No game with id %s found' % gameId)
+        MasterGameBuilder.games[gameId][1] = time.time()
+        return MasterGameBuilder.games[gameId][0].getState()
+
+    def deletePlayer(self, playerName):
+        if playerName in MasterGameBuilder.players.keys():
+            del MasterGameBuilder.players[playerName[0]]
+        else:
+            raise cherrypy.HTTPError(400, 'MasterGameBuilder: No player with name %s found' % playerName)
 
     def deleteGame(self, gameId):
-        if gameId in MasterGameBuilder.games.keys() and not MasterGameBuilder.games[gameId].isAlive():
+        if gameId in MasterGameBuilder.games.keys() and not MasterGameBuilder.games[gameId][0].isAlive():
             del MasterGameBuilder.games[gameId]
         else:
             raise cherrypy.HTTPError(400, 'MasterGameBuilder: Cannot delete active game %s ' % gameId)
 
-    def setPlayerSpeed(self, playerName, speedY):
-        """ Set player speed in y-direction."""
-        if playerName in MasterGameBuilder.players.keys():
-            MasterGameBuilder.players[playerName].velocity = model.Vector(0, float(speedY))
-        else:
-            raise cherrypy.HTTPError(400, 'MasterGameBuilder: No player %s found' % playerName)
+class ControlUnit(threading.Thread):
+    deleteGames = []
+    deletePlayers = []
 
-    def gameState(self, gameId):
-        if gameId in MasterGameBuilder.games.keys():
-            return MasterGameBuilder.games[gameId].getState()
-        else:
-            raise cherrypy.HTTPError(404, 'MasterGameBuilder: No game with id %s found' % gameId)
+    def __init__(self, mgb):
+        super(ControlUnit, self).__init__(target=self.run)
+        self.mgb = mgb
+        self.daemon = True
+
+    def run(self):
+        while True:
+            time.sleep(5)
+            tNow = time.time()
+            for gameId, value in MasterGameBuilder.games.items():
+                startTime = value[1]
+                if t_now - startTime > 3600:
+                    ControlUnit.deleteGames.append(gameId)
+            for gameId in ControlUnit.deleteGames:
+                mgb.deleteGame(gameId)
+            for playerName, value in MasterGameBuilder.players.items():
+                startTime = value[1]
+                if t_now - startTime > 3600:
+                    ControlUnit.deletePlayers.append(playerName)
+            for playerName in ControlUnit.deletePlayers:
+                mgb.deletePlayer(playerName)
+            ControlUnit.deletePlayers = []
+            ControlUnit.deleteGames = []
+
 
 masterGame = MasterGameBuilder()
+cu = ControlUnit(masterGame)
+cu.start()
 masterGame.createPlayer('Arnold')

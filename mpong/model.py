@@ -273,7 +273,7 @@ class MPongGame(threading.Thread):
         self.gameID = gameID
         self.maxPlayers = maxPlayers
         self.joinedPlayers = []
-        self.gameStarted = None
+        self.gameStarted = 3
         self.pt = None
         self.model = None
         self.daemon = True
@@ -316,7 +316,7 @@ class MPongGame(threading.Thread):
                     self.winner = self.model.game.paddle1.name
                 else:
                     self.winner = self.model.game.paddle2.name
-            break 
+                break 
 
     def stop(self):
         self.gameStarted = -1
@@ -331,12 +331,3 @@ class MPongGame(threading.Thread):
         else:
             raise cherrypy.HTTPError(400, 'Game not started')
 
-class ControlUnit(threading.Thread):
-    def __init__(self, players, games):
-        super(ControlUnit, self).__init__(target=self.run)
-
-    def run():
-        while True:
-            time.slepp(5)
-            ## check for inactive games, or games that is over
-            ## check for inactive players or players that left
