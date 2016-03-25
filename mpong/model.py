@@ -273,7 +273,7 @@ class MPongGame(threading.Thread):
         self.gameID = gameID
         self.maxPlayers = maxPlayers
         self.joinedPlayers = []
-        self.gameStarted = False
+        self.gameStarted = None
         self.pt = None
         self.model = None
         self.daemon = True
@@ -292,7 +292,7 @@ class MPongGame(threading.Thread):
                 return p
 
     def run(self):
-        self.gameStarted = True
+        self.gameStarted = 0
         self.model = Game(2./self.goldenRatio, self.joinedPlayers[0].name, self.joinedPlayers[1].name, 2./self.goldenRatio*0.25)
         player1 = self.joinedPlayers[0]
         player2 = self.joinedPlayers[1]
@@ -300,7 +300,7 @@ class MPongGame(threading.Thread):
             time.sleep(1)
             self.countDown -= 1 
         self.pt = time.time()
-        while self.gameStarted:
+        while True:
             t = time.time()
             dt = abs(self.pt - t)
             self.pt = t
@@ -308,21 +308,25 @@ class MPongGame(threading.Thread):
             velocity[player1.name] = player1.getVelocity()
             velocity[player2.name] = player2.getVelocity()
             self.model.update(velocity, dt)
+            if self.gameStarted == -1:
+                break
             if self.model.game.paddle1.points == 10 or self.model.game.paddle2.points == 10:
+                self.gameStarted = 1
                 if self.model.game.paddle1.points == 10:
                     self.winner = self.model.game.paddle1.name
                 else:
                     self.winner = self.model.game.paddle2.name
-                self.stop()
+            break 
 
     def stop(self):
-        self.gameStarted = False
+        self.gameStarted = -1
 
     def getState(self):
         if self.model:
             state = self.model.getState()
             state['startCountDown'] = self.countDown
             state['winner'] = self.winner
+            state['gameStarted'] = self.gameStarted
             return self.model.getState()
         else:
             raise cherrypy.HTTPError(400, 'Game not started')
