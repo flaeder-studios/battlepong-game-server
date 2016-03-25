@@ -278,6 +278,7 @@ class MPongGame(threading.Thread):
         self.model = None
         self.daemon = True
         self.countDown = 5
+        self.winner = ""
 
     def joinPlayer(self, newPlayer):
         if newPlayer not in self.joinedPlayers:
@@ -308,6 +309,10 @@ class MPongGame(threading.Thread):
             velocity[player2.name] = player2.getVelocity()
             self.model.update(velocity, dt)
             if self.model.game.paddle1.points == 10 or self.model.game.paddle2.points == 10:
+                if self.model.game.paddle1.points == 10:
+                    self.winner = self.model.game.paddle1.name
+                else:
+                    self.winner = self.model.game.paddle2.name
                 self.stop()
 
     def stop(self):
@@ -317,6 +322,7 @@ class MPongGame(threading.Thread):
         if self.model:
             state = self.model.getState()
             state['startCountDown'] = self.countDown
+            state['winner'] = self.winner
             return self.model.getState()
         else:
             raise cherrypy.HTTPError(400, 'Game not started')
