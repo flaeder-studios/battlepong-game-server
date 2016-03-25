@@ -5,6 +5,7 @@ import cherrypy
 class MasterGameBuilder(object):
     games = {}
     players = {}
+    controlUnit = None
 
     def createPlayer(self, name):
         if name not in MasterGameBuilder.players.keys():
