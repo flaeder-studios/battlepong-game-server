@@ -19,6 +19,8 @@ class StopHandler:
                 if g['id'] == currentGame['id']:
                     GameHandler.games.remove(g)
             masterGame.stopGame(currentGame['id'])
+            cherrypy.session['currentGame'] = None
+
             cherrypy.log('Stop game %s' % currentGame['id'])
 
 
