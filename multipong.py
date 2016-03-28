@@ -6,6 +6,7 @@ import os
 import cherrypy
 import json
 import handlers
+import mpong.controlUnit
 
 
 def handleError():
@@ -35,6 +36,9 @@ root.game.paddle = handlers.PaddleHandler()
 root.player = handlers.PlayerHandler()
 
 cherrypy.config.update({'error_page.default': standardErrorMessage})
+
+mpong.controlUnit.cu.start() # remove timeout games.
+
 
 cfgFile = os.path.dirname(os.path.realpath(__file__)) + '/multipong.conf'
 cherrypy.quickstart(root, '/', cfgFile)

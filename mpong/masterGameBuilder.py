@@ -79,58 +79,5 @@ class MasterGameBuilder(object):
             raise cherrypy.HTTPError(400, 'MasterGameBuilder: Cannot delete active game %s ' % gameId)
 
 
-class ControlUnit(threading.Thread):
-    deleteGames = []
-    deletePlayers = []
-
-    def __init__(self, mgb):
-        super(ControlUnit, self).__init__(target=self.run)
-        self.mgb = mgb
-        self.daemon = True
-
-    def run(self):
-        while True:
-            time.sleep(20)
-            pt = time.time()
-            for gameId, value in MasterGameBuilder.games.items():
-                startTime = value[1]
-                if pt - startTime > 3600:
-                    for s in cherrypy.session.cache.values():
-                        self.clearSession(gameId, s)
-                    ControlUnit.deleteGames.append(gameId)
-            for gameId in ControlUnit.deleteGames:
-                mgb.deleteGame(gameId)
-            for playerName, value in MasterGameBuilder.players.items():
-                startTime = value[1]
-                if pt - startTime > 3600:
-                    ControlUnit.deletePlayers.append(playerName)
-            for playerName in ControlUnit.deletePlayers:
-                mgb.deletePlayer(playerName)
-            ControlUnit.deletePlayers = []
-            ControlUnit.deleteGames = []
-
-    def clearSession(self, gameId, session):
-        createdGames = session['createdGames']
-        deleteGame = None 
-        if createdGames:
-            for game in createdGames:
-                if game[u'id'] == gameId:
-                    deleteGame = game
-                    break
-        if deleteGame:
-            createdGames.remove(deleteGame)
-        currentGame = session['currentGame']
-        deleteGame = None
-        if currentGame:
-            for game in currentGame:
-                if game[u'id'] == gameId:
-                    deleteGame = game
-                    break
-        if deleteGame:
-            currentGame.remove(deleteGame)
-
-
 masterGame = MasterGameBuilder()
-cu = ControlUnit(masterGame)
-cu.start()
 masterGame.createPlayer('Arnold')
