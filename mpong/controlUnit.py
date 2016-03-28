@@ -21,7 +21,7 @@ class ControlUnit(threading.Thread):
             pt = time.time()
             for gameId, value in mpong.masterGameBuilder.MasterGameBuilder.games.items():
                 startTime = value[1]
-                if pt - startTime > 3:
+                if pt - startTime > 3600:
                     cherrypy.log("game %s timeout" % gameId)
                     ControlUnit.deleteGames.append(gameId)
                     for g in GameHandler.games:
