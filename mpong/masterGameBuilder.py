@@ -25,6 +25,7 @@ class MasterGameBuilder(object):
         if name not in MasterGameBuilder.players:
             raise cherrypy.HTTPError(401, 'MasterGameBuilder: No name %s found.' % (name))
         if gameId not in MasterGameBuilder.games:
+            cherrypy.session['currentGame'] = None
             raise cherrypy.HTTPError(404, 'MasterGameBuilder: No game with id %s found.' % (gameId))
         MasterGameBuilder.players[name][1] = time.time()
         MasterGameBuilder.games[gameId][1] = time.time()
@@ -32,8 +33,9 @@ class MasterGameBuilder(object):
 
     def leave(self, gameId, name):
         if name not in MasterGameBuilder.players:
-            raise cherrypy.HTTPError(404, 'MasterGameBuilder: No name %s found.' % name)
+            raise cherrypy.HTTPError(401, 'MasterGameBuilder: No name %s found.' % name)
         if gameId not in MasterGameBuilder.games:
+            cherrypy.session['currentGame'] = None
             raise cherrypy.HTTPError(404, 'MasterGameBuilder: No game with id %s found.' % gameId)
         MasterGameBuilder.players[name][1] = time.time()
         MasterGameBuilder.games[gameId][1] = time.time()
@@ -41,9 +43,10 @@ class MasterGameBuilder(object):
 
     def startGame(self, gameId):
         if gameId not in MasterGameBuilder.games:
-            raise cherrypy.HTTPError(400, 'MasterGameBuilder: No game with id %s found' % gameId)
+            raise cherrypy.HTTPError(401, 'MasterGameBuilder: No game with id %s found' % gameId)
         if not MasterGameBuilder.games[gameId][0].maxPlayers == len(MasterGameBuilder.games[gameId][0].joinedPlayers):
-            raise cherrypy.HTTPError(400, 'MasterGameBuilder: Not enough players joined')
+            cherrypy.session['currentGame'] = None
+            raise cherrypy.HTTPError(404, 'MasterGameBuilder: Not enough players joined')
         MasterGameBuilder.games[gameId][1] = time.time()
         MasterGameBuilder.games[gameId][0].start()
 
@@ -56,12 +59,13 @@ class MasterGameBuilder(object):
     def setPlayerSpeed(self, playerName, speedY):
         """ Set player speed in y-direction."""
         if playerName not in MasterGameBuilder.players:
-            raise cherrypy.HTTPError(400, 'MasterGameBuilder: No player %s found' % playerName)
+            raise cherrypy.HTTPError(401, 'MasterGameBuilder: No player %s found' % playerName)
         MasterGameBuilder.players[playerName][1] = time.time()
         MasterGameBuilder.players[playerName][0].velocity = model.Vector(0, float(speedY))
 
     def gameState(self, gameId):
         if gameId not in MasterGameBuilder.games:
+            cherrypy.session['currentGame'] = None
             raise cherrypy.HTTPError(404, 'MasterGameBuilder: No game with id %s found' % gameId)
         MasterGameBuilder.games[gameId][1] = time.time()
         return MasterGameBuilder.games[gameId][0].getState()
@@ -70,13 +74,14 @@ class MasterGameBuilder(object):
         if playerName in MasterGameBuilder.players:
             del MasterGameBuilder.players[playerName[0]]
         else:
-            raise cherrypy.HTTPError(400, 'MasterGameBuilder: No player with name %s found' % playerName)
+            raise cherrypy.HTTPError(401, 'MasterGameBuilder: No player with name %s found' % playerName)
 
     def deleteGame(self, gameId):
         if gameId in MasterGameBuilder.games and not MasterGameBuilder.games[gameId][0].isAlive():
             del MasterGameBuilder.games[gameId]
         else:
-            raise cherrypy.HTTPError(400, 'MasterGameBuilder: Cannot delete active game %s ' % gameId)
+            cherrypy.session['currentGame'] = None
+            raise cherrypy.HTTPError(404, 'MasterGameBuilder: Cannot delete active game %s ' % gameId)
 
 
 masterGame = MasterGameBuilder()
