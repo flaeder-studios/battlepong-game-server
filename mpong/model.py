@@ -266,6 +266,7 @@ class Player(object):
     def getVelocity(self):
         return self.velocity.copy()
 
+
 class MPongGame(threading.Thread):
     def __init__(self, gameID, maxPlayers):
         super(MPongGame, self).__init__(target=self.run)
@@ -273,7 +274,9 @@ class MPongGame(threading.Thread):
         self.gameID = gameID
         self.maxPlayers = maxPlayers
         self.joinedPlayers = []
-        self.gameStarted = 3
+        self.gameStarted = False
+        self.gameOver = False
+        self.stopGame = False
         self.pt = None
         self.model = None
         self.daemon = True
@@ -292,7 +295,7 @@ class MPongGame(threading.Thread):
                 return p
 
     def run(self):
-        self.gameStarted = 0
+        self.gameStarted = True
         self.model = Game(2./self.goldenRatio, self.joinedPlayers[0].name, self.joinedPlayers[1].name, 2./self.goldenRatio*0.25)
         player1 = self.joinedPlayers[0]
         player2 = self.joinedPlayers[1]
@@ -300,7 +303,7 @@ class MPongGame(threading.Thread):
             time.sleep(1)
             self.countDown -= 1 
         self.pt = time.time()
-        while True:
+        while not self.stopGame:
             t = time.time()
             dt = abs(self.pt - t)
             self.pt = t
@@ -308,10 +311,8 @@ class MPongGame(threading.Thread):
             velocity[player1.name] = player1.getVelocity()
             velocity[player2.name] = player2.getVelocity()
             self.model.update(velocity, dt)
-            if self.gameStarted == -1:
-                break
             if self.model.game.paddle1.points == 10 or self.model.game.paddle2.points == 10:
-                self.gameStarted = 1
+                self.gameOver = True
                 if self.model.game.paddle1.points == 10:
                     self.winner = self.model.game.paddle1.name
                 else:
@@ -319,7 +320,7 @@ class MPongGame(threading.Thread):
                 break 
 
     def stop(self):
-        self.gameStarted = -1
+        self.stopGame = True
 
     def getState(self):
         if self.model:
@@ -329,5 +330,6 @@ class MPongGame(threading.Thread):
         state['startCountDown'] = self.countDown
         state['winner'] = self.winner
         state['gameStarted'] = self.gameStarted
+        state['gameOver'] = self.gameOver
         return state
 
