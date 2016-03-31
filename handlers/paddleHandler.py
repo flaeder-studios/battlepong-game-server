@@ -10,6 +10,7 @@ class PaddleHandler:
     exposed = True
 
     @cherrypy.tools.json_in()
+    @cherrypy.tools.json_out()
     def POST(self):
         """ str -> float """
 
@@ -23,4 +24,5 @@ class PaddleHandler:
         masterGame.setPlayerSpeed(playerName, float(requestedSpeed))
         cherrypy.log('Set paddle speed to %f' % requestedSpeed)
 
+        return {'currentSpeed': requestedSpeed}
 

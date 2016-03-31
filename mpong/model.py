@@ -324,10 +324,10 @@ class MPongGame(threading.Thread):
     def getState(self):
         if self.model:
             state = self.model.getState()
-            state['startCountDown'] = self.countDown
-            state['winner'] = self.winner
-            state['gameStarted'] = self.gameStarted
-            return self.model.getState()
         else:
-            raise cherrypy.HTTPError(400, 'Game not started')
+            state = {}
+        state['startCountDown'] = self.countDown
+        state['winner'] = self.winner
+        state['gameStarted'] = self.gameStarted
+        return state
 
