@@ -25,17 +25,14 @@ class MasterGameBuilder(object):
         if name not in MasterGameBuilder.players:
             raise cherrypy.HTTPError(401, 'MasterGameBuilder: No name %s found.' % (name))
         if gameId not in MasterGameBuilder.games:
-            cherrypy.session['currentGame'] = None
             raise cherrypy.HTTPError(404, 'MasterGameBuilder: No game with id %s found.' % (gameId))
         MasterGameBuilder.players[name][1] = time.time()
-        MasterGameBuilder.games[gameId][1] = time.time()
         MasterGameBuilder.games[gameId][0].joinPlayer(MasterGameBuilder.players[name][0])
 
     def leave(self, gameId, name):
         if name not in MasterGameBuilder.players:
             raise cherrypy.HTTPError(401, 'MasterGameBuilder: No name %s found.' % name)
         if gameId not in MasterGameBuilder.games:
-            cherrypy.session['currentGame'] = None
             raise cherrypy.HTTPError(404, 'MasterGameBuilder: No game with id %s found.' % gameId)
         MasterGameBuilder.players[name][1] = time.time()
         MasterGameBuilder.games[gameId][1] = time.time()
@@ -45,9 +42,7 @@ class MasterGameBuilder(object):
         if gameId not in MasterGameBuilder.games:
             raise cherrypy.HTTPError(401, 'MasterGameBuilder: No game with id %s found' % gameId)
         if not MasterGameBuilder.games[gameId][0].maxPlayers == len(MasterGameBuilder.games[gameId][0].joinedPlayers):
-            cherrypy.session['currentGame'] = None
             raise cherrypy.HTTPError(404, 'MasterGameBuilder: Not enough players joined')
-        MasterGameBuilder.games[gameId][1] = time.time()
         MasterGameBuilder.games[gameId][0].start()
 
     def stopGame(self, gameId):
@@ -65,9 +60,7 @@ class MasterGameBuilder(object):
 
     def gameState(self, gameId):
         if gameId not in MasterGameBuilder.games:
-            cherrypy.session['currentGame'] = None
             raise cherrypy.HTTPError(404, 'MasterGameBuilder: No game with id %s found' % gameId)
-        MasterGameBuilder.games[gameId][1] = time.time()
         return MasterGameBuilder.games[gameId][0].getState()
 
     def deletePlayer(self, playerName):
@@ -80,7 +73,6 @@ class MasterGameBuilder(object):
         if gameId in MasterGameBuilder.games and not MasterGameBuilder.games[gameId][0].isAlive():
             del MasterGameBuilder.games[gameId]
         else:
-            cherrypy.session['currentGame'] = None
             raise cherrypy.HTTPError(404, 'MasterGameBuilder: Cannot delete active game %s ' % gameId)
 
 
