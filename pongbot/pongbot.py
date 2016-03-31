@@ -1,6 +1,7 @@
 import pongsession
 import names
 import time
+import math
 
 def dot(x,y):
     return sum(p * q for (p, q) in zip(x,y))
@@ -55,7 +56,7 @@ class PongBot:
 
         print "here we go!"
         pt = time.time()
-        P = 0.25
+        P = 4
         while not state['winner']:
             state = s.getState(currentGame['id'])
             t = time.time()
@@ -64,23 +65,17 @@ class PongBot:
             paddle = state['paddles'][name]
             ball = state['balls']['gameBall']
 
-            if paddle['position'][0] < 0:
-                if dot(ball['velocity'], [1, 0]) < 0:
-                    poserr = paddle['position'][1] - paddle['position'][1]
-                else:
-                    poserr = -paddle['position'][1]
+            if (paddle['position'][0] < 0 and ball['velocity'][0] < 0) or (paddle['position'][0] > 0 and ball['velocity'][0] > 0):
+                poserr = ball['position'][1] - paddle['position'][1]
             else:
-                if dot(ball['velocity'], [1, 0]) > 0:
-                    poserr = paddle['position'][1] - paddle['position'][1]
-                else:
-                    poserr = -paddle['position'][1]
+                poserr = -paddle['position'][1]
 
             dt = t - pt
-            vref = poserr / dt
+            vref = math.copysign(3, poserr)
             verr = vref - paddle['velocity'][1]
 
-            v = verr * P + ball['velocity'][1]
-            s.setPaddleSpeed(v)
+            v = verr * P * dt + ball['velocity'][1]
+            s.setPaddleSpeed(poserr * P)
 
 
         print "game over! %s won" % state['winner']
