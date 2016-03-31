@@ -3,7 +3,7 @@
     "use strict";
 
     angular.module('flaederGamesApp')
-        .controller('BattlePongController', ['$scope', '$window', '$location', '$timeout','BattlePongService', 'lobbyService', 'playerService', 'gameService', function ($scope, $window, $location, $timeout, BattlePongService, lobbyService, playerService, gameService) {
+        .controller('BattlePongController', ['$scope', '$window', '$location', '$timeout', '$routeParams', 'BattlePongService', 'lobbyService', 'playerService', 'gameService', 'alertService', function ($scope, $window, $location, $timeout, $routeParams, BattlePongService, lobbyService, playerService, gameService, alertService) {
 
             $scope.pTime = 0;
             $scope.pPaddleUpdate = 0;
@@ -43,22 +43,52 @@
                 }
             };
 
+            $scope.viewGame = function (gameId) {
+                console.log("viewing game", gameId);
+                $scope.gameOn = true;
+                BattlePongService.initGame();
+                playerService.getPlayer(function (data) {
+                    $scope.currentPlayer = data.player;
+                    BattlePongService.getState(gameId, function (data) {
+                        $scope.gameOn = true;
+                        initState(data);
+                        render($scope.pTime);
+                        updateState(gameId);
+                    });
+                });
+            };
+
             $scope.startGame = function () {
                 console.log("starting game...");
                 $scope.gameOn = true;
                 BattlePongService.initGame();
                 window.addEventListener('keydown', $scope.handleKeyPress, false);
                 window.addEventListener('keyup', $scope.handleKeyRelease, false);
-                startStuff();
+                playerService.getPlayer(function (data) {
+                    $scope.currentPlayer = data.player;
+                    BattlePongService.getState($scope.currentPlayer.currentGame.id, function (data) {
+                        $scope.gameOn = true;
+                        initState(data);
+                        render($scope.pTime);
+                        updateState($scope.currentPlayer.currentGame.id);
+                        updatePaddleSpeed($scope.gameState.players[$scope.player.name]);
+                    });
+                });
             };
 
             $scope.quitGame = function () {
-                gameService.quitGame(function (data) {
-                    $scope.updatePlayerData( function () {
-                        $scope.gameOn = false;
-                        $location.path('/lobby');
+                if ($routeParams.mode != 'view')
+                {
+                    gameService.quitGame(function (data) {
+                        $scope.updatePlayerData( function () {
+                            $scope.gameOn = false;
+                            $location.path('/lobby');
+                        });
                     });
-                });
+                } else {
+                    $scope.gameOn = false;
+                    $location.path('/lobby');
+                }
             };
 
             $scope.handleKeyPress = function (e) {
@@ -134,25 +164,12 @@
                 });
             }
 
-            function updateState() {
-                BattlePongService.getState($scope.currentPlayer.currentGame.id, function (data) {
+            function updateState(gameId) {
+                BattlePongService.getState(gameId, function (data) {
                     setState(data);
                     if ($scope.gameOn == true) {
-                        updateState();
+                        updateState(gameId);
                     }
-                });
-            }
-
-            function startStuff() {
-                playerService.getPlayer(function (data) {
-                    $scope.currentPlayer = data.player;
-                    BattlePongService.getState($scope.currentPlayer.currentGame.id, function (data) {
-                        $scope.gameOn = true;
-                        initState(data);
-                        render($scope.pTime);
-                        updateState();
-                        updatePaddleSpeed($scope.gameState.players[$scope.player.name]);
-                    });
                 });
             }
 
@@ -184,7 +201,15 @@
 		
             };
 
-            $scope.startGame();
+            if ($routeParams.mode == 'view') {
+                if ($routeParams.gameId) {
+                    $scope.viewGame($routeParams.gameId);
+                } else {
+                    alertSerivce.displayAlert('game id undefined');
+                }
+            } else {
+                $scope.startGame();
+            }
 
     }]);
 })();

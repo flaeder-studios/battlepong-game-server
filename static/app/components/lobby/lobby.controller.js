@@ -19,6 +19,10 @@
                 $location.path('/game');
             }
 
+            $scope.viewGame = function (gameId) {
+                $location.path('/game/battlepong/view/' + gameId);
+            }
+
             $scope.createGame = function (game, callback, errorhandler) {
                 lobbyService.createGame(game, function (data) {
                     $scope.games.push(data.games[0]);

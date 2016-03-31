@@ -38,7 +38,7 @@ class PongBot:
         currentGame = player['currentGame']
         name = player['name']
         while len(currentGame['joinedPlayers']) < currentGame['maxPlayers']:
-            print '%d / %d' % (len(currentGame['joinedPlayers']), currentGame['maxPlayers'])
+            print 'waiting for oponent (%d / %d joined)' % (len(currentGame['joinedPlayers']), currentGame['maxPlayers'])
             time.sleep(1.0)
             player = s.getPlayer()['player']
             currentGame = player['currentGame']

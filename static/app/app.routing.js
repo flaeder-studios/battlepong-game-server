@@ -10,7 +10,7 @@
             }).when('/game', {
                 templateUrl: '/app/components/game/game.view.html',
                 controller: 'GameController'
-            }).when('/game/battlepong', {
+            }).when('/game/battlepong/:mode?/:gameId?', {
                 templateUrl: '/app/components/battlepong/battlepong.view.html',
                 controller: 'BattlePongController'
             }).when('/home', {
