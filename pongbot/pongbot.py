@@ -49,31 +49,39 @@ class PongBot:
             s.startGame()
 
         state = s.getState(currentGame['id'])
-        while state['gameStarted'] != 0:
+        while not state['gameStarted']:
             print "waiting for game to start... (%d)" % state['gameStarted']
             state = s.getState(currentGame['id'])
             time.sleep(1.0)
 
         print "here we go!"
         P = 4
+        I = 4
+        pt = time.time()
+        posint = 0
         while not state['winner']:
             state = s.getState(currentGame['id'])
+            t = time.time()
 
-            # adjust paddle speed
             paddle = state['paddles'][name]
             ball = state['balls']['gameBall']
 
             if (paddle['position'][0] < 0 and ball['velocity'][0] < 0) or (paddle['position'][0] > 0 and ball['velocity'][0] > 0):
                 poserr = ball['position'][1] - paddle['position'][1]
+                P = 4
+                I = 4
             else:
                 poserr = -paddle['position'][1]
-            s.setPaddleSpeed(poserr * P)
+                posint = 0
+                I = 0
+                P = 1
 
+            posint += poserr * (t - pt)
+
+            # print "(poserr %f, posint %f)" % (poserr, posint)
+
+            s.setPaddleSpeed(poserr * P + posint * I)
+            pt = t
 
         print "game over! %s won" % state['winner']
-
-
-
-
-
 
