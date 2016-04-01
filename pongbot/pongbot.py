@@ -55,11 +55,9 @@ class PongBot:
             time.sleep(1.0)
 
         print "here we go!"
-        pt = time.time()
         P = 4
         while not state['winner']:
             state = s.getState(currentGame['id'])
-            t = time.time()
 
             # adjust paddle speed
             paddle = state['paddles'][name]
@@ -69,12 +67,6 @@ class PongBot:
                 poserr = ball['position'][1] - paddle['position'][1]
             else:
                 poserr = -paddle['position'][1]
-
-            dt = t - pt
-            vref = math.copysign(3, poserr)
-            verr = vref - paddle['velocity'][1]
-
-            v = verr * P * dt + ball['velocity'][1]
             s.setPaddleSpeed(poserr * P)
 
 

@@ -1,9 +1,10 @@
-<!-- {{gameState | json}} -->
+{{gameState | json}}
 <div class="gameContainer">
     <canvas width=777 height=480 id="gameCanvas" auto-resize resize-fn="resize(width, height)">
         Your browser doesn't appear to support the HTML5 <code>&lt;canvas&gt;</code> element.
     </canvas>
     <div id=scoreBoard>
+    	{{ currentPlayer.currentGame.joinedPlayers.length + ' / ' + currentPlayer.currentGame.maxPlayers }}
         <p ng-repeat="(name, data) in gameState.players" ng-style="data.style" > {{name}}: {{data.score | number}}  </p> <br />
     </div>
 </div>

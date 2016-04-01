@@ -47,8 +47,7 @@
                 console.log("viewing game", gameId);
                 $scope.gameOn = true;
                 BattlePongService.initGame();
-                playerService.getPlayer(function (data) {
-                    $scope.currentPlayer = data.player;
+                $scope.updatePlayerData(function (data) {
                     BattlePongService.getState(gameId, function (data) {
                         $scope.gameOn = true;
                         initState(data);
@@ -64,14 +63,51 @@
                 BattlePongService.initGame();
                 window.addEventListener('keydown', $scope.handleKeyPress, false);
                 window.addEventListener('keyup', $scope.handleKeyRelease, false);
-                playerService.getPlayer(function (data) {
-                    $scope.currentPlayer = data.player;
-                    BattlePongService.getState($scope.currentPlayer.currentGame.id, function (data) {
+                $scope.updatePlayerData(function (data) {
+                    BattlePongService.getState($scope.player.currentGame.id, function (data) {
                         $scope.gameOn = true;
                         initState(data);
                         render($scope.pTime);
-                        updateState($scope.currentPlayer.currentGame.id);
+                        updateState($scope.player.currentGame.id);
                         updatePaddleSpeed($scope.gameState.players[$scope.player.name]);
+                    });
+                });
+            };
+
+            function getLastItem(list) {
+                return list[list.length - 1];
+            }
+
+            $scope.waitForPlayers = function () {
+                console.log('waiting for players to join...');
+                $scope.updatePlayerData(function (data) {
+                    if ($scope.player.currentGame.joinedPlayers.length == $scope.player.currentGame.maxPlayers) {
+                        $scope.startGame();
+                    } else {
+                        $timeout($scope.waitForPlayers, 1000);
+                    }
+                });
+            }
+
+            $scope.startGame = function () {
+                console.log("starting game...");
+                $scope.updatePlayerData(function (data) {
+                    BattlePongService.getState($scope.player.currentGame.id, function (data) {
+                        if (data.gameStarted) {
+                            $scope.gameOn = true;
+                            BattlePongService.initGame();
+                            window.addEventListener('keydown', $scope.handleKeyPress, false);
+                            window.addEventListener('keyup', $scope.handleKeyRelease, false);
+                            $scope.gameOn = true;
+                            initState(data);
+                            render($scope.pTime);
+                            updateState($scope.player.currentGame.id);
+                            updatePaddleSpeed($scope.gameState.players[$scope.player.name]);
+                        } else if (getLastItem($scope.player.currentGame.joinedPlayers) == $scope.player.name) {
+                            gameService.startGame($scope.startGame);
+                        } else {
+                            $scope.startGame();
+                        }
                     });
                 });
             };
@@ -208,7 +244,7 @@
                     alertSerivce.displayAlert('game id undefined');
                 }
             } else {
-                $scope.startGame();
+                $scope.waitForPlayers();
             }
 
     }]);

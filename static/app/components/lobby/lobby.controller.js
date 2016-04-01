@@ -15,12 +15,10 @@
                 });
             };
 
-            $scope.gotoGame = function () {
-                $location.path('/game');
-            }
-
-            $scope.viewGame = function (gameId) {
-                $location.path('/game/battlepong/view/' + gameId);
+            $scope.viewGame = function (game) {
+                if (game.joinedPlayers.length == game.maxPlayers) {
+                    $location.path('/game/battlepong/view/' + game.id);
+                }
             }
 
             $scope.createGame = function (game, callback, errorhandler) {
@@ -86,6 +84,9 @@
                         if (callback) {
                             callback(data.games[0]);
                         }
+                        
+                        $location.path('/game/battlepong/play/' + game.id);
+                    
                     });
                 }
             };
@@ -259,8 +260,6 @@
                     }
                 });
             };
-
-            console.log("entered lobby")
 
             if (!$scope.isRegistered) {
                 $location.path('/home')
