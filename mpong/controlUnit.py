@@ -23,10 +23,6 @@ class ControlUnit(threading.Thread):
                 if pt - startTime > 10 and not len(value[0].joinedPlayers) > 0:
                     cherrypy.log('200','ControlUnit: game %s timeout' % gameID)
                     self.deleteGames.append(gameID)
-                    for g in GameHandler.games:
-                        if g['id'] == gameID:
-                            GameHandler.games.remove(g)
-                            break
             for gameID in self.deleteGames:
                 self.mgb.deleteGame(gameID)
             for playerName, value in self.mgb.players.items():
