@@ -2,28 +2,24 @@
 # -*- coding: utf-8 -*-
 
 import cherrypy
-from gameHandler import GameHandler
 from mpong.masterGameBuilder import masterGame
 
 
 class JoinGameHandler:
     exposed = True
 
-    def GET(self, gameId):
+    def GET(self, gameID):
         playerName = cherrypy.session.get('name')
-        return "%s has joined game %s" % (playerName, gameId)
+        return "%s has joined game %s" % (playerName, gameID)
 
     @cherrypy.tools.json_out()
-    def POST(self, gameId):
+    def POST(self, gameID):
 
         # Add player to game. This allows him to pick up a websocket to the game. Return adress to ws.
         playerName = cherrypy.session.get('name')
 
-        masterGame.join(gameId, playerName)
-        for g in GameHandler.games:
-            if g['id'] == gameId:
-                g['joinedPlayers'].append(playerName)
-                cherrypy.session['currentGame'] = g
-                cherrypy.log("Player %s joined game %s" %(playerName, g['id']))
-                return {'games': [g]}
+        cherrypy.session['currentGame'] = masterGame.join(gameID, playerName)
+
+        cherrypy.log("Player %s joined game %s" %(playerName, gameID))
+        return {'games': [cherrypy.session['currentGame']]}
 

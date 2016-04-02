@@ -254,6 +254,7 @@ class Game(object):
 class Player(object):
     def __init__(self, name):
         self.name = name
+        self.currentGame = None
         self.velocity = Vector(0.0, 0.0)
 
     def changeName(self, name):
@@ -266,13 +267,20 @@ class Player(object):
     def getVelocity(self):
         return self.velocity.copy()
 
+    def setCurrentGame(self, currentGame):
+        self.currentGame = currentGame
+
+    def getCurrentGame(self):
+        return self.currentGame
+
 
 class MPongGame(threading.Thread):
-    def __init__(self, gameID, maxPlayers):
+    def __init__(self, gameID, maxPlayers, createdBy):
         super(MPongGame, self).__init__(target=self.run)
         self.goldenRatio = 1.618033
         self.gameID = gameID
         self.maxPlayers = maxPlayers
+        self.createdBy = createdBy
         self.joinedPlayers = []
         self.gameStarted = False
         self.gameOver = False
@@ -282,6 +290,17 @@ class MPongGame(threading.Thread):
         self.daemon = True
         self.countDown = 5
         self.winner = ""
+
+    def getMetadata(self):
+        return {u'name' : 'mpong',
+                u'joinedPlayers': [player.name for player in self.joinedPlayers], 
+                u'createdBy': self.createdBy,
+                u'maxPlayers': self.maxPlayers,
+                u'id': self.gameID,
+                u'gameStarted': self.gameStarted,
+                u'gameOver': self.gameOver,
+                u'winner': self.winner
+               }
 
     def joinPlayer(self, newPlayer):
         if newPlayer not in self.joinedPlayers:

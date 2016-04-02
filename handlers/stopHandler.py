@@ -12,15 +12,14 @@ class StopHandler:
 
     def POST(self):
 
-        currentGame = cherrypy.session.get('currentGame')
-        if currentGame['gameStarted']:
-            currentGame['gameStarted'] = False
-            for g in GameHandler.games:
-                if g['id'] == currentGame['id']:
-                    GameHandler.games.remove(g)
-            masterGame.stopGame(currentGame['id'])
-            cherrypy.session['currentGame'] = None
+        playerName = cherrypy.session.get('name')
+        player = masterGame.players[playerName][0]
+        currentGame = player.getCurrentGame()
+        stopGame = masterGame.stopGame(currentGame['id'])
+        player.setCurrentGame(None)
+        cherrypy.session['currentGame'] = player.getCurrentGame()
 
-            cherrypy.log('Stop game %s' % currentGame['id'])
+        cherrypy.log('Stop game %s' % stopGame['id'])
+        return {'games':[stopGame]}
 
 

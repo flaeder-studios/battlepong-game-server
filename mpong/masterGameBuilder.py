@@ -4,86 +4,104 @@ import time
 import threading
 
 class MasterGameBuilder(object):
-    games = {}
-    players = {}
+
+    def __init__(self):
+        self.games = {}
+        self.players = {}
 
     def createPlayer(self, name):
-        if name in MasterGameBuilder.games:
+        if name in self.games:
             raise cherrypy.HTTPError(400, 'MasterGameBuilder: Player %s already exists' % name)
         if name == "":
             raise cherrypy.HTTPError(403, 'MasterGameBuilder: Player name "" illegale')
         cherrypy.log('200','MasterGameBuilder: create player %s' % name)
-        MasterGameBuilder.players[name] = [model.Player(name), time.time()]
+        self.players[name] = [model.Player(name), time.time()]
 
-    def createGame(self, gameId, maxPlayers):
-        if gameId == "":
+    def createGame(self, gameID, maxPlayers, createdBy):
+        if gameID == "":
             raise cherrypy.HTTPError(403, 'MasterGameBuilder: Game name "" illegale')
-        if gameId in MasterGameBuilder.games:
-            raise cherrypy.HTTPError(400, 'MasterGameBuilder: Game already %s exists' % gameId)
-        cherrypy.log('200','MasterGameBuilder: create game %s' % gameId)
-        MasterGameBuilder.games[gameId] = [model.MPongGame(gameId, maxPlayers), time.time()]
+        if gameID in self.games:
+            raise cherrypy.HTTPError(400, 'MasterGameBuilder: Game already %s exists' % gameID)
+        self.games[gameID] = [model.MPongGame(gameID, maxPlayers, createdBy), time.time()]
+        if gameID == 'TerminatorConnan':
+            self.join(gameID, 'Arnold')
+        cherrypy.log('200','MasterGameBuilder: create game %s' % gameID)
+        return self.getMetadata(gameID)
 
-    def join(self, gameId, name):
-        if name not in MasterGameBuilder.players:
+    def getMetadata(self, gameID):
+        if gameID not in self.games:
+            raise cherrypy.HTTPError(404, 'MasterGameBuilder: No game with id %s found.' % (gameID))
+        cherrypy.log('200', 'MasterGameBuilder: returning metadata for game %s' % gameID)
+        return self.games[gameID][0].getMetadata()
+
+    def getMetadataAll(self):
+        return [value[0].getMetadata() for key, value in self.games.items()]
+
+    def join(self, gameID, name):
+        if name not in self.players:
             raise cherrypy.HTTPError(401, 'MasterGameBuilder: No name %s found.' % (name))
-        if gameId not in MasterGameBuilder.games:
-            raise cherrypy.HTTPError(404, 'MasterGameBuilder: No game with id %s found.' % (gameId))
-        cherrypy.log('200','MasterGameBuilder: player %s joined game %s' % (name, gameId))
-        MasterGameBuilder.players[name][1] = time.time()
-        MasterGameBuilder.games[gameId][0].joinPlayer(MasterGameBuilder.players[name][0])
+        if gameID not in self.games:
+            raise cherrypy.HTTPError(404, 'MasterGameBuilder: No game with id %s found.' % (gameID))
+        self.players[name][1] = time.time()
+        self.games[gameID][0].joinPlayer(self.players[name][0])
+        self.players[name][0].setCurrentGame(self.getMetadata(gameID))
+        cherrypy.log('200','MasterGameBuilder: player %s joined game %s' % (name, gameID))
+        return self.getMetadata(gameID)
 
-    def leave(self, gameId, name):
-        if name not in MasterGameBuilder.players:
+    def leave(self, gameID, name):
+        if name not in self.players:
             raise cherrypy.HTTPError(401, 'MasterGameBuilder: No name %s found.' % name)
-        if gameId not in MasterGameBuilder.games:
-            raise cherrypy.HTTPError(404, 'MasterGameBuilder: No game with id %s found.' % gameId)
-        cherrypy.log('200','MasterGameBuilder: player %s left game %s' % (name, gameId))
-        MasterGameBuilder.players[name][1] = time.time()
-        MasterGameBuilder.games[gameId][1] = time.time()
-        MasterGameBuilder.games[gameId][0].leavePlayer(MasterGameBuilder.players[name][0])
+        if gameID not in self.games:
+            raise cherrypy.HTTPError(404, 'MasterGameBuilder: No game with id %s found.' % gameID)
+        cherrypy.log('200','MasterGameBuilder: player %s left game %s' % (name, gameID))
+        self.players[name][1] = time.time()
+        self.games[gameID][1] = time.time()
+        self.games[gameID][0].leavePlayer(self.players[name][0])
 
-    def startGame(self, gameId):
-        if gameId not in MasterGameBuilder.games:
-            raise cherrypy.HTTPError(401, 'MasterGameBuilder: No game with id %s found' % gameId)
-        if not MasterGameBuilder.games[gameId][0].maxPlayers == len(MasterGameBuilder.games[gameId][0].joinedPlayers):
+    def startGame(self, gameID):
+        if gameID not in self.games:
+            raise cherrypy.HTTPError(401, 'MasterGameBuilder: No game with id %s found' % gameID)
+        if not self.games[gameID][0].maxPlayers == len(self.games[gameID][0].joinedPlayers):
             raise cherrypy.HTTPError(404, 'MasterGameBuilder: Not enough players joined')
-        cherrypy.log('200','MasterGameBuilder: start game %s' % gameId)
-        MasterGameBuilder.games[gameId][0].start()
+        cherrypy.log('200','MasterGameBuilder: start game %s' % gameID)
+        self.games[gameID][0].start()
 
-    def stopGame(self, gameId):
-        if gameId not in MasterGameBuilder.games:
-            raise cherrypy.HTTPError(400, 'MasterGameBuilder: No game with id %s found' % gameId)
-        MasterGameBuilder.games[gameId][0].stop()
-        cherrypy.log('200','MasterGameBuilder: stop and remove game %s' % gameId)
-        del MasterGameBuilder.games[gameId]
+    def stopGame(self, gameID):
+        if gameID not in self.games:
+            raise cherrypy.HTTPError(400, 'MasterGameBuilder: No game with id %s found' % gameID)
+        self.games[gameID][0].stop()
+        cherrypy.log('200','MasterGameBuilder: stop game %s' % gameID)
+        return self.games[gameID][0].getMetadata()
 
     def setPlayerSpeed(self, playerName, speedY):
         """ Set player speed in y-direction."""
-        if playerName not in MasterGameBuilder.players:
+        if playerName not in self.players:
             raise cherrypy.HTTPError(401, 'MasterGameBuilder: No player %s found' % playerName)
         cherrypy.log('200','MasterGameBuilder: set player %s speed in y-direction to %f' % (playerName, speedY))
-        MasterGameBuilder.players[playerName][1] = time.time()
-        MasterGameBuilder.players[playerName][0].velocity = model.Vector(0, float(speedY))
+        self.players[playerName][1] = time.time()
+        self.players[playerName][0].velocity = model.Vector(0, float(speedY))
 
-    def gameState(self, gameId):
-        if gameId not in MasterGameBuilder.games:
-            raise cherrypy.HTTPError(404, 'MasterGameBuilder: No game with id %s found' % gameId)
-        cherrypy.log('200','MasterGameBuilder: game %s state %s' % (gameId, MasterGameBuilder.games[gameId][0].getState()))
-        return MasterGameBuilder.games[gameId][0].getState()
+    def gameState(self, gameID):
+        if gameID not in self.games:
+            raise cherrypy.HTTPError(404, 'MasterGameBuilder: No game with id %s found' % gameID)
+        cherrypy.log('200','MasterGameBuilder: game %s state %s' % (gameID, self.games[gameID][0].getState()))
+        return self.games[gameID][0].getState()
 
     def deletePlayer(self, playerName):
-        if playerName not in MasterGameBuilder.players:
+        if playerName not in self.players:
             raise cherrypy.HTTPError(401, 'MasterGameBuilder: No player with name %s found' % playerName)
         cherrypy.log('200','MasterGameBuilder: delete player %s' % playerName)
-        del MasterGameBuilder.players[playerName[0]]
+        del self.players[playerName[0]]
 
-    def deleteGame(self, gameId):
-        if gameId not in MasterGameBuilder.games:
+    def deleteGame(self, gameID):
+        if gameID not in self.games:
             raise cherrypy.HTTPError(404, 'MasterGameBuilder: Game do not exist')
-        if MasterGameBuilder.games[gameId][0].isAlive():
-            raise cherrypy.HTTPError(404, 'MasterGameBuilder: Cannot delete active game %s ' % gameId)
-        cherrypy.log('200','MasterGameBuilder: delete game %s' % gameId)
-        del MasterGameBuilder.games[gameId]
+        if self.games[gameID][0].isAlive():
+            raise cherrypy.HTTPError(404, 'MasterGameBuilder: Cannot delete active game %s ' % gameID)
+        cherrypy.log('200','MasterGameBuilder: delete game %s' % gameID)
+        removedGame = self.getMetadata(gameID)
+        del self.games[gameID]
+        return removedGame
 
 
 masterGame = MasterGameBuilder()

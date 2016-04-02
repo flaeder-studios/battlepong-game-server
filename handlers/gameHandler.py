@@ -9,98 +9,57 @@ class GameHandler:
 
     exposed = True
 
-    games = []
 
     def getAllGames(self):
         games = cherrypy.engine.publish('mpong-get-all-games') #.pop()
 
-        return {'games': GameHandler.games}
+        return {'games': masterGame.getMetadataAll()}
 
-    def getGame(self, gameId):
-        game = cherrypy.engine.publish('mpong-get-game', gameId) #.pop()
+    def getGame(self, gameID):
+        game = cherrypy.engine.publish('mpong-get-game', gameID) #.pop()
 
-        for g in GameHandler.games:
-            if g.get('id') == gameId:
-                return {'games': [g]}
-
-        raise cherrypy.HTTPError(404, 'No game with id %s found' % gameId)
+        return {'games': [ masterGame.getMetadata(gameID)]}
 
     @cherrypy.tools.json_out()
-    def GET(self, gameId=None):
+    def GET(self, gameID=None):
         if not cherrypy.session.get('name'):
             raise cherrypy.HTTPError(401)
 
-        if gameId is None:
+        if gameID is None:
             return self.getAllGames()
         else:
-            return self.getGame(gameId)
+            return self.getGame(gameID)
 
     @cherrypy.tools.json_out()
     @cherrypy.tools.json_in()
-    def POST(self, gameId=None):
+    def POST(self, gameID=None):
         if not cherrypy.session.get('name'):
             raise cherrypy.HTTPError(401, 'name not set')
+        playerName = cherrypy.session.get('name')
 
         game = cherrypy.request.json
-
         if 'id' not in game:
-            if gameId:
-                game[u'id'] = str(gameId)
+            if gameID:
+                game[u'id'] = str(gameID)
             else:
                 raise cherrypy.HTTPError(400, 'game id not set')
-
         if u'maxPlayers' not in game:
             raise cherrypy.HTTPError(400, 'game maxPlayers not set')
         game[u'maxPlayers'] = int(game[u'maxPlayers'])
 
-        for g in GameHandler.games:
-            if g.get('id') == game['id']:
-                raise cherrypy.HTTPError(400, message='game with id %s already exists' % gameId)
+        masterGame.createGame(game['id'], int(game['maxPlayers']), playerName)
+        cherrypy.session['currentGame'] = masterGame.getMetadata(game['id'])
 
-        game[u'createdBy'] = str(cherrypy.session.get('name'))
-        game[u'name'] = 'mpong'
-        game[u'gameStarted'] = False
-        game[u'joinedPlayers'] = []
-
-        masterGame.createGame(game['id'], int(game['maxPlayers']))
-
-        if game['id'] == 'TerminatorConnan':
-            masterGame.join(game['id'], 'Arnold')
-            game[u'joinedPlayers'] = ['Arnold']
-
-        GameHandler.games.append(game)
-        cherrypy.session['currentGame'] = game
-
-        cherrypy.log("created game %s" % game)
-
+        game = masterGame.getMetadata(gameID)
+        cherrypy.log("GameHandler: created game %s" % game)
         return {'games': [game]}
 
     @cherrypy.tools.json_out()
-    def DELETE(self, gameId):
+    def DELETE(self, gameID):
         if not cherrypy.session.get('name'):
             raise cherrypy.HTTPError(401, 'name not set')
         
-        #removedGame = cherrypy.engine.publish('mpong-remove-game', gameId) #.pop()
-        removedGame = None
-        
-        for g in GameHandler.games:
-            if g['id'] == gameId:
-                if g['createdBy'] == cherrypy.session.get('name'):
-                    masterGame.deleteGame(gameId)
-                    removedGame = g
-                    GameHandler.games.remove(g)
-                    break
-                else:
-                    raise cherrypy.HTTPError(401, '%s could not remove game created by %s' % (cherrypy.session.get('name'), g['createdBy']))
-        
-        
-        if 'currentGame' in cherrypy.session and removedGame == cherrypy.session['currentGame']:
-            cherrypy.session['currentGame'] = None
-        
-        if removedGame is None:
-            raise cherrypy.HTTPError(404, 'could not remove game with id %s' % gameId)
-            
-        cherrypy.log("removed game %s" % removedGame)
-            
+        #removedGame = cherrypy.engine.publish('mpong-remove-game', gameID) #.pop()
+        removedGame = masterGame.deleteGame(gameID)
         return { 'games': [removedGame] }
 
