@@ -16,6 +16,7 @@ class StopHandler:
         player = masterGame.players[playerName][0]
         currentGame = player.getCurrentGame()
         stopGame = masterGame.stopGame(currentGame['id'])
+        masterGame.leave(currentGame['id'], playerName)
         player.setCurrentGame(None)
         cherrypy.session['currentGame'] = player.getCurrentGame()
 
