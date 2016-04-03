@@ -38,19 +38,19 @@ class GameHandler:
         playerName = cherrypy.session.get('name')
 
         game = cherrypy.request.json
-        if 'id' not in game:
+        if u'id' not in game:
             if gameID:
-                game[u'id'] = str(gameID)
+                game[u'id'] = gameID
             else:
                 raise cherrypy.HTTPError(400, 'game id not set')
         if u'maxPlayers' not in game:
             raise cherrypy.HTTPError(400, 'game maxPlayers not set')
         game[u'maxPlayers'] = int(game[u'maxPlayers'])
 
-        masterGame.createGame(game['id'], int(game['maxPlayers']), playerName)
-        cherrypy.session['currentGame'] = masterGame.getMetadata(game['id'])
+        masterGame.createGame(game[u'id'], int(game[u'maxPlayers']), playerName)
+        cherrypy.session['currentGame'] = masterGame.getMetadata(game[u'id'])
 
-        game = masterGame.getMetadata(gameID)
+        game = masterGame.getMetadata(game[u'id'])
         cherrypy.log("GameHandler: created game %s" % game)
         return {'games': [game]}
 

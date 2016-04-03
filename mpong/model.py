@@ -255,6 +255,7 @@ class Player(object):
     def __init__(self, name):
         self.name = name
         self.currentGame = None
+        self.createdGames = None
         self.velocity = Vector(0.0, 0.0)
 
     def changeName(self, name):
@@ -272,6 +273,18 @@ class Player(object):
 
     def getCurrentGame(self):
         return self.currentGame
+
+    def setCreatedGames(self, createdGames):
+        self.createdGames = createdGames
+
+    def getCreatedGames(self):
+        return self.currentGame
+
+    def getPlayerData(self):
+        return {'name': self.name,
+                'currentGame': self.currentGame,
+                'createdGames': self.createdGames
+               }
 
 
 class MPongGame(threading.Thread):
@@ -292,14 +305,14 @@ class MPongGame(threading.Thread):
         self.winner = ""
 
     def getMetadata(self):
-        return {u'name' : 'mpong',
-                u'joinedPlayers': [player.name for player in self.joinedPlayers], 
-                u'createdBy': self.createdBy,
-                u'maxPlayers': self.maxPlayers,
-                u'id': self.gameID,
-                u'gameStarted': self.gameStarted,
-                u'gameOver': self.gameOver,
-                u'winner': self.winner
+        return {'name' : 'mpong',
+                'joinedPlayers': [player.name for player in self.joinedPlayers], 
+                'createdBy': self.createdBy,
+                'maxPlayers': self.maxPlayers,
+                'id': self.gameID,
+                'gameStarted': self.gameStarted,
+                'gameOver': self.gameOver,
+                'winner': self.winner
                }
 
     def joinPlayer(self, newPlayer):
