@@ -255,6 +255,7 @@ class Player(object):
     def __init__(self, name):
         self.name = name
         self.currentGame = None
+        self.createdGames = None
         self.velocity = Vector(0.0, 0.0)
 
     def changeName(self, name):
@@ -272,6 +273,18 @@ class Player(object):
 
     def getCurrentGame(self):
         return self.currentGame
+
+    def setCreatedGames(self, createdGames):
+        self.createdGames = createdGames
+
+    def getCreatedGames(self):
+        return self.currentGame
+
+    def getPlayerData(self):
+        return {'name': self.name,
+                'currentGame': self.currentGame,
+                'createdGames': self.createdGames
+               }
 
 
 class MPongGame(threading.Thread):

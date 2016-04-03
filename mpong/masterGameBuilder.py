@@ -19,9 +19,9 @@ class MasterGameBuilder(object):
 
     def createGame(self, gameID, maxPlayers, createdBy):
         if gameID == "":
-            raise cherrypy.HTTPError(403, 'MasterGameBuilder: Game name "" illegale')
+            raise cherrypy.HTTPError(404, 'MasterGameBuilder: Game name "" illegale')
         if gameID in self.games:
-            raise cherrypy.HTTPError(400, 'MasterGameBuilder: Game already %s exists' % gameID)
+            raise cherrypy.HTTPError(404, 'MasterGameBuilder: Game already %s exists' % gameID)
         self.games[gameID] = [model.MPongGame(gameID, maxPlayers, createdBy), time.time()]
         if gameID == 'TerminatorConnan':
             self.join(gameID, 'Arnold')
@@ -44,7 +44,8 @@ class MasterGameBuilder(object):
             raise cherrypy.HTTPError(404, 'MasterGameBuilder: No game with id %s found.' % (gameID))
         self.players[name][1] = time.time()
         self.games[gameID][0].joinPlayer(self.players[name][0])
-        self.players[name][0].setCurrentGame(self.getMetadata(gameID))
+        for player in self.games[gameID][0].joinedPlayers:
+            player.setCurrentGame(self.getMetadata(gameID))
         cherrypy.log('200','MasterGameBuilder: player %s joined game %s' % (name, gameID))
         return self.getMetadata(gameID)
 
@@ -64,7 +65,11 @@ class MasterGameBuilder(object):
         if not self.games[gameID][0].maxPlayers == len(self.games[gameID][0].joinedPlayers):
             raise cherrypy.HTTPError(404, 'MasterGameBuilder: Not enough players joined')
         cherrypy.log('200','MasterGameBuilder: start game %s' % gameID)
-        self.games[gameID][0].start()
+        if self.games[gameID][0].getState()['gameStarted']:
+            cherrypy.log("MasterGameBuilder: Game %s already started" % gameID)
+        else:
+            self.games[gameID][0].start()
+            cherrypy.log("MasterGameBuilder: Starting game %s" % gameID)
 
     def stopGame(self, gameID):
         if gameID not in self.games:

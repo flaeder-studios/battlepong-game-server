@@ -16,6 +16,6 @@ class StartHandler:
         if not currentGame['gameStarted']:
             currentGame['gameStarted'] = True
             masterGame.startGame(currentGame['id'])
-            cherrypy.log('Start game %s' % currentGame['id'])
+            cherrypy.log('Start game %s' % currentGame)
 
         return currentGame
