@@ -7,8 +7,7 @@
 
             $scope.pTime = 0;
             $scope.pPaddleUpdate = 0;
-            $scope.gameState = {balls: {}, players: {}};
-            $scope.gameOn = false;
+            $scope.gameState = {balls: {}, players: {}, counter: 0, gameOver: false, started: false, winner: ""};
 
             $scope.scoreBoardStyle = {}
             
@@ -144,7 +143,10 @@
             };
 
             function setState (data) {
-                for (var ball in data.balls) {
+                $scope.gameState.counter = data['startCountDown'];
+                $scope.gameState.winner = data['winner'];
+                $scope.gameState.started = data['gameStarted'];
+                $scope.gameState.gameOver = data['gameOver'];                for (var ball in data.balls) {
                     $scope.gameState.balls[ball].position = data.balls[ball].position;
                     $scope.gameState.balls[ball].radius = data.balls[ball].radius;
                 }
@@ -158,6 +160,10 @@
             }
 
             function initState (data) {
+                $scope.gameState.counter = data['startCountDown'];
+                $scope.gameState.winner = data['winner'];
+                $scope.gameState.started = data['gameStarted'];
+                $scope.gameState.gameOver = data['gameOver'];
                 for (var ball in data.balls) {
                     $scope.gameState.balls[ball] = {};
                     $scope.gameState.balls[ball].position = data.balls[ball].position;
@@ -185,7 +191,7 @@
                 BattlePongService.setPaddleSpeed(paddle.velocity[1], function() {
                     var dt = 0,
                         time = new Date().getTime();
-                    if ($scope.gameOn) {
+                    if ($scope.gameOn && !$scope.gameState.gameOver) {
                         if ($scope.pPaddleUpdate === 0) {
                             $scope.pPaddleUpdate = time;
                         }
@@ -203,7 +209,7 @@
             function updateState(gameId) {
                 BattlePongService.getState(gameId, function (data) {
                     setState(data);
-                    if ($scope.gameOn == true) {
+                    if ($scope.gameOn == true && !$scope.gameState.gameOver) {
                         updateState(gameId);
                     }
                 });
