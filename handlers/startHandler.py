@@ -12,10 +12,12 @@ class StartHandler:
     @cherrypy.tools.json_out()
     def POST(self):
 
-        currentGame = cherrypy.session.get('currentGame')
+        currentSessionGameId = cherrypy.session.get('currentGame')['id']
+        currentGame = masterGame.getMetadata(currentSessionGameId)
         if not currentGame['gameStarted']:
-            currentGame['gameStarted'] = True
-            masterGame.startGame(currentGame['id'])
+            masterGame.startGame(currentSessionGameId)
+            cherrypy.session['currentGame'] = masterGame.getMetadata(currentSessionGameId)
+            currentGame = masterGame.getMetadata(currentSessionGameId)
             cherrypy.log('Start game %s' % currentGame)
 
         return currentGame

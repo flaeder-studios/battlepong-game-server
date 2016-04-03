@@ -65,11 +65,7 @@ class MasterGameBuilder(object):
         if not self.games[gameID][0].maxPlayers == len(self.games[gameID][0].joinedPlayers):
             raise cherrypy.HTTPError(404, 'MasterGameBuilder: Not enough players joined')
         cherrypy.log('200','MasterGameBuilder: start game %s' % gameID)
-        if self.games[gameID][0].getState()['gameStarted']:
-            cherrypy.log("MasterGameBuilder: Game %s already started" % gameID)
-        else:
-            self.games[gameID][0].start()
-            cherrypy.log("MasterGameBuilder: Starting game %s" % gameID)
+        self.games[gameID][0].start()
 
     def stopGame(self, gameID):
         if gameID not in self.games:
