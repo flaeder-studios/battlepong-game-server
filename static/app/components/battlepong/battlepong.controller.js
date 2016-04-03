@@ -10,6 +10,7 @@
             $scope.gameState = {balls: {}, players: {}, counter: 0, gameOver: false, started: false, winner: ""};
 
             $scope.scoreBoardStyle = {}
+            $scope.gameInfoStyle = {}
             
             function componentToHex(c) {
                 var hex = c.toString(16);
@@ -40,6 +41,15 @@
                         'left': ($scope.width + 10).toString() + 'px'
                     };
                 }
+                $scope.gameInfoStyle = {
+                    'position': 'relative',
+                    'font-size': '48px',
+                    'left': '10px',
+                    'text-align': 'center',
+                    'color': '#ff9831',
+                    'width': $scope.width.toString() + 'px',
+                    'bottom': ($scope.height / 2 + 96).toString() + 'px'
+                };
             };
 
             $scope.viewGame = function (gameId) {
@@ -146,7 +156,8 @@
                 $scope.gameState.counter = data['startCountDown'];
                 $scope.gameState.winner = data['winner'];
                 $scope.gameState.started = data['gameStarted'];
-                $scope.gameState.gameOver = data['gameOver'];                for (var ball in data.balls) {
+                $scope.gameState.gameOver = data['gameOver'];                
+                for (var ball in data.balls) {
                     $scope.gameState.balls[ball].position = data.balls[ball].position;
                     $scope.gameState.balls[ball].radius = data.balls[ball].radius;
                 }
@@ -182,8 +193,8 @@
                     $scope.gameState.players[paddle].height = data.paddles[paddle].dimensions[1];
                     $scope.gameState.players[paddle].color = [Math.random(), Math.random(), Math.random(), 1.0];
                     $scope.gameState.players[paddle].score = data.paddles[paddle].score;
-                    $scope.updateStyle();
                 }
+                $scope.updateStyle();
                 console.log($scope.gameState)
             }
 
@@ -191,7 +202,7 @@
                 BattlePongService.setPaddleSpeed(paddle.velocity[1], function() {
                     var dt = 0,
                         time = new Date().getTime();
-                    if ($scope.gameOn && !$scope.gameState.gameOver) {
+                    if ($scope.gameOn) {
                         if ($scope.pPaddleUpdate === 0) {
                             $scope.pPaddleUpdate = time;
                         }
