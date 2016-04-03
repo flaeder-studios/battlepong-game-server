@@ -11,7 +11,15 @@
             $scope.initialize = function () {
                 $scope.updatePlayerData(function (data) {
                     if ($scope.isRegistered) {
-                        $location.path('/lobby');
+                        if ($scope.player.currentGame && $scope.player.currentGame.gameStarted) {
+                            for (var idx = 0; idx < $scope.player.currentGame.joinedPlayers.length; ++idx) {
+                                if ($scope.player.currentGame.joinedPlayers[idx] == $scope.player.name) {
+                                    $location.path('/game/battlepong/play/' + $scope.player.currentGame.id);
+                                }
+                            }
+                        } else {
+                            $location.path('/lobby');
+                        }
                     } else {
                         $scope.openRegisterModal();
                     }
