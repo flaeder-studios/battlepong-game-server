@@ -72,7 +72,7 @@ class PongSession(requests.Session):
         pass
 
     def quitGame(self):
-        pass
+        return self.post(self.url('QUIT'))
 
     @checkRequestResponse
     def getState(self, id):

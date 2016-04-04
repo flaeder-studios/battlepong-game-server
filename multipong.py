@@ -36,9 +36,13 @@ root.game.paddle = handlers.PaddleHandler()
 root.player = handlers.PlayerHandler()
 
 cherrypy.config.update({'error_page.default': standardErrorMessage})
+cherrypy.config.update({'log.screen': False,
+                        'log.access_file': '',
+                        'log.error_file': '',
+                        'server.thread_pool': 30})
 
-mpong.controlUnit.cu.start() # remove timeout games.
-
+# remove timeout games.
+mpong.controlUnit.cu.start()
 
 cfgFile = os.path.dirname(os.path.realpath(__file__)) + '/multipong.conf'
 cherrypy.quickstart(root, '/', cfgFile)
