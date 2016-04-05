@@ -318,11 +318,11 @@ class MPongGame(threading.Thread):
     def joinPlayer(self, newPlayer):
         if newPlayer not in self.joinedPlayers:
             self.joinedPlayers.append(newPlayer)
-            return newPlayer
+        return newPlayer
 
     def leavePlayer(self, leavingPlayer):
         if leavingPlayer in self.joinedPlayers:
-            self.joinedPlayers.remove(p)
+            self.joinedPlayers.remove(leavingPlayer)
         return leavingPlayer
 
     def run(self):
