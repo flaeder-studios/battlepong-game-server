@@ -9,8 +9,6 @@ class PlayerHandler:
     
     exposed = True
     
-    players = []
-
     @cherrypy.tools.json_out()
     def GET(self):
         player = {}
