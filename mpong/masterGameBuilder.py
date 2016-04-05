@@ -81,7 +81,6 @@ class MasterGameBuilder(object):
         game = self.isGameID(gameID)
         game.stop()
         cherrypy.log('200','MasterGameBuilder: stop game %s' % gameID)
-        return game.getMetadata()
 
     def setPlayerSpeed(self, playerName, speedY):
         """ Set player speed in y-direction."""
