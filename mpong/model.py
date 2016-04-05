@@ -321,10 +321,9 @@ class MPongGame(threading.Thread):
             return newPlayer
 
     def leavePlayer(self, leavingPlayer):
-        for p in self.joinedPlayers:
-            if p == leavingPlayer:
-                self.joinedPlayers.remove(p)
-                return p
+        if leavingPlayer in self.joinedPlayers:
+            self.joinedPlayers.remove(p)
+        return leavingPlayer
 
     def run(self):
         self.gameStarted = True
