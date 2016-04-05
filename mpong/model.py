@@ -322,14 +322,12 @@ class MPongGame(threading.Thread):
             self.joinedPlayers.append(newPlayer)
         else:
             raise cherrypy.HTTPError(401, 'MPongGame: Player %s already registred.' % playerName)
-        return newPlayer
 
     def leavePlayer(self, leavingPlayer):
         if leavingPlayer in self.joinedPlayers:
             self.joinedPlayers.remove(leavingPlayer)
         else:
             raise cherrypy.HTTPError(401, 'MPongGame: No Player %s found.' % playerName)
-        return leavingPlayer
 
     def run(self):
         self.gameStarted = True
