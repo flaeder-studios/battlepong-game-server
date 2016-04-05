@@ -37,19 +37,34 @@ class MasterGameBuilder(object):
     def getMetadataAll(self):
         return [value[0].getMetadata() for key, value in self.games.items()]
 
-    def join(self, gameID, name):
-        if name not in self.players:
-            raise cherrypy.HTTPError(401, 'MasterGameBuilder: No name %s found.' % (name))
+    def checkValidGameIDPlayerName(self, gameID, playerName):
         if gameID not in self.games:
             raise cherrypy.HTTPError(404, 'MasterGameBuilder: No game with id %s found.' % (gameID))
-        if len(self.games[gameID][0].joinedPlayers) == 2:
-            raise cherrypy.HTTPError(404, 'MasterGameBuilder: Cannot join game with id %s, max players reach.' % (gameID))
-        self.players[name][1] = time.time()
-        self.games[gameID][0].joinPlayer(self.players[name][0])
-        for player in self.games[gameID][0].joinedPlayers:
-            player.setCurrentGame(self.getMetadata(gameID))
-        cherrypy.log('200','MasterGameBuilder: player %s joined game %s' % (name, gameID))
-        return self.getMetadata(gameID)
+        if playerName not in self.players:
+            raise cherrypy.HTTPError(401, 'MasterGameBuilder: No playerName %s found.' % (playerName))
+        return self.games[gameID][0], self.players[playerName][0]
+
+    def checkRegisterPlayer(self, game, player):
+        if player in game.joinedPlayers:
+            return True
+        else:
+            return False
+
+    def updatePlayers(self, game):
+        for player in game.joinedPlayers:
+            player.setCurrentGame(game.getMetadata())
+
+    def join(self, gameID, playerName):
+        game, player = self.checkValidGameIDPlayerName(gameID, playerName)
+        if len(game.joinedPlayers) == 2:
+            raise cherrypy.HTTPError(404, 'MasterGameBuilder: Cannot join game with id %s, max players reach.' % gameID)
+        if self.checkRegisterPlayer(game, player):
+            raise cherrypy.HTTPError(404, 'MasterGameBuilder: Player %s already registred for game %s.' % (playerName, gameID))
+        game.joinPlayer(player)
+        self.players[playerName][1] = time.time()
+        self.updatePlayers(game)
+        cherrypy.log('200','MasterGameBuilder: player %s joined game %s' % (playerName, gameID))
+        return game.getMetadata()
 
     def leave(self, gameID, name):
         if name not in self.players:
