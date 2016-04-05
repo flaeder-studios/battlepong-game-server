@@ -42,6 +42,8 @@ class MasterGameBuilder(object):
             raise cherrypy.HTTPError(401, 'MasterGameBuilder: No name %s found.' % (name))
         if gameID not in self.games:
             raise cherrypy.HTTPError(404, 'MasterGameBuilder: No game with id %s found.' % (gameID))
+        if len(self.games[gameID][0].joinedPlayers) == 2:
+            raise cherrypy.HTTPError(404, 'MasterGameBuilder: Cannot join game with id %s, max players reach.' % (gameID))
         self.players[name][1] = time.time()
         self.games[gameID][0].joinPlayer(self.players[name][0])
         for player in self.games[gameID][0].joinedPlayers:

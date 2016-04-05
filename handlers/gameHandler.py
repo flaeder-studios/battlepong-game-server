@@ -46,6 +46,7 @@ class GameHandler:
         if u'maxPlayers' not in game:
             raise cherrypy.HTTPError(400, 'game maxPlayers not set')
         game[u'maxPlayers'] = int(game[u'maxPlayers'])
+        # gameID != game[u'id']
 
         masterGame.createGame(game[u'id'], int(game[u'maxPlayers']), playerName)
         cherrypy.session['currentGame'] = masterGame.getMetadata(game[u'id'])
