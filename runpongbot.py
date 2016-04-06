@@ -19,5 +19,5 @@ if __name__ == '__main__':
     while True:
         time.sleep(10)
         print '---------------'
-        for bot in bots:
-            bot.printStats()
+        print 'getStateDelay:', min([bot.getStateStatistics.min for bot in bots]), sum([bot.getStateStatistics.mean for bot in bots]) / len(bots), max([bot.getStateStatistics.max for bot in bots])
+        print 'setPaddleSpeedDelay:', min([bot.setPaddleSpeedStatistics.min for bot in bots]), sum([bot.setPaddleSpeedStatistics.mean for bot in bots]) / len(bots), max([bot.setPaddleSpeedStatistics.max for bot in bots])
