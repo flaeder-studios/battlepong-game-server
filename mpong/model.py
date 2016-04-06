@@ -255,7 +255,7 @@ class Player(object):
     def __init__(self, name):
         self.name = name
         self.currentGame = None
-        self.createdGames = None
+        self.createdGames = []
         self.velocity = Vector(0.0, 0.0)
 
     def changeName(self, name):
@@ -272,13 +272,15 @@ class Player(object):
         self.currentGame = currentGame
 
     def getCurrentGame(self):
+        if self.currentGame is None:
+            raise cherrypy.HTTPError(401, 'Player: No currentGame found for player %s ' % self.name)
         return self.currentGame
 
     def setCreatedGames(self, createdGames):
-        self.createdGames = createdGames
+        self.createdGames.append(createdGames)
 
     def getCreatedGames(self):
-        return self.currentGame
+        return self.createdGames
 
     def getPlayerData(self):
         return {'name': self.name,

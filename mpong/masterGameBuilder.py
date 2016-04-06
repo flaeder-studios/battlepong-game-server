@@ -18,11 +18,13 @@ class MasterGameBuilder(object):
         self.players[name] = [model.Player(name), time.time()]
 
     def createGame(self, gameID, maxPlayers, createdBy):
+        player = self.isPlayerName(createdBy)
         if gameID == "":
             raise cherrypy.HTTPError(404, 'MasterGameBuilder: Game name "" illegale')
         if gameID in self.games:
             raise cherrypy.HTTPError(404, 'MasterGameBuilder: Game already %s exists' % gameID)
         self.games[gameID] = [model.MPongGame(gameID, maxPlayers, createdBy), time.time()]
+        player.setCreatedGames(self.getGameData(gameID))
         if gameID == 'TerminatorConnan':
             self.join(gameID, 'Arnold')
         cherrypy.log('200','MasterGameBuilder: create game %s' % gameID)
@@ -47,6 +49,16 @@ class MasterGameBuilder(object):
         cherrypy.log('200', 'MasterGameBuilder: returning currentGame for player %s' % playerName)
         return player.getCurrentGame()
 
+    def getCreatedGames(self, playerName):
+        player = self.isPlayerName(playerName)
+        cherrypy.log('200', 'MasterGameBuilder: returning currentGame for player %s' % playerName)
+        return player.getCreatedGames()
+
+    def getPlayerData(self, playerName):
+        player = self.isPlayerName(playerName)
+        cherrypy.log('200', 'MasterGameBuilder: returning currentGame for player %s' % playerName)
+        return player.getPlayerData()
+
     def getGameData(self, gameID):
         game = self.isGameID(gameID)
         cherrypy.log('200', 'MasterGameBuilder: returning GameData for game %s' % gameID)
@@ -65,7 +77,6 @@ class MasterGameBuilder(object):
         game.joinPlayer(player)
         self.updatePlayers(game)
         cherrypy.log('200','MasterGameBuilder: player %s joined game %s' % (playerName, gameID))
-        return game.getGameData()
 
     def leave(self, gameID, playerName):
         game = self.isGameID(gameID)
@@ -86,6 +97,7 @@ class MasterGameBuilder(object):
     def stopGame(self, gameID):
         game = self.isGameID(gameID)
         game.stop()
+        self.updatePlayers(game)
         cherrypy.log('200','MasterGameBuilder: stop game %s' % gameID)
 
     def setPlayerSpeed(self, playerName, speedY):

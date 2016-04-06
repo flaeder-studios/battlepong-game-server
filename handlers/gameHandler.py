@@ -49,7 +49,7 @@ class GameHandler:
         # gameID != game[u'id']
 
         masterGame.createGame(game[u'id'], int(game[u'maxPlayers']), playerName)
-        cherrypy.session['currentGame'] = masterGame.getCurrentGame(playerName)
+        cherrypy.session['createdGames'] = masterGame.getCreatedGames(playerName)
 
         game = masterGame.getGameData(game[u'id'])
         cherrypy.log("GameHandler: created game %s" % game)

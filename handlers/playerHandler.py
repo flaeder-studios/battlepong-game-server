@@ -11,18 +11,15 @@ class PlayerHandler:
     
     @cherrypy.tools.json_out()
     def GET(self):
-        player = {}
 
         if 'name' not in cherrypy.session:
             return { 'player': {}}
         playerName = cherrypy.session['name']
-        player = masterGame.players[playerName][0]
-        cherrypy.session['currentGame'] = player.getCurrentGame()
-        cherrypy.session['createdGames'] = player.getCreatedGames()
-        cherrypy.session['createdGames'] = player.getCreatedGames()
+        cherrypy.session['currentGame'] = None
+        cherrypy.session['createdGames'] = None
 
-        cherrypy.log("player: %s" % player.getPlayerData())
-        return { 'player': player.getPlayerData() }
+        cherrypy.log("player: %s" % masterGame.getPlayerData(playerName))
+        return { 'player': masterGame.getPlayerData(playerName) }
 
     @cherrypy.tools.json_out()
     @cherrypy.tools.json_in()

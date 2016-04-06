@@ -18,7 +18,8 @@ class JoinGameHandler:
         # Add player to game. This allows him to pick up a websocket to the game. Return adress to ws.
         playerName = cherrypy.session.get('name')
 
-        cherrypy.session['currentGame'] = masterGame.join(gameID, playerName)
+        masterGame.join(gameID, playerName)
+        cherrypy.session['currentGame'] = masterGame.getCurrentGame(playerName)
 
         cherrypy.log("Player %s joined game %s" %(playerName, gameID))
         return {'games': [cherrypy.session['currentGame']]}

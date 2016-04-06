@@ -12,7 +12,8 @@ class StopHandler:
 
     def POST(self):
 
-        currentGame = cherrypy.session.get('currentGame')
-        stopGame = masterGame.stopGame(currentGame['id'])
+        playerName = cherrypy.session.get('name')
+        currentGame = masterGame.getCurrentGame(playerName)
+        masterGame.stopGame(currentGame['id'])
         cherrypy.log('Stop game %s' % currentGame)
         return {'games':[currentGame]}
