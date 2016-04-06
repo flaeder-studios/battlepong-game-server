@@ -316,15 +316,18 @@ class MPongGame(threading.Thread):
                }
 
     def joinPlayer(self, newPlayer):
+        if len(self.joinedPlayers) == 2:
+            raise cherrypy.HTTPError(404, 'MPongGame: Cannot join game with id %s, max players reach.' % gameID)
         if newPlayer not in self.joinedPlayers:
             self.joinedPlayers.append(newPlayer)
-            return newPlayer
+        else:
+            raise cherrypy.HTTPError(401, 'MPongGame: Player %s already registred.' % playerName)
 
     def leavePlayer(self, leavingPlayer):
-        for p in self.joinedPlayers:
-            if p == leavingPlayer:
-                self.joinedPlayers.remove(p)
-                return p
+        if leavingPlayer in self.joinedPlayers:
+            self.joinedPlayers.remove(leavingPlayer)
+        else:
+            raise cherrypy.HTTPError(401, 'MPongGame: No Player %s found.' % playerName)
 
     def run(self):
         self.gameStarted = True
