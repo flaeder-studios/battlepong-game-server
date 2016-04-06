@@ -11,11 +11,9 @@ class LeaveGameHandler:
     @cherrypy.tools.json_out()
     def POST(self):
         playerName = cherrypy.session.get('name')
-        currentGame = cherrypy.session.get('currentGame')
+        currentGame = masterGame.getCurrentGame(playerName)
         masterGame.leave(currentGame['id'], playerName)
-        if playerName in currentGame['joinedPlayers']:
-            currentGame['joinedPlayers'].remove(playerName)
-        cherrypy.session['currentGame'] = None
+        cherrypy.session['currentGame'] = masterGame.getCurrentGame(playerName)
         
         return {'games': [currentGame]}
 

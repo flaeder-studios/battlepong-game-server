@@ -18,15 +18,17 @@ class MasterGameBuilder(object):
         self.players[name] = [model.Player(name), time.time()]
 
     def createGame(self, gameID, maxPlayers, createdBy):
+        player = self.isPlayerName(createdBy)
         if gameID == "":
             raise cherrypy.HTTPError(404, 'MasterGameBuilder: Game name "" illegale')
         if gameID in self.games:
             raise cherrypy.HTTPError(404, 'MasterGameBuilder: Game already %s exists' % gameID)
         self.games[gameID] = [model.MPongGame(gameID, maxPlayers, createdBy), time.time()]
+        player.setCreatedGames(self.getGameData(gameID))
         if gameID == 'TerminatorConnan':
             self.join(gameID, 'Arnold')
         cherrypy.log('200','MasterGameBuilder: create game %s' % gameID)
-        return self.getMetadata(gameID)
+        return self.getGameData(gameID)
 
     def isGameID(self, gameID):
         """ Check if a gameID exist in self.games ."""
@@ -42,17 +44,32 @@ class MasterGameBuilder(object):
         self.players[playerName][1] = time.time()
         return self.players[playerName][0]
 
-    def getMetadata(self, gameID):
-        game = self.isGameID(gameID)
-        cherrypy.log('200', 'MasterGameBuilder: returning metadata for game %s' % gameID)
-        return game.getMetadata()
+    def getCurrentGame(self, playerName):
+        player = self.isPlayerName(playerName)
+        cherrypy.log('200', 'MasterGameBuilder: returning currentGame for player %s' % playerName)
+        return player.getCurrentGame()
 
-    def getMetadataAll(self):
-        return [value[0].getMetadata() for key, value in self.games.items()]
+    def getCreatedGames(self, playerName):
+        player = self.isPlayerName(playerName)
+        cherrypy.log('200', 'MasterGameBuilder: returning currentGame for player %s' % playerName)
+        return player.getCreatedGames()
+
+    def getPlayerData(self, playerName):
+        player = self.isPlayerName(playerName)
+        cherrypy.log('200', 'MasterGameBuilder: returning currentGame for player %s' % playerName)
+        return player.getPlayerData()
+
+    def getGameData(self, gameID):
+        game = self.isGameID(gameID)
+        cherrypy.log('200', 'MasterGameBuilder: returning GameData for game %s' % gameID)
+        return game.getGameData()
+
+    def getAllGameData(self):
+        return [value[0].getGameData() for key, value in self.games.items()]
 
     def updatePlayers(self, game):
         for player in game.joinedPlayers:
-            player.setCurrentGame(game.getMetadata())
+            player.setCurrentGame(game.getGameData())
 
     def join(self, gameID, playerName):
         game = self.isGameID(gameID)
@@ -60,7 +77,6 @@ class MasterGameBuilder(object):
         game.joinPlayer(player)
         self.updatePlayers(game)
         cherrypy.log('200','MasterGameBuilder: player %s joined game %s' % (playerName, gameID))
-        return game.getMetadata()
 
     def leave(self, gameID, playerName):
         game = self.isGameID(gameID)
@@ -74,12 +90,14 @@ class MasterGameBuilder(object):
         game = self.isGameID(gameID)
         if not game.maxPlayers == len(game.joinedPlayers):
             raise cherrypy.HTTPError(404, 'MasterGameBuilder: Not enough players joined')
+        game.start()
+        self.updatePlayers(game)
         cherrypy.log('200','MasterGameBuilder: start game %s' % gameID)
-        self.games[gameID][0].start()
 
     def stopGame(self, gameID):
         game = self.isGameID(gameID)
         game.stop()
+        self.updatePlayers(game)
         cherrypy.log('200','MasterGameBuilder: stop game %s' % gameID)
 
     def setPlayerSpeed(self, playerName, speedY):
@@ -108,7 +126,7 @@ class MasterGameBuilder(object):
             raise cherrypy.HTTPError(404, 'MasterGameBuilder: Cannot delete active game %s ' % gameID)
         if len(game.joinedPlayers) > 0:
             raise cherrypy.HTTPError(404, 'MasterGameBuilder: Cannot delete game %s, joinedPlayers not empty' % gameID)
-        removedGame = game.getMetadata()
+        removedGame = game.getGameData()
         del self.games[gameID]
         cherrypy.log('200','MasterGameBuilder: delete game %s' % gameID)
         return removedGame
