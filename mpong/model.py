@@ -304,7 +304,7 @@ class MPongGame(threading.Thread):
         self.countDown = 5
         self.winner = ""
 
-    def getMetadata(self):
+    def getGameData(self):
         return {'name' : 'mpong',
                 'joinedPlayers': [player.name for player in self.joinedPlayers], 
                 'createdBy': self.createdBy,

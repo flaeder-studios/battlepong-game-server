@@ -13,12 +13,12 @@ class GameHandler:
     def getAllGames(self):
         games = cherrypy.engine.publish('mpong-get-all-games') #.pop()
 
-        return {'games': masterGame.getMetadataAll()}
+        return {'games': masterGame.getAllGameData()}
 
     def getGame(self, gameID):
         game = cherrypy.engine.publish('mpong-get-game', gameID) #.pop()
 
-        return {'games': [ masterGame.getMetadata(gameID)]}
+        return {'games': [ masterGame.getGameData(gameID)]}
 
     @cherrypy.tools.json_out()
     def GET(self, gameID=None):
@@ -49,9 +49,9 @@ class GameHandler:
         # gameID != game[u'id']
 
         masterGame.createGame(game[u'id'], int(game[u'maxPlayers']), playerName)
-        cherrypy.session['currentGame'] = masterGame.getMetadata(game[u'id'])
+        cherrypy.session['currentGame'] = masterGame.getGameData(game[u'id'])
 
-        game = masterGame.getMetadata(game[u'id'])
+        game = masterGame.getGameData(game[u'id'])
         cherrypy.log("GameHandler: created game %s" % game)
         return {'games': [game]}
 

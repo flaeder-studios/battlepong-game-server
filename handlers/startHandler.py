@@ -13,11 +13,11 @@ class StartHandler:
     def POST(self):
 
         currentSessionGameId = cherrypy.session.get('currentGame')['id']
-        currentGame = masterGame.getMetadata(currentSessionGameId)
+        currentGame = masterGame.getGameData(currentSessionGameId)
         if not currentGame['gameStarted']:
             masterGame.startGame(currentSessionGameId)
-            cherrypy.session['currentGame'] = masterGame.getMetadata(currentSessionGameId)
-            currentGame = masterGame.getMetadata(currentSessionGameId)
+            cherrypy.session['currentGame'] = masterGame.getGameData(currentSessionGameId)
+            currentGame = masterGame.getGameData(currentSessionGameId)
             cherrypy.log('Start game %s' % currentGame)
 
         return currentGame
