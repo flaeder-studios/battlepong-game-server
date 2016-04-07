@@ -81,8 +81,8 @@
             };
 
             service.handlePaddleBounce = function (ball, paddle) {
-                if (Math.abs(ball.position[0] - paddle.position[0]) < ball.radius + paddle.width / 2 &&
-                    Math.abs(ball.position[1] - paddle.position[1]) < paddle.height / 2) {
+                if (Math.abs(ball.position[0] - paddle.position[0]) < ball.radius + paddle.width &&
+                    Math.abs(ball.position[1] - paddle.position[1]) < paddle.height) {
                     // collision!!
                     if (ball.velocity[0] < 0) {
                         ball.position[0] = paddle.position[0] + paddle.width / 2 + ball.radius + 0.00001;
@@ -90,7 +90,7 @@
                         ball.position[0] = paddle.position[0] - paddle.width / 2 - ball.radius - 0.00001;
                     }
                     ball.velocity[0] = -ball.velocity[0];
-                } else if (Math.abs(ball.position[1] - paddle.position[1]) < ball.radius + paddle.height / 2 &&
+                } else if (Math.abs(ball.position[1] - paddle.position[1]) < ball.radius + paddle.height &&
                     Math.abs(ball.position[0] - paddle.position[0]) < paddle.width) {
                     // collision!!
                     if (ball.velocity[1] < 0) {
@@ -105,23 +105,6 @@
             service.moveBall = function (ball, dt) {
                 ball.position[0] += ball.velocity[0] * dt;
                 ball.position[1] += ball.velocity[1] * dt;
-
-                if (ball.position[0] > 1.0) {
-                    ball.position[0] = 1.0;
-                }
-
-                if (ball.position[0] < -1.0) {
-                    ball.position[0] = -1.0;
-                }
-
-                if (ball.position[1] > 1.0) {
-                    ball.position[1] = 1.0;
-                }
-
-                if (ball.position[1] < -1.0) {
-                    ball.position[1] = -1.0;
-                }
-
             };
 
             service.movePaddle = function (paddle, dt) {
@@ -132,24 +115,21 @@
                 // Update position
                 paddle.position[0] += paddle.velocity[0] * dt;
                 paddle.position[1] += paddle.velocity[1] * dt;
-
+/*
                 // limit position
                 if (paddle.position[0] + paddle.width / 2 > 1.0) {
                     paddle.position[0] = 1.0 - paddle.width / 2;
-                    paddle.velocity[0] = 0.0;
                 }
                 if (paddle.position[0] - paddle.width / 2 < -1.0) {
                     paddle.position[0] = -1.0 + paddle.width / 2;
-                    paddle.velocity[0] = 0.0;
                 }
                 if (paddle.position[1] + paddle.height / 2 > 1.0) {
                     paddle.position[1] = 1.0 - paddle.height / 2;
-                    paddle.velocity[1] = 0.0;
                 }
                 if (paddle.position[1] - paddle.height / 2 < -1.0) {
                     paddle.position[1] = -1.0 + paddle.height / 2;
-                    paddle.velocity[1] = 0.0;
                 }
+                */
             };
 
             service.drawPaddle = function (paddle) {
