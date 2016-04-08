@@ -15,5 +15,5 @@ class StopHandler:
         playerName = cherrypy.session.get('name')
         currentGame = masterGame.getCurrentGame(playerName)
         masterGame.stopGame(currentGame['id'])
-        cherrypy.log('Stop game %s' % currentGame)
-        return {'games':[currentGame]}
+        cherrypy.log('StopHandler: Stop game %s' % currentGame)
+        return {'game':[currentGame]}

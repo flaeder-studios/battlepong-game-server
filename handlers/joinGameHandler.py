@@ -10,7 +10,10 @@ class JoinGameHandler:
 
     def GET(self, gameID):
         playerName = cherrypy.session.get('name')
-        return "%s has joined game %s" % (playerName, gameID)
+        joinGameId = masterGame.getCurrentGame(playerName)['id']
+        game = masterGame.getGameData(joinGameId)
+        cherrypy.log("JoinGameHandler: Player %s joined game %s" % (playerName, game))
+        return {'games': [game]}
 
     @cherrypy.tools.json_out()
     def POST(self, gameID):
@@ -21,6 +24,4 @@ class JoinGameHandler:
         masterGame.join(gameID, playerName)
         cherrypy.session['currentGame'] = masterGame.getCurrentGame(playerName)
 
-        cherrypy.log("Player %s joined game %s" %(playerName, gameID))
-        return {'games': [cherrypy.session['currentGame']]}
-
+        return self.GET(gameID)

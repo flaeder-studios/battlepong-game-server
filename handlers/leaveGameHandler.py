@@ -11,9 +11,11 @@ class LeaveGameHandler:
     @cherrypy.tools.json_out()
     def POST(self):
         playerName = cherrypy.session.get('name')
-        currentGame = masterGame.getCurrentGame(playerName)
-        masterGame.leave(currentGame['id'], playerName)
+        leaveGameId = masterGame.getCurrentGame(playerName)['id']
+        masterGame.leave(leaveGameId, playerName)
         cherrypy.session['currentGame'] = masterGame.getCurrentGame(playerName)
         
-        return {'games': [currentGame]}
+        game = masterGame.getGameData(leaveGameId)
+        cherrypy.log("LeaveGameHandler: Player %s left game %s" % (playerName,game))
+        return {'games': [game]}
 

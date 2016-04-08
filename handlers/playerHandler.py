@@ -18,8 +18,9 @@ class PlayerHandler:
         cherrypy.session['currentGame'] = None
         cherrypy.session['createdGames'] = None
 
-        cherrypy.log("player: %s" % masterGame.getPlayerData(playerName))
-        return { 'player': masterGame.getPlayerData(playerName) }
+        playerData = masterGame.getPlayerData(playerName)
+        cherrypy.log("player: %s" % playerData)
+        return { 'player': playerData }
 
     @cherrypy.tools.json_out()
     @cherrypy.tools.json_in()

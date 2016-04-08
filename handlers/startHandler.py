@@ -13,9 +13,13 @@ class StartHandler:
     def POST(self):
 
         playerName = cherrypy.session.get('name')
-        if not masterGame.getCurrentGame(playerName)['gameStarted']:
-            masterGame.startGame(masterGame.getCurrentGame(playerName)['id'])
-            cherrypy.session['currentGame'] = masterGame.getCurrentGame(playerName)
-            cherrypy.log('Start game %s' % masterGame.getCurrentGame(playerName))
+        startGameId = masterGame.getCurrentGame(playerName)['id']
+        gameStarted = masterGame.getCurrentGame(playerName)['gameStarted']
+        if not gameStarted:
+            masterGame.startGame(startGameId)
 
-        return masterGame.getCurrentGame(playerName)
+        cherrypy.session['currentGame'] = masterGame.getCurrentGame(playerName)
+
+        game = masterGame.getGameData(startGameId)
+        cherrypy.log('StartHandler: Start game %s' % game)
+        return { 'game': game }
