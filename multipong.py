@@ -39,7 +39,9 @@ cherrypy.config.update({'error_page.default': standardErrorMessage})
 cherrypy.config.update({'log.screen': False,
                         'log.access_file': '',
                         'log.error_file': '',
-                        'server.thread_pool': 30})
+                        'server.thread_pool': 30,
+                        'server.socket_host': "0.0.0.0",
+                        'server.socket_port': 8080})
 
 # remove timeout games.
 mpong.controlUnit.cu.start()
