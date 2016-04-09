@@ -272,8 +272,6 @@ class Player(object):
         self.currentGame = currentGame
 
     def getCurrentGame(self):
-        if self.currentGame is None:
-            raise cherrypy.HTTPError(401, 'Player: No currentGame found for player %s ' % self.name)
         return self.currentGame
 
     def setCreatedGames(self, createdGames):
@@ -323,7 +321,7 @@ class MPongGame(threading.Thread):
         if newPlayer not in self.joinedPlayers:
             self.joinedPlayers.append(newPlayer)
         else:
-            raise cherrypy.HTTPError(401, 'MPongGame: Player %s already registred.' % playerName)
+            raise cherrypy.HTTPError(401, 'MPongGame: Player %s already registred.' % newPlayer.name)
 
     def leavePlayer(self, leavingPlayer):
         if leavingPlayer in self.joinedPlayers:

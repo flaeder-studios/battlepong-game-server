@@ -10,7 +10,7 @@ class MasterGameBuilder(object):
         self.players = {}
 
     def createPlayer(self, name):
-        if name in self.games:
+        if name in self.players:
             raise cherrypy.HTTPError(401, 'MasterGameBuilder: Player %s already exists' % name)
         if name == "":
             raise cherrypy.HTTPError(401, 'MasterGameBuilder: Player name "" illegale')

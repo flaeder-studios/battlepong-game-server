@@ -34,7 +34,6 @@ class PlayerHandler:
             playerName = data['player']['name']
             masterGame.createPlayer(playerName)
             cherrypy.session['name'] = playerName
-
-        cherrypy.log("set name to %s" % (playerName))
+            cherrypy.log("set name to %s" % (playerName))
         
         return self.GET()
