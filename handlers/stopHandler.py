@@ -19,4 +19,4 @@ class StopHandler:
 
         game = masterGame.getGameData(currentGame['id'])
         cherrypy.log('StopHandler: stop and leave game %s' % game)
-        return {'game':[game]}
+        return {'games':[game]}

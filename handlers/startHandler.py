@@ -22,4 +22,4 @@ class StartHandler:
 
         game = masterGame.getGameData(startGameId)
         cherrypy.log('StartHandler: Start game %s' % game)
-        return { 'game': game }
+        return {'games': [game] }

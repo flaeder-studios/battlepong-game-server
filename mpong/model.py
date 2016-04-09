@@ -317,7 +317,7 @@ class MPongGame(threading.Thread):
 
     def joinPlayer(self, newPlayer):
         if len(self.joinedPlayers) == 2:
-            raise cherrypy.HTTPError(404, 'MPongGame: Cannot join game with id %s, max players reach.' % gameID)
+            raise cherrypy.HTTPError(404, 'MPongGame: Cannot join game with id %s, max players reach.' % self.gameID)
         if newPlayer not in self.joinedPlayers:
             self.joinedPlayers.append(newPlayer)
         else:
