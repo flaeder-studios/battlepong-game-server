@@ -43,8 +43,6 @@ cherrypy.config.update({'log.screen': False,
                         'server.socket_host': "0.0.0.0",
                         'server.socket_port': 8080})
 
-# remove timeout games.
-mpong.controlUnit.cu.start()
 
 cfgFile = os.path.dirname(os.path.realpath(__file__)) + '/multipong.conf'
 cherrypy.quickstart(root, '/', cfgFile)
