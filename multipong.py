@@ -1,20 +1,17 @@
 #!/usr/bin/python
 # -*- coding: utf-8 -*-
 
-from handlers.websocketHandler import EchoWebSocket
+import os
+import cherrypy
+import json
+import handlers
+import mpong.controlUnit
+from ws4py.websocket import EchoWebSocket
+
 if __name__ == "__main__":
-    import os
-    
-    import cherrypy
-    import json
-    import handlers
-    import mpong.controlUnit
-    from handlers.websocketHandler import WebSocketHandler
-    
     def handleError():
         cherrypy.response.status = 500
         cherrypy.response.body = ["An error occurred..."]
-    
     
     def standardErrorMessage(status, message, traceback, version):
         response = cherrypy.response
@@ -36,7 +33,7 @@ if __name__ == "__main__":
     root.game.state = handlers.GameState()
     root.game.paddle = handlers.PaddleHandler()
     root.player = handlers.PlayerHandler()
-    root.ws = WebSocketHandler()
+    root.ws = handlers.WebSocketHandler()
     
     cherrypy.config.update({'error_page.default': standardErrorMessage})
     cherrypy.config.update({'log.screen': True,
