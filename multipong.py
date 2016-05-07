@@ -40,8 +40,7 @@ cherrypy.config.update({'log.screen': False,
                         'log.access_file': '',
                         'log.error_file': '',
                         'server.thread_pool': 30,
-                        'server.socket_host': "0.0.0.0",
-                        'server.socket_port': 8080})
+                        'server.socket_file': '/tmp/multipong'})
 
 
 cfgFile = os.path.dirname(os.path.realpath(__file__)) + '/multipong.conf'
