@@ -1,7 +1,6 @@
 
 import handlers
 
-
 def handleError():
     cherrypy.response.status = 500
     cherrypy.response.body = ["An error occurred..."]

@@ -1,8 +1,8 @@
 #!/usr/bin/python
 # -*- coding: utf-8 -*-
 
-import os
 import cherrypy
+import os
 import json
 from multipongApplication import root
 from ws4py.websocket import EchoWebSocket
