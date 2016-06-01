@@ -1,46 +1,22 @@
 #!/usr/bin/python
 # -*- coding: utf-8 -*-
 
-import os
 import cherrypy
+import os
 import json
-import handlers
-
-if __name__ == "__main__":
-    def handleError():
-        cherrypy.response.status = 500
-        cherrypy.response.body = ["An error occurred..."]
-
-    def standardErrorMessage(status, message, traceback, version):
-        response = cherrypy.response
-        response.headers['Content-Type'] = 'application/json'
-        return json.dumps({'status': status, 'message': message, 'traceback': traceback, 'version': version})
+from multipongApplication import root
 
 
-    class Root:
-        _cp_config = {'request.error_response': handleError}
+def standardErrorMessage(status, message, traceback, version):
+    response = cherrypy.response
+    response.headers['Content-Type'] = 'application/json'
+    return json.dumps({'status': status, 'message': message, 'traceback': traceback, 'version': version})
 
-
-    root = Root()
-    root.game = handlers.GameHandler()
-    root.game.method = Root()
-    root.game.method.join = handlers.JoinGameHandler()
-    root.game.method.leave = handlers.LeaveGameHandler()
-    root.game.method.start = handlers.StartHandler()
-    root.game.method.quit = handlers.StopHandler()
-    root.game.state = handlers.GameState()
-    root.game.paddle = handlers.PaddleHandler()
-    root.player = handlers.PlayerHandler()
-    root.ws = handlers.WebSocketHandler()
-
-    cherrypy.config.update({'error_page.default': standardErrorMessage})
-    cherrypy.config.update({'log.screen': True,
-                            'log.access_file': '',
-                            'log.error_file': '',
-                            'server.thread_pool': 30,
-                            'server.socket_file': '/tmp/multipong'})
-
-
-
-    cfgFile = os.path.dirname(os.path.realpath(__file__)) + '/multipong.conf'
-    cherrypy.quickstart(root, '/', cfgFile)
+cherrypy.config.update({'error_page.default': standardErrorMessage})
+cherrypy.config.update({'log.screen': True,
+                        'log.access_file': '',
+                        'log.error_file': '',
+                        'server.thread_pool': 30,
+                        'server.socket_file': '/tmp/flaeder/lobby/socket'})
+cfgFile = os.path.dirname(os.path.realpath(__file__)) + '/multipong.conf'
+cherrypy.quickstart(root, '/', cfgFile)

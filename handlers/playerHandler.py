@@ -6,21 +6,23 @@ from mpong.masterGameBuilder import masterGame
 
 
 class PlayerHandler:
-    
+
     exposed = True
-    
+
     @cherrypy.tools.json_out()
     def GET(self):
 
         if 'name' not in cherrypy.session:
-            return { 'player': {}}
+            return {'player': {}}
+
         playerName = cherrypy.session['name']
         cherrypy.session['currentGame'] = None
         cherrypy.session['createdGames'] = None
 
         playerData = masterGame.getPlayerData(playerName)
         cherrypy.log("player: %s" % playerData)
-        return { 'player': playerData }
+
+        return {'player': playerData}
 
     @cherrypy.tools.json_out()
     @cherrypy.tools.json_in()
@@ -35,5 +37,5 @@ class PlayerHandler:
             masterGame.createPlayer(playerName)
             cherrypy.session['name'] = playerName
             cherrypy.log("set name to %s" % (playerName))
-        
+
         return self.GET()

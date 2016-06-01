@@ -27,7 +27,6 @@ class MasterGameBuilder(object):
         player.setCreatedGames(self.getGameData(gameID))
         if gameID == 'TerminatorConnan':
             self.join(gameID, 'Arnold')
-        self.join(gameID, createdBy)    # player auto join created game
         cherrypy.log('200','MasterGameBuilder: create game %s' % gameID)
         return self.getGameData(gameID)
 
@@ -85,8 +84,6 @@ class MasterGameBuilder(object):
         game.leavePlayer(player)
         player.setCurrentGame(None)
         self.updatePlayers(game)
-        if len(game.joinedPlayers) == 0:
-            self.deleteGame(gameID)
         cherrypy.log('200','MasterGameBuilder: player %s left game %s' % (playerName, gameID))
 
     def startGame(self, gameID):
