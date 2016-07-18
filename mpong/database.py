@@ -11,7 +11,7 @@ Classes to be found here
     DatabaseObject
     Player(DatabaseObject)
     GameData(DatabaseObject)
-    DatabaseSimple
+    Database
 """
 
 class DatabaseObject(object):
@@ -28,13 +28,11 @@ class DatabaseObject(object):
 
 
 class Player(DatabaseObject):
-    """First create player(). Then set player data with setPlayer()"""
     def __init__(self, name):
         """Initialize player"""
         super(Player, self).__init__()
         self.name = name
-        self.currentGame = 0
-        self.createdGames = []
+        self.currentGame = 0    # key of currentGame
 
     def setName(self, name):
         self.name = name
@@ -48,46 +46,43 @@ class Player(DatabaseObject):
     def getCurrentGame(self):
         return self.currentGame
 
-    def setCreatedGames(self, key):
-        for k in self.createdGames:
-            if key == k:
-                return None
-        else:
-            self.createdGames.append(key)
-            return key
-
-    def getCreatedGames(self):
-        return self.createdGames[:]
-
     def copy(self):
         tmp = Player(self.name)
         tmp.currentGame = self.currentGame
-        tmp.createdGames = self.createdGames[:]
         return tmp
 
 class GameData(DatabaseObject):
     """First create GameData(). Then set gameData with setGameData."""
     def __init__(self, createdByPlayer, maxPlayers):
-        """Create GameData(). Use setGameData() to set attributes"""
         super(GameData, self).__init__()
         self.createdBy = createdByPlayer
         self.maxPlayers = maxPlayers
-        self.currentPlayers = [createdByPlayer]
+        self.currentPlayers = []
         self.game = None
 
     def setCurrentPlayers(self, player):
-        """set game data"""
-        if self.maxPlayers < 2 and player not in self.currentPlayers:
-            self.currentPlayers.append(player)
-            return player
-        else:
-            return None
+        """Throws ValueError."""
+        if player in self.currentPlayers:
+            raise ValueError('Player already in game.')
+        if len(self.currentPlayers) == self.maxPlayers:
+            raise ValueError('Game is full.')
+        self.currentPlayers.append(player)
+        return player
 
     def getCurrentPlayers(self):
-        if len(self.currentPlayers) < 2:
-            return [self.createdBy.copy()]
+        if len(self.currentPlayers) < 1:
+            return []
+        elif len(self.currentPlayers) < 2:
+            return [self.currentPlayers[0].copy()]
         else:
             return [self.currentPlayers[0].copy(), self.currentPlayers[1].copy()]
+
+    def leaveCurrentPlayers(self, player):
+        """Throws ValueError."""
+        if player not in self.currentPlayers:
+            raise ValueError('Player not found in currentPlayers.')
+        self.currentPlayers.remove(player)
+        return player
 
     def startGame(self):
         # start game. Add mpong.newModel.Game() to self.game.
@@ -95,8 +90,7 @@ class GameData(DatabaseObject):
 
     def copy(self):
         tmp = GameData(self.createdBy.copy(), self.maxPlayers)
-        if len(self.currentPlayers) > 1:
-            tmp.setCurrentPlayers(self.currentPlayers[1].copy())
+        tmp.currentPlayers = self.getCurrentPlayers()
         return tmp
 
 
@@ -106,42 +100,45 @@ class Database(object):
         self.data = []
 
     def add(self, obj):
-        """Add object to database. If object is added object is returned, otherwise returns None"""
-        for elem in self.data:
-            if obj.getKey() == elem.getKey():
-                return None
-        else:
-            self.data.append(obj)
-            return obj
+        """Add object to database. Throws ValueError."""
+        if  obj in self.data:
+            raise ValueError("Object alread in databasase.")
+        self.data.append(obj)
+        return obj
 
     def search(self, key):
-        """Search database for object with key, key. If found returns object otherwise returns None"""
+        """Search database for object with key, key. Throws ValueError."""
         for elem in self.data:
             if key == elem.getKey():
                 return elem
         else:
-            return None
+            raise ValueError("Object not found")
 
     def deleteObj(self, key):
-        """Delete object with key, key. If found returns object otherwise returns None"""
+        """Delete object with key, key. Throws ValueError."""
         obj = self.search(key)
-        if obj is not None:
-            self.data.remove(obj)
-            return obj
-        else:
-            return None
+        self.data.remove(obj)
+        return obj
 
 
 if __name__ == "__main__":
-    playerDatabase = DatabaseSimple()
-    p = Player('Erik')
-    p1 = Player('Malin')
-    print p.getKey(), p1.getKey()
-    p.setCurrentGame(1)
-    p1.setCurrentGame(2)
-    playerDatabase.add(p)
-    playerDatabase.add(p1)
-    print playerDatabase.data
-    playerDatabase.deleteObj(1)
-    print playerDatabase.data
+    playerDatabase = Database()
+    #p = Player('Erik')
+    #p1 = Player('Malin')
+    #print p.getKey(), p1.getKey()
+    #p.setCurrentGame(1)
+    #p1.setCurrentGame(2)
+    #playerDatabase.add(p)
+    #playerDatabase.add(p1)
+    #print playerDatabase.data
+    #playerDatabase.deleteObj(1)
+    #print playerDatabase.data
+    try:
+        p = Player('Daniel')
+        playerDatabase.add(p)
+        playerDatabase.add(p)
+        playerDatabase.search(5)
+    except ValueError as e:
+        print "Database error:", str(e)
+
 

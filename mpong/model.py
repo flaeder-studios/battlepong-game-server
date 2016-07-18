@@ -98,7 +98,7 @@ class Ball(object):
         self.position = position.copy()
         self.radius = radius
         self.speed = speed
-        self.velocity = Vector(0, 0)
+        self.velocity = Vector(1, 0).multiply(speed)
 
     def setSpeed(self, speed):
         self.speed = speed
@@ -148,16 +148,16 @@ class Game(threading.Thread):
         rightPaddle.setPosition(gameBoard.getPosition().add(Vector(gameBoard.getHalfDimensions().getX(), 0)))
         ball.setPosition(gameBoard.getPosition())
         self.n = 2 # middle position on paddle
-        self.pt = 0
+        self.tp = 0
         self.stopGame = False
 
     def getGameOn(self):
         return self.gameOn
 
-    def getPlayerOne(self):
+    def getLeftPlayer(self):
         return self.players[0].copy()
 
-    def getPlayerTwo(self):
+    def getRightPlayer(self):
         return self.players[1].copy()
 
     def getLeftPaddle(self):
@@ -186,35 +186,29 @@ class Game(threading.Thread):
                 self.ballStart(Vector(1, 0).rotate(rad))
                 time.paus(2)
                 self.gameOn = True
-                self.pt = time.time()
-            tNow = time.time()
-            dt = tNow  - self.pt
-            self.pt = tNow
-            self.moveBall(self.players[0], dt)
+                self.tp = time.time()
+            tn = time.time()
+            dt = tn  - self.tp
+            self.tp = tn 
+            self.moveBall(dt)
             self.collision()
 
     def ballStart(self, velocity):
         self.ball.setPosition(self.gameBoard.getPosition())
         self.ball.setVelocity(velocity)
 
+    def moveBall(self, dt):
+        b = self.ball
+        b.setPosition(b.getPosition().add(b.getVelocity().multiply(dt)))
+
     def movePlayer(self, player, vector, dt):
         if self.gameOn:
             if player is self.players[0]:
                 p = self.paddles[0]
                 p.setPosition(p.getPosition().add(vector.multiply(dt)))
-                return player
             elif player is self.players[1]:
                 p = self.paddles[1]
                 p.setPosition(p.getPosition().add(vector.multiply(dt)))
-                return player
-        return None
-
-    uef moveBall(self, player, dt):
-        if self.gameOn and player in self.players:
-            b = self.ball
-            b.setPosition(b.getPosition().add(b.getVelocity().multiply(dt)))
-            return player
-        return None
 
     def collision(self):
         if self.gameOn:
