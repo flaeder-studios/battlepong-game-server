@@ -2,21 +2,19 @@
 # -*- coding: utf-8 -*-
 
 import cherrypy
-from gameHandler import GameHandler
-from mpong.masterGameBuilder import masterGame
 
 
 class StopHandler:
-
     exposed = True
 
+    def __init__(self, players):
+        self.players = players
+
     def POST(self):
-
         playerName = cherrypy.session.get('name')
-        currentGame = masterGame.getCurrentGame(playerName)
-        masterGame.stopGame(currentGame['id'])
-        masterGame.leave(currentGame['id'], playerName)
-
-        game = masterGame.getGameData(currentGame['id'])
-        cherrypy.log('StopHandler: stop and leave game %s' % game)
+        player = self.players[playerName]
+        currentGame = player['currentGame']
+        activeGame = currentGame['activeGame']
+        activeGame.stopped = True
+        cherrypy.log('StopHandler: stop game %s' % game)
         return {'games':[game]}

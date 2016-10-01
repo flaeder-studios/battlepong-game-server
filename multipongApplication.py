@@ -10,20 +10,22 @@ def handleError():
 class Root:
     _cp_config = {'request.error_response': handleError}
 
-
+players = {}
+gameData = {}
 root = Root()
 
 root.game = Root()
-root.game.state = handlers.GameState()
-root.game.paddle = handlers.PaddleHandler()
+#root.game.state = handlers.GameState(gameData)
+root.game.paddle = handlers.PaddleHandler(players)
 
 root.lobby = Root()
-root.lobby.game = handlers.GameHandler()
-root.lobby.player = handlers.PlayerHandler()
+root.lobby.game = handlers.GameHandler(players, gameData)
+root.lobby.player = handlers.PlayerHandler(players)
+
 root.lobby.method = Root()
-root.lobby.method.join = handlers.JoinGameHandler()
-root.lobby.method.leave = handlers.LeaveGameHandler()
-root.lobby.method.start = handlers.StartHandler()
-root.lobby.method.quit = handlers.StopHandler()
+root.lobby.method.join = handlers.JoinGameHandler(players, gameData)
+root.lobby.method.leave = handlers.LeaveGameHandler(players, gameData)
+root.lobby.method.start = handlers.StartHandler(players)
+root.lobby.method.quit = handlers.StopHandler(players)
 
 root.ws = handlers.WebSocketHandler()
