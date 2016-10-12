@@ -12,10 +12,11 @@ class Root:
 
 players = {}
 gameData = {}
+
 root = Root()
 
 root.game = Root()
-#root.game.state = handlers.GameState(gameData)
+root.game.state = handlers.GameState(gameData)
 root.game.paddle = handlers.PaddleHandler(players)
 
 root.lobby = Root()
