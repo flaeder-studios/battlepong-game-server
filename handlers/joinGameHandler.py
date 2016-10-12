@@ -1,21 +1,8 @@
-#!/usr/bin/python
-# -*- coding: utf-8 -*-
-
 import cherrypy
+import handlers.handlerOutput
 
 
-class JoinGameHandler:
-    exposed = True
-
-    def __init__(self, players, gameData):
-        self.players = players
-        self.gameData = gameData
-
-    def GET(self, gameID):
-        playerName = cherrypy.session.get('name')
-        game = self.players[playerName]['currentGame']
-        cherrypy.log("JoinGameHandler: Player %s joined game %s" % (playerName, game))
-        return {'games': [game]}
+class JoinGameHandler(handlers.handlerOutput.GetGameData):
 
     @cherrypy.tools.json_out()
     def POST(self, gameID):
@@ -23,12 +10,12 @@ class JoinGameHandler:
         try:
             playerName = cherrypy.session.get('name')
             player = self.players[playerName]
-            joinGame = self.gameData[gameID]
-            if 'currentPlayers' in joinGame.keys():
-                joinGame['currentPlayers'].append(player)
+            game = self.gameData[gameID]
+            if len(game['currentPlayers']) < 2:
+                game['currentPlayers'].append(player)
+                player['currentGame'] = game
             else:
-                joinGame['currentPlayers'] = [player]
-            player['currentGame'] = joinGame
-            return self.GET(gameID)
+                raise cherrypy.HTTPError('game is full of players.')
+            return self.GET()
         except KeyError as e:
             raise cherrypy.HTTPError('No game with id {}'.format(e))

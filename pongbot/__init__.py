@@ -1,2 +1,0 @@
-
-from pongbot import PongBot

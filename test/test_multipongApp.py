@@ -30,5 +30,4 @@ if __name__ == '__main__':
             self.assertStatus('200 OK')
 
     c = SimpleCPTest()
-    c.setup_server()
     c.test_simple_thing()

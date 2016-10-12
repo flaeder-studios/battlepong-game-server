@@ -1,6 +1,3 @@
-#!/usr/bin/python
-# -*- coding: utf-8 -*-
-
 import cherrypy
 import mpong.model
 
@@ -16,7 +13,9 @@ class PlayerHandler:
         if 'name' not in cherrypy.session:
             return {'player': {}}
         playerName = cherrypy.session['name']
-        playerData = self.players[playerName]
+        player = self.players[playerName]
+        playerData = {}
+        playerData['name'] = player['name']
         cherrypy.log("player: %s" % playerData)
         return {'player': playerData}
 
@@ -24,6 +23,8 @@ class PlayerHandler:
     @cherrypy.tools.json_in()
     def POST(self):
         """ This method creates a player. A player name must be unique."""
+        if 'name' in cherrypy.session:
+            raise cherrypy.HTTPError('Player name already set. Cannot change player name.')
         data = cherrypy.request.json
         # if exists pull out player name from data
         if 'player' in data and 'name' in data['player']:

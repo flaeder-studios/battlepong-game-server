@@ -1,47 +1,17 @@
-
 import cherrypy
+import handlers.handlerOutput
 
 
-class GameHandler:
-    exposed = True
-
-    def __init__(self, players, gameData):
-        self.players = players
-        self.gameData = gameData
-
-    def getAllGames(self):
-        #games = cherrypy.engine.publish('mpong-get-all-games') #.pop()
-        d = {}
-        for gameID in self.gameData.keys():
-            d[gameID] = self.getGame(gameID)
-        return {'games': self.gameData}
-
-    def getGame(self, gameID):
-        game = cherrypy.engine.publish('mpong-get-game', gameID) #.pop()
-        game = self.gameData[gameID]
-        d = {}
-        d['id'] = game['id']
-        d['maxPlayers'] = game['maxPlayers']
-        d['currentPlayers'] = game['currentPlayers']
-        if 'activeGame' in game.keys():
-            d['gameStarted'] = True
-        return {'games': [d]}
-
-    @cherrypy.tools.json_out()
-    def GET(self, gameID=None):
-        if not cherrypy.session.get('name'):
-            raise cherrypy.HTTPError(401)
-        if gameID is None:
-            return self.getAllGames()
-        else:
-            return self.getGame(gameID)
+class GameHandler(handlers.handlerOutput.GetGameData):
 
     @cherrypy.tools.json_out()
     @cherrypy.tools.json_in()
     def POST(self, gameID=None):
+        """Create a dict with game info. {id, maxPlayers, currentPlayers, activeGame}."""
         if not cherrypy.session.get('name'):
             raise cherrypy.HTTPError(401, 'name not set')
         playerName = cherrypy.session.get('name')
+        player = self.players[playerName]
         game = cherrypy.request.json
         if 'id' not in game:
             if gameID:
@@ -52,12 +22,12 @@ class GameHandler:
             raise cherrypy.HTTPError(400, 'game maxPlayers not set')
         game['maxPlayers'] = int(game['maxPlayers'])
         game['currentPlayers'] = [player]
-        game['gameStarted'] = False
-        player = self.players[playerName]
+        game['activeGame'] = False
         player['currentGame'] = game
         self.gameData[game['id']] = game
-        cherrypy.log("GameHandler: created game %s" % game)
-        return {'games': [game]}
+        gameData = self.GET()
+        cherrypy.log('games: {}'.format(gameData))
+        return gameData
 
     @cherrypy.tools.json_out()
     def DELETE(self, gameID):

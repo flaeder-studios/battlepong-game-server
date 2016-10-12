@@ -1,11 +1,9 @@
-#!/usr/bin/python
-# -*- coding: utf-8 -*-
-
 import cherrypy
 import numpy as np
 import time
 import threading
 import mpong.model
+import handlers.handlerOutput
 
 
 class ActiveGame(threading.Thread):
@@ -31,20 +29,21 @@ class ActiveGame(threading.Thread):
             tp = time.time()
 
 
-class StartHandler:
-    exposed = True
-
-    def __init__(self, players):
-        self.players = players
+class StartHandler(handlers.handlerOutput.GetGameData):
 
     @cherrypy.tools.json_out()
     def POST(self):
         playerName = cherrypy.session.get('name')
-        player = self.players[playerName]
-        currentGame = player['currentGame']
-        cherrypy.session['currentGame'] = currentGame
-        cherrypy.log('StartHandler: Start game %s' % game)
-        players = currentGame['currentPlayers']
-        currentGame['activeGame'] = ActiveGame(players[0]['paddle'], players[1]['paddle'])
-        currentGame['activeGame'].start()
-        return {'games': [currentGame] }
+        if playerName is None:
+            raise cherrypy.HTTPError('No player name in session.')
+        try:
+            player = self.players[playerName]
+            currentGame = player['currentGame']
+            cherrypy.session['currentGame'] = currentGame
+            cherrypy.log('StartHandler: Start game {}'.format(currentGame['id']))
+            players = currentGame['currentPlayers']
+            currentGame['activeGame'] = ActiveGame(players[0]['paddle'], players[1]['paddle'])
+            currentGame['activeGame'].start()
+            return self.GET(currentGame['id'])
+        except KeyError as e:
+            raise cherrypy.HTTPError('startHandler: {}'.format(e))

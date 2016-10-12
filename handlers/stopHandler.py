@@ -1,20 +1,19 @@
-#!/usr/bin/python
-# -*- coding: utf-8 -*-
-
 import cherrypy
+import handlers.handlerOutput
 
 
-class StopHandler:
-    exposed = True
-
-    def __init__(self, players):
-        self.players = players
+class StopHandler(handlers.handlerOutput.GetGameData):
 
     def POST(self):
         playerName = cherrypy.session.get('name')
-        player = self.players[playerName]
-        currentGame = player['currentGame']
-        activeGame = currentGame['activeGame']
-        activeGame.stopped = True
-        cherrypy.log('StopHandler: stop game %s' % game)
-        return {'games':[game]}
+        if playerName is None:
+            raise cherrypy.HTTPError('No player name in session.')
+        try:
+            player = self.players[playerName]
+            currentGame = player['currentGame']
+            activeGame = currentGame['activeGame']
+            activeGame.stopped = True
+            cherrypy.log('StopHandler: stop game {}'.format(currentGame['id']))
+            return self.GET(currentGame['id'])
+        except KeyError as e:
+            raise cherrypy.HTTPError('stopHandler: {}'.format(e))
