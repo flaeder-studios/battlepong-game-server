@@ -24,6 +24,8 @@ class ActiveGame(threading.Thread):
             self.ball.position = self.ball.position + self.ball.velocity * dt
             self.leftPaddle.position = self.leftPaddle.position + self.leftPaddle.velocity * dt
             self.rightPaddle.position = self.rightPaddle.position + self.rightPaddle.velocity * dt
+            self.leftPaddle.velocity = np.array((0, 0))
+            self.rightPaddle.velocity = np.array((0, 0))
             game.collision()
             dt = time.time() - tp
             tp = time.time()
